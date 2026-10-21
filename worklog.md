@@ -2174,3 +2174,38 @@ frame 16 мс, ms/tick 8-12 (внешний на чистом под-режим�
   manual/rcon/rconpoll/threadcpu/stacks, втч свежие 21.10 exinfo/oreinfo*/meminfo),
   все отчёты (*.md), tsv, prof_*report.txt и хвосты логов.
 - Серверы: ~13:07/13:25 21.10 владельцем подняты два ShooterGameServer.
+
+## 2026-10-21 19:30-21:00 Слот A (doit6 §1): именованная атрибуция non-CPU ожиданий
+- Отчёт: C:/Dev/_research/REPORT-SLOT-A.md. Офлайн, без стенда и патчей.
+- Ключевой метод (новый): .bin и .wait пишутся в ОДНОМ цикле сэмплера (TickProf.cpp
+  645-660), причём .wait пишется только при RipIsBlocked(rip) => можно выровнять
+  762 wait-записи с сэмплами 1:1 (проверено: slot[0]==RIP сэмпла, 762/762).
+- Формат .wait: 5 слов = RIP, [RSP], [RSP+8], [RSP+16], [RSP+24] => глубина стека
+  всего 4 слова (причина неатрибутируемости 40% ожиданий).
+- Имена syscall'ов: через Ghidra /ntdll.dll (NtWaitForSingleObject 0x15EE84,
+  NtQueryDirectoryFileEx, NtSetEvent, NtAllocate/FreeVirtualMemory и др.).
+- Имена exe-функций: ghidra_funcs_v361.tsv + pdbsym.py + Ghidra get_functions.
+- РЕЗУЛЬТАТ: 624/762 (81.9%) ожиданий = NtWaitForSingleObject (в пустых профилях
+  0.4-3.6%!), ZwDelayExecution(Sleep) в плотном профиле = 0 (в пустых 79-99%).
+  Названо поимённо с RVA 453/762 = 59.5%:
+  * 91 (11.9%) ProcessTasksNamedThread+0x32d (0x1EA897D) -> FNamedTaskThread::Stall
+    (0x1EA9080, taskgraph.cpp) -> ожидание FEvent Queues[Thread].StallRestartEvent
+    (декомпил Ghidra: Wait(INFINITE) через vtable+0x20). Это TaskGraph-барьер.
+  * 270 (35.4%) в стеке &GNatives (RVA 0x491C6B0 = таблица нативных функций UObject,
+    5039 xref'ов) => native-exec/Blueprint-диспетчеризация; в пустых профилях 0-23
+    на десятки тысяч => специфика плотной базы, не артефакт кадра.
+  * 79 (10.4%) CallRemoteFunction+0x6a (0x24782AA, actorcomponent.cpp) - ВАЖНОЕ
+    УТОЧНЕНИЕ к прошлому слоту: ранее отброшены как stale-кадры, но Ghidra показала
+    в CallRemoteFunction ВИРТУАЛЬНЫЙ вызов call [R10+0x270] (0x1424782A3) => ожидание
+    в вызываемом методе, записи реальные.
+  * 13 (1.7%) PopAllAndClose<FBaseGraphTask> (0x1ED7CAE, taskgraph.cpp).
+- Физика (PhysX 5.5%) владельцем ожиданий НЕ является: в стеках ожиданий PhysX нет ни разу.
+- Эпизоды: 649, из них 575 - одиночные сэмплы => большинство ожиданий КОРОТКИЕ;
+  массовое время кадра дают CPU + дескcheduling, а не ожидания.
+- Пути: профили/лог плагина переехали в ArkApi/Plugins/_backup/TickProf (TickProf вынесен
+  владельцем из активных плагинов) - TICKPROF обновлён в profanalyze/profnamed/waitsites.
+- Ghidra-мост: get_functions/find_functions по exe РАБОТАЮТ при явном program:=
+  "/v361_ShooterGameServer.exe" (в прошлом слоте считались сломанными); run_script_inline
+  по-прежнему падает с ClassNotFoundException.
+- Слот B (живой профиль в фазе) и C (overlaptrim3) не начаты: на живом сервере
+  (pid 17496) плагина TickProf нет, разворачивание - отдельная согласованная операция.

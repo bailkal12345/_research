@@ -1,0 +1,154 @@
+╨╕╨╝╨┐╨╛╤Ç╤é╨╛╨▓: 659
+   IAT kernel32.dll   sleep                    rva 0x391B130
+   IAT kernel32.dll   sleepex                  rva 0x391B618
+   IAT kernel32.dll   waitformultipleobjects   rva 0x391B628
+   IAT kernel32.dll   waitforsingleobject      rva 0x391B3E8
+   IAT msvcp120.dll   _cnd_wait                rva 0x391B678
+   IAT msvcr120.dll   ?wait@concurrency@@yaxi@z rva 0x391BAC0
+
+=== call-site'╤ï (FF 15) ╨╜╨░ WaitForSingleObject* ===
+
+kernel32.dll!sleep : 38 call-site'╨╛╨▓
+      2  rva 0x1F7AB70  Serialize
+      2  rva 0x2191240  PresentWithVsyncDWM
+      2  rva 0x222BB70  WaitForRHIThreadTasks
+      1  rva 0x?  ?
+      1  rva 0x1EC3730  Destroy
+      1  rva 0x1F3A020  Run
+      1  rva 0x1F3A610  BlockTillAllRequestsFinished
+      1  rva 0x1F4E7B0  ConsoleCtrlHandler
+      1  rva 0x1F5B9D0  Sleep
+      1  rva 0x1F5BC40  SetThreadName
+      1  rva 0x1F7A3B0  FlushCache
+      1  rva 0x211A4C0  Run
+      1  rva 0x215A2F0  ShutdownDefaultBus
+      1  rva 0x217FCF0  PlatformStaticInitialize
+      1  rva 0x2232C30  WaitAndResumeRendering
+      1  rva 0x2233350  Run
+      1  rva 0x2233820  StopRenderingThread
+      1  rva 0x248A950  ~FStreamingWaveData
+      1  rva 0x251B580  Shutdown
+      1  rva 0x2537FF0  Run
+      1  rva 0x26FEB60  UpdateResourceW
+      1  rva 0x26FED70  WaitForStreaming
+      1  rva 0x271ACF0  Run
+      1  rva 0x2794410  DestroyGenerator
+      1  rva 0x295C0A0  WriteNewTasks
+      1  rva 0x295CA80  ReadAvailableResults
+      1  rva 0x295DB60  BlockOnShaderMapCompletion
+      1  rva 0x295F060  Shutdown
+      1  rva 0x30CB640  Serialize
+      1  rva 0x32BFC50  Visit
+      1  rva 0x32C0500  DoWork
+      1  rva 0x33A8AB0  Shutdown
+      1  rva 0x33F3BE0  umtx_initImplPreInit
+      1  rva 0x362AFE0  Curl_poll
+      1  rva 0x362B330  Curl_socket_check
+
+kernel32.dll!waitforsingleobject : 20 call-site'╨╛╨▓
+      4  rva 0x295C530  LaunchWorkersIfNeeded
+      2  rva 0x242B690  Tick
+      2  rva 0x295C300  LaunchWorkerIfNeeded
+      1  rva 0x1F5A940  IsProcRunning
+      1  rva 0x1F5BBB0  Wait
+      1  rva 0x1F5BCB0  ~FRunnableThreadWin
+      1  rva 0x1F5BEA0  Kill
+      1  rva 0x1F5C450  Hide
+      1  rva 0x295B5D0  CreatePipeAndNewTask
+      1  rva 0x32C1B30  SteamCMDInstallMods
+      1  rva 0x3397F00  ovr_Detect
+      1  rva 0x361D670  wait
+      1  rva 0x361D800  ~Thread
+      1  rva 0x361D830  `scalar_deleting_destructor'
+      1  rva 0x3638300  Curl_thread_join
+
+msvcp120.dll!_cnd_wait : 6 call-site'╨╛╨▓
+      1  rva 0x33113C0  sync_commit
+      1  rva 0x3313CF0  _Wait
+      1  rva 0x3313DA0  _Get_value
+      1  rva 0x331AEA0  sync_commit
+      1  rva 0x33201A0  wait_for_removal
+      1  rva 0x33228C0  fetch_task_or_stop
+
+msvcr120.dll!?wait@concurrency@@yaxi@z : 1 call-site'╨╛╨▓
+      1  rva 0x33140E0  sleep_for<__int64,std::ratio<1,1000>_>
+
+kernel32.dll!sleepex : 2 call-site'╨╛╨▓
+      1  rva 0x362C3B0  Curl_is_connected
+      1  rva 0x362D780  FUN_14362d780
+
+kernel32.dll!waitformultipleobjects : 1 call-site'╨╛╨▓
+      1  rva 0x363AFF0  FUN_14363aff0
+
+=== ╨╛╨▒╤Ç╨░╤é╨╜╤ï╨╡ ╨▓╤ï╨╖╨╛╨▓╤ï ===
+
+ProcessTasksNamedThread @0x1EA8650 : 2 callers
+        1  ProcessTasksUntilQuit
+        1  ProcessTasksUntilIdle
+
+~FStallWatcher @0x1B8F70 : 0 callers
+
+Stall @0x1EA9080 : 1 callers
+        1  ProcessTasksNamedThread
+
+NotifyStalling @0x1EAAE40 : 1 callers
+        1  ProcessTasks
+
+~FScopedRHIThreadStaller @0x216DAA0 : 0 callers
+
+StallRHIThread @0x222BAA0 : 40 callers
+        3  FinalizeMipCount
+        1  CreateVertexShader<TSizedDefaultAllocator<64>_>
+        1  CreatePixelShader<TSizedDefaultAllocator<64>_>
+        1  CreateHullShader<TSizedDefaultAllocator<64>_>
+        1  CreateDomainShader<TSizedDefaultAllocator<64>_>
+        1  CreateGeometryShader<TSizedDefaultAllocator<64>_>
+        1  CreateComputeShader<TSizedDefaultAllocator<64>_>
+        1  RHICalibrateTimers
+
+WaitForTasks @0x222B7A0 : 48 callers
+        3  RenderOverlays
+        3  RenderFrame
+        2  InitRHI
+        2  InitRHI
+        2  InitRHI
+        2  InitRHI
+        2  InitRHI
+        2  Convert
+
+~FScopedCommandListWaitForTasks @0x222B910 : 0 callers
+
+GameThreadWaitForTask @0x2233DB0 : 9 callers
+        2  FlushRenderingCommands
+        1  StartRenderingThread
+        1  UpdateVertices
+        1  UpdateReflectionCaptureContents
+        1  InitializeLODData
+        1  EnqueueBeginRenderFrame
+        1  FreeRenderInfo
+        1  EnqueueBeginRenderFrame
+
+===== kernel32.dll!waitformultipleobjects : 1 call-site'╨╛╨▓ (IAT 0x391B628) =====
+  site 0x363B23D  fn=FUN_14363aff0                          ret@0x363B243 -> ?
+
+===== kernel32.dll!waitforsingleobject : 20 call-site'╨╛╨▓ (IAT 0x391B3E8) =====
+  site 0x1F5A94D  fn=IsProcRunning                          ret@0x1F5A953 -> runtime/core/private/windows/windowsplatformprocess.cpp:370
+  site 0x1F5BBD9  fn=Wait                                   ret@0x1F5BBDF -> runtime/core/private/windows/windowsplatformprocess.cpp:1027
+  site 0x1F5BCF2  fn=~FRunnableThreadWin                    ret@0x1F5BCF8 -> runtime/core/private/windows/windowsrunnablethread.h:113
+  site 0x1F5BECC  fn=Kill                                   ret@0x1F5BED2 -> runtime/core/private/windows/windowsrunnablethread.h:177
+  site 0x1F5C489  fn=Hide                                   ret@0x1F5C48F -> runtime/core/private/windows/windowsplatformsplash.cpp:735
+  site 0x242B6C1  fn=Tick                                   ret@0x242B6C7 -> runtime/online/voice/private/windows/voicecapturewindows.cpp:440
+  site 0x242B700  fn=Tick                                   ret@0x242B706 -> runtime/online/voice/private/windows/voicecapturewindows.cpp:470
+  site 0x295B638  fn=CreatePipeAndNewTask                   ret@0x295B63E -> runtime/engine/private/shadercompiler/shadercompiler.cpp:368
+  site 0x295C38A  fn=LaunchWorkerIfNeeded                   ret@0x295C390 -> runtime/engine/private/shadercompiler/shadercompiler.cpp:718
+  site 0x295C3B3  fn=LaunchWorkerIfNeeded                   ret@0x295C3B9 -> runtime/engine/private/shadercompiler/shadercompiler.cpp:726
+  site 0x295C5DF  fn=LaunchWorkersIfNeeded                  ret@0x295C5E5 -> runtime/engine/private/shadercompiler/shadercompiler.cpp:769
+  site 0x295C5F6  fn=LaunchWorkersIfNeeded                  ret@0x295C5FC -> runtime/engine/private/shadercompiler/shadercompiler.cpp:772
+  site 0x295C64D  fn=LaunchWorkersIfNeeded                  ret@0x295C653 -> runtime/engine/private/shadercompiler/shadercompiler.cpp:785
+  site 0x295C66D  fn=LaunchWorkersIfNeeded                  ret@0x295C673 -> runtime/engine/private/shadercompiler/shadercompiler.cpp:796
+  site 0x32C1DD1  fn=SteamCMDInstallMods                    ret@0x32C1DD7 -> runtime/online/onlinesubsystemsteam/private/steamworkshop.cpp:574
+  site 0x3397F3A  fn=ovr_Detect                             ret@0x3397F40 -> thirdparty/oculus/libovr/libovr_1_0_0/src/ovr_capi_util.cpp:203
+  site 0x361D6A1  fn=wait                                   ret@0x361D6A7 -> ?
+  site 0x361D81A  fn=~Thread                                ret@0x361D820 -> ?
+  site 0x361D850  fn=`scalar_deleting_destructor'           ret@0x361D856 -> ?
+  site 0x3638313  fn=Curl_thread_join                       ret@0x3638319 -> ?

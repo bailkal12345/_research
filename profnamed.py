@@ -2,7 +2,7 @@
 # Именованная атрибуция профилей TickProf: .bin/.ret/.wait + границы .pdata + имена из Ghidra (PDB).
 import struct, bisect, collections, glob, os, sys
 
-TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf'
+TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\\Plugins\_backup\\TickProf'
 EXE = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.exe'
 TSV = r'C:\Dev\_research\ghidra_funcs_v361.tsv'
 import profanalyze as pa

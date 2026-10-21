@@ -1,0 +1,203 @@
+╨╖╨░╨┐╨╕╤ü╨╡╨╣: 762
+
+=== rip Zw*+0x15ee84 : 624 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+    165 (26.4%) | KERNELBASE.dll+5201f <- raw_0 <- raw_0 <- raw_28478622400
+    160 (25.6%) | KERNELBASE.dll+5201f <- raw_0 <- exe@Data+491c6b0 <- raw_ffff
+     94 (15.1%) | KERNELBASE.dll+5201f <- raw_28110e4df50 <- exe@Data+491c6b0 <- raw_ffff
+     91 (14.6%) | KERNELBASE.dll+5201f <- raw_0 <- exe:0x1EA897D ProcessTasksNamedThread+0x32d <- raw_1
+     79 (12.7%) | KERNELBASE.dll+5201f <- raw_2817074b6d0 <- exe:0x24782AA CallRemoteFunction+0x6a <- raw_28478622400
+     13 ( 2.1%) | KERNELBASE.dll+5201f <- raw_28108161420 <- exe:0x1ED7CAE PopAllAndClose<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>+0x3e <- raw_28108161420
+      6 ( 1.0%) | KERNELBASE.dll+5201f <- raw_28110e4df50 <- exe@Data+491c6b0 <- raw_281f7e0d600
+      4 ( 0.6%) | KERNELBASE.dll+5201f <- raw_0 <- exe@Data+491c6b0 <- raw_281f7e0d600
+      4 ( 0.6%) | KERNELBASE.dll+5201f <- raw_282e593e100 <- exe@Data+491c6b0 <- raw_c837ca01c806dc95
+      2 ( 0.3%) | KERNELBASE.dll+5201f <- raw_282e593e700 <- exe@Data+491c6b0 <- raw_c8369362c8081334
+      2 ( 0.3%) | KERNELBASE.dll+5201f <- raw_28108161420 <- raw_0 <- raw_0
+      2 ( 0.3%) | KERNELBASE.dll+5201f <- raw_0 <- raw_28179cd0208 <- raw_282ebd73ff0
+  ... ╨┐╤Ç╨╛╤ç╨╕╨╡ ╤å╨╡╨┐╨╛╤ç╨║╨╕: 2
+
+=== rip Zw*+0x161794 : 22 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      5 (22.7%) | KERNELBASE.dll+9c14e <- raw_28105483050 <- raw_28105483050 <- raw_9b6d8cf120
+      5 (22.7%) | KERNELBASE.dll+9c14e <- raw_28105482870 <- raw_28105482870 <- raw_9b6d8cf120
+      4 (18.2%) | KERNELBASE.dll+9c14e <- raw_28105481eb0 <- raw_28105481eb0 <- raw_9b6d8cf120
+      2 ( 9.1%) | KERNELBASE.dll+9c14e <- raw_28105481b50 <- raw_28105481b50 <- raw_9b6d8cf120
+      2 ( 9.1%) | KERNELBASE.dll+9c14e <- raw_28105482090 <- raw_28105482090 <- raw_9b6d8cf120
+      1 ( 4.5%) | KERNELBASE.dll+9c14e <- raw_28105481c10 <- raw_28105481c10 <- raw_9b6d8cf120
+      1 ( 4.5%) | KERNELBASE.dll+9c0cc <- raw_28105482090 <- raw_28105482090 <- raw_9b6d8cf120
+      1 ( 4.5%) | KERNELBASE.dll+9c14e <- raw_28105482ab0 <- raw_28105482ab0 <- raw_9b6d8cf120
+      1 ( 4.5%) | KERNELBASE.dll+9c14e <- raw_28105482a50 <- raw_28105482a50 <- raw_9b6d8cf120
+
+=== rip Zw*+0x15efc4 : 20 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      4 (20.0%) | KERNELBASE.dll+b6f4d <- raw_470 <- exe:0xE7792A GetPlayerViewPoint+0x14a <- raw_2810845c5a0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_2810845cc00 <- raw_282fa5b2b20 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_28108161420 <- raw_2836480f838 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_28108161400 <- raw_0 <- raw_28313d2e4c0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_2602a158991 <- raw_4f <- raw_4f
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_2810845cc00 <- raw_2831503cc40 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_28108161420 <- raw_282b01d2238 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_28108161420 <- raw_2836477cd38 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_2810845cc00 <- raw_28313346000 <- raw_0
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_0 <- raw_2836470d200 <- raw_fffffffffffffffe
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_28108161400 <- raw_1 <- raw_2831647dc40
+      1 ( 5.0%) | KERNELBASE.dll+b6f4d <- raw_0 <- raw_281dd3d7300 <- raw_fffffffffffffffe
+  ... ╨┐╤Ç╨╛╤ç╨╕╨╡ ╤å╨╡╨┐╨╛╤ç╨║╨╕: 5
+
+=== rip Zw*+0x15f1c4 : 15 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      5 (33.3%) | KERNELBASE.dll+befda <- raw_9b6d8cdf24 <- raw_2848ad5f000 <- raw_ff00000000000000
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_0 <- raw_ffffffffffffffff <- raw_fffffffffffffffe
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_b8
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_98
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_28
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_30
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_9b6d8cdf24 <- raw_2848ad5f000 <- raw_ff000000ffff0000
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_28216fd0000 <- raw_1000 <- raw_4b000
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_c0
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_80
+      1 ( 6.7%) | KERNELBASE.dll+befda <- raw_2810845cc00 <- raw_281613342c0 <- raw_48
+
+=== rip Zw*+0x15f104 : 10 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      3 (30.0%) | KERNELBASE.dll+b8134 <- raw_28478622400 <- raw_2840f50a5c0 <- raw_28478622400
+      3 (30.0%) | KERNELBASE.dll+b8134 <- raw_48aa7ecec6cf2850 <- raw_4881ccb3 <- raw_28478622400
+      1 (10.0%) | KERNELBASE.dll+b8134 <- raw_436babbf43098dc5 <- raw_419ffffc <- raw_28478622400
+      1 (10.0%) | KERNELBASE.dll+b8134 <- raw_c047ce7b00000000 <- raw_80000000 <- raw_1000
+      1 (10.0%) | KERNELBASE.dll+b8134 <- raw_90011fef4b8 <- raw_2af83 <- raw_1000
+      1 (10.0%) | KERNELBASE.dll+b8134 <- raw_c047ce4800000000 <- raw_80000000 <- raw_1000
+
+=== rip win32u.dll+1974 : 8 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      7 (87.5%) | USER32.dll+94f35 <- raw_56 <- raw_0 <- raw_0
+      1 (12.5%) | USER32.dll+94f35 <- raw_0 <- raw_0 <- raw_0
+
+=== rip Zw*+0x15f584 : 7 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      3 (42.9%) | KERNELBASE.dll+b32d0 <- raw_0 <- GameNetworkingSockets.dll+15126 <- raw_2833f404c58
+      2 (28.6%) | KERNELBASE.dll+b32d0 <- raw_6 <- GameNetworkingSockets.dll+15126 <- raw_0
+      1 (14.3%) | KERNELBASE.dll+b32d0 <- raw_5 <- GameNetworkingSockets.dll+15126 <- raw_1
+      1 (14.3%) | KERNELBASE.dll+b32d0 <- raw_28499ab56a0 <- GameNetworkingSockets.dll+15126 <- raw_0
+
+=== rip raw_2817605b250 : 5 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (20.0%) | TickProf.dll+2b840 <- raw_1 <- raw_8 <- exe@Data+4959090
+      1 (20.0%) | TickProf.dll+2b840 <- raw_ffffffffffffffff <- raw_dff <- raw_0
+      1 (20.0%) | TickProf.dll+2b840 <- raw_2 <- raw_3f3504f300000000 <- raw_bbbfe1c63d3e68b7
+      1 (20.0%) | TickProf.dll+2b840 <- raw_7 <- PhysX3_x64.dll+703ac <- raw_ffffffff
+      1 (20.0%) | TickProf.dll+2b840 <- raw_282d0b0e580 <- raw_282d0a7b280 <- exe@Data+3fccf58
+
+=== rip Zw*+0x15eee4 : 4 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      3 (75.0%) | MSWSOCK.dll+617d <- raw_282d0989378 <- raw_0 <- raw_c71215dfc71215df
+      1 (25.0%) | MSWSOCK.dll+617d <- raw_9b6d8ce3e0 <- raw_9b6d8ce3e0 <- raw_9b6d8de517
+
+=== rip Zw*+0x2bb97 : 3 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (33.3%) | raw_9b6d8cd894 <- exe:0x1F432E0 ToString+0x30 <- raw_9b6d8cc8f8 <- raw_7ff600000000
+      1 (33.3%) | raw_c047ce7a00000000 <- raw_80000000 <- raw_503b2d <- raw_9000
+      1 (33.3%) | raw_9b6d8ce760 <- exe:0x1FA578F ~FFrame+0xef <- raw_9b6d8ce760 <- raw_10cc22a80
+
+=== rip Zw*+0x15f124 : 3 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (33.3%) | KERNELBASE.dll+c4ee1 <- raw_a76fba000 <- raw_5d09172 <- raw_6fcdf00
+      1 (33.3%) | KERNELBASE.dll+bec82 <- raw_282c4ee0000 <- raw_28179cd0148 <- raw_282edc0f300
+      1 (33.3%) | KERNELBASE.dll+bec82 <- raw_282e75d0000 <- raw_28179cd0148 <- raw_282e75c0a00
+
+=== rip raw_28104ac0c6e : 3 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (33.3%) | TickProf.dll+2baa4 <- raw_282cfef2aa0 <- raw_0 <- raw_0
+      1 (33.3%) | TickProf.dll+2baa4 <- exe@Data+49abba0 <- raw_9b6d8ce810 <- raw_fffffffffffffffe
+      1 (33.3%) | TickProf.dll+2baa4 <- raw_282cfef7d78 <- raw_0 <- raw_0
+
+=== rip raw_28104ac0c60 : 3 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      2 (66.7%) | TickProf.dll+2baa4 <- exe@Data+49abba0 <- raw_9b6d8ce810 <- raw_fffffffffffffffe
+      1 (33.3%) | TickProf.dll+2baa4 <- raw_90011fe9fe8 <- exe:0x1CFBBD operator!=<APrimalDinoAIController,FWeakObjectPtr,FIndexToObject>+0x1d <- raw_28170c20aa0
+
+=== rip USER32.dll+9040 : 2 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      2 (100.0%) | USER32.dll+8e84 <- raw_0 <- raw_0 <- exe@Data+499f930
+
+=== rip Zw*+0x15f204 : 2 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (50.0%) | KERNELBASE.dll+b11dd <- raw_9b6d8ce5c8 <- GameNetworkingSockets.dll+53e10 <- raw_78
+      1 (50.0%) | KERNELBASE.dll+b11dd <- raw_9b6d8ce5c8 <- GameNetworkingSockets.dll+53e10 <- raw_76
+
+=== rip Zw*+0x254ac : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_0 <- raw_0 <- raw_3eaa88883d84cc2e <- raw_be3811883f6c5fa2
+
+=== rip Zw*+0xe0f9a : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNEL32.DLL+12a26 <- raw_28300000000 <- raw_0 <- raw_90011fed508
+
+=== rip Zw*+0x15f4c4 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNELBASE.dll+bebef <- raw_2823f530000 <- raw_28179cd0148 <- raw_281b29ff750
+
+=== rip Zw*+0xe0f9f : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNEL32.DLL+12a26 <- raw_0 <- raw_28108394c00 <- raw_28103b35700
+
+=== rip Zw*+0x256a4 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_284588e0000 <- exe:0x1F4A683 FreeInternal+0x3d3 <- raw_284588c0c00 <- raw_2b06d
+
+=== rip Zw*+0x280ce : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_0 <- raw_0 <- raw_0 <- raw_0
+
+=== rip KERNEL32.DLL+12a05 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | MSVCR120.dll+23439 <- raw_2822ba80000 <- raw_2822ba80000 <- raw_2834f252100
+
+=== rip Zw*+0x2bb65 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x1F4AC57 Malloc+0x77 <- raw_28179cd0208 <- raw_9b000000b5 <- raw_139d
+
+=== rip Zw*+0x162b67 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_2847ae2d208 <- exe:0x3580D03 getEntry+0x13 <- raw_42e77890c0e37600 <- PxFoundation_x64.dll+7b5a
+
+=== rip Zw*+0xa3667 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_28160ea2548 <- raw_282b2117f48 <- raw_282b2117f48 <- raw_100000000
+
+=== rip Zw*+0xe0fa4 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNEL32.DLL+12a26 <- raw_28300000000 <- raw_0 <- raw_90011fed508
+
+=== rip Zw*+0x25585 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_90011fe8c18 <- raw_0 <- raw_7fffffff <- raw_0
+
+=== rip Zw*+0x2568d : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_2832ac8f340 <- raw_2af83 <- raw_2832879a400 <- raw_2832add4680
+
+=== rip Zw*+0x28010 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_a4 <- raw_30 <- raw_0 <- raw_9b6d8ced48
+
+=== rip Zw*+0x2bbb2 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_282f2f48700 <- exe:0x1F4AE17 Malloc+0x237 <- raw_28179cd0608 <- raw_9b6d8ce6d0
+
+=== rip Zw*+0x2bb73 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_fffffffffffffffe <- raw_281609f68c8 <- raw_fffffffffffffffe <- exe:0x1ED2187 Free+0x27
+
+=== rip KERNELBASE.dll+bef95 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x1F4A632 FreeInternal+0x382 <- raw_28179cd0030 <- exe:0x547C65 IsCharacterHardAttached+0xb5 <- raw_28179cd0030
+
+=== rip Zw*+0xbafff : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_10000 <- raw_281d8f30000 <- raw_28179cd0030 <- raw_28179cd0030
+
+=== rip Zw*+0x25669 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_0 <- raw_0 <- raw_2847ae2aa80 <- PhysX3_x64.dll+5598e
+
+=== rip Zw*+0x15f5c4 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNELBASE.dll+bf29b <- raw_0 <- raw_1 <- raw_fffffffffffffffe
+
+=== rip raw_2817605b255 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | TickProf.dll+2b840 <- raw_0 <- raw_9b6d8caa10 <- raw_8000000000000000
+
+=== rip Zw*+0x27ff0 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_0 <- raw_0 <- raw_0 <- raw_0
+
+=== rip KERNEL32.DLL+18620 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x1FA56D9 ~FFrame+0x39 <- raw_0 <- raw_0 <- raw_fffffffffffffffe
+
+=== rip raw_28175694bf0 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x253B501 Tick+0x221 <- raw_0 <- raw_1023270 <- raw_0
+
+=== rip Zw*+0xbaf00 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNELBASE.dll+bf53e <- raw_0 <- raw_fffffffffffffffe <- raw_9b00001fff
+
+=== rip Zw*+0x2bb8c : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_2832ac8f340 <- raw_9b6d8cc360 <- raw_2827bd2c540 <- raw_28179cd0330
+
+=== rip KERNEL32.DLL+56ca0 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x1ED1E3E ExecuteTask+0x3e <- raw_283645b2618 <- raw_2 <- raw_283648a8538
+
+=== rip KERNEL32.DLL+83910 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | PhysX3_x64.dll+56d79 <- raw_9b6d8c2d38 <- raw_90011fe65a8 <- raw_2840f50a5c0
+
+=== rip KERNEL32.DLL+18629 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | exe:0x1FA56D9 ~FFrame+0x39 <- raw_281960fd180 <- exe:0x258A47 `scalar_deleting_destructor'+0x17 <- raw_2832add5c40
+
+=== rip Zw*+0x15efe4 : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | KERNELBASE.dll+80f69 <- raw_3aa38 <- raw_9b6d8ce3a0 <- raw_0
+
+=== rip KERNELBASE.dll+bf50d : 1 ╨╖╨░╨┐╨╕╤ü╨╡╨╣ ===
+      1 (100.0%) | raw_0 <- raw_fffffffffffffffe <- raw_9b00001fff <- raw_28108161420

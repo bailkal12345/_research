@@ -2,7 +2,7 @@
 # Точные call-site'ы exe в wait-стопках (профиль базы Genesis) + контекст.
 import struct, bisect, collections
 
-TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf'
+TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\\Plugins\_backup\\TickProf'
 import profanalyze as pa
 import profnamed as pn
 

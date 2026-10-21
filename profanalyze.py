@@ -3,7 +3,7 @@
 # Разрешение имён — через таблицы экспорта PE самих DLL (без的发展 патчей, только чтение).
 import struct, sys, bisect, collections
 
-TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf'
+TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\\Plugins\_backup\\TickProf'
 EXE = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.exe'
 
 def load_data(name, ext):
