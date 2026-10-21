@@ -1,0 +1,120 @@
+[
+ {
+  "prof": "631247234",
+  "samples": 31681,
+  "waits": 1883,
+  "exe_cpu": 28292,
+  "bp_pct": 54.37226070974127,
+  "top_leaf": {
+   "AdvanceToNextIntersectingElement+0x87": 1512,
+   "ServerOctreeOverlapActors+0x340": 1118,
+   "ServerOctreeOverlapActors+0x392": 1026,
+   "execDynamicCast+0xbe": 861,
+   "Get+0x4": 748,
+   "CopyValuesInternal+0x5d": 436,
+   "AdvanceToNextIntersectingElement+0x147": 419,
+   "execLocalVariable+0x1a": 394,
+   "execLocalVariable": 385,
+   "CopyCompleteValueFromScriptVM": 383,
+   "CopyCompleteValueToScriptVM": 366,
+   "ProcessChildren+0x159": 302,
+   "ProcessInternal+0xd6": 299,
+   "operator_enum_EMovementMode+0xd": 294,
+   "execLocalVariable+0xa": 274
+  },
+  "fileio_leaf": {
+   "CreateTask+0xd3": 30,
+   "QueueTickFunction+0x3d": 20,
+   "FTickTaskManager::StartFrame+0x33a": 10,
+   "FTickTaskLevel::QueueAllTicks+0x70": 10,
+   "DispatchSubsequents+0xdb": 10,
+   "QueueTickFunction+0x39": 10,
+   "UpdateBasedOnRaft+0x46": 10,
+   "SetupPrereqs+0x83": 10,
+   "CreateTask+0x2": 10,
+   "swap<std::_Ref_count_base_*___ptr64>+0x13": 10
+  },
+  "fileio_caller": {
+   "<non-exe>": 419,
+   "ProcessContextOpcode+0x6c": 38,
+   "ProcessInternal+0xcf": 20,
+   "UCharacterMovementComponent+0x1f5": 10,
+   "execJumpIfNot+0x41": 10,
+   "ProcessContextOpcode+0xa3": 10,
+   "Invoke+0x2f8": 9,
+   "CallFunction+0xb7": 9,
+   "execArray_Length+0xbd": 9,
+   "CopyCompleteValueToScriptVM+0x49": 8
+  }
+ },
+ {
+  "prof": "512222984",
+  "samples": 3868,
+  "waits": 762,
+  "exe_cpu": 2740,
+  "bp_pct": 5.985401459854015,
+  "top_leaf": {
+   "AdvanceToNextIntersectingElement+0x87": 129,
+   "AdvanceToNextIntersectingElement+0x82": 76,
+   "TagFriendlyStructures+0x46c": 50,
+   "TagFriendlyStructures+0x488": 48,
+   "ProcessChildren+0x159": 32,
+   "Tick+0x69d": 27,
+   "ExecuteTask+0x37": 27,
+   "FindId+0x19e": 24,
+   "InitInternal_FindOrAddNameEntry<char>+0x92": 23,
+   "AllocateSerialNumber+0x3c": 22,
+   "InitInternal_FindOrAddNameEntry<char>+0x8b": 21,
+   "AdvanceToNextIntersectingElement+0x147": 21,
+   "Tick": 18,
+   "QueueTickFunction+0x3d": 17,
+   "TagFriendlyStructures+0x472": 15
+  },
+  "fileio_leaf": {
+   "AdvanceToNextIntersectingElement+0x147": 2,
+   "FTickTaskManager::StartFrame+0x2da": 1,
+   "FindId+0xf8": 1,
+   "Tick+0x45": 1,
+   "StepInterp+0x14e": 1,
+   "AdvanceToNextIntersectingElement+0x87": 1,
+   "ConvertQueryOverlap+0xef": 1,
+   "GetUObject+0x5": 1,
+   "ProcessEvent+0x43": 1,
+   "AdvanceToNextIntersectingElement+0xea": 1
+  },
+  "fileio_caller": {
+   "<non-exe>": 17,
+   "UpdateAnimation+0x2ce": 1,
+   "HandleImpact+0x92": 1,
+   "DuringPhysxTick+0x6d": 1,
+   "Emplace<TKeyInitializer<TWeakObjectPtr<UObject,FWeakObjectPtr,FIndexToObject>_&&___ptr64>_>+0x34": 1,
+   "UActorChannel::ReplicateActor+0x49f": 1
+  }
+ },
+ {
+  "prof": "301269000",
+  "samples": 30405,
+  "waits": 29395,
+  "exe_cpu": 770,
+  "bp_pct": 8.441558441558442,
+  "top_leaf": {
+   "AdvanceToNextIntersectingElement+0x147": 30,
+   "AdvanceToNextIntersectingElement+0x87": 29,
+   "ProcessChildren+0x159": 25,
+   "InitInternal_FindOrAddNameEntry<char>+0x92": 20,
+   "FTickTaskManager::RunTickGroup+0x10d": 9,
+   "ExecuteTick+0x6a": 7,
+   "ExecuteTask+0x37": 7,
+   "FTickTaskLevel::QueueNewlySpawned+0xf4": 6,
+   "FindId+0x19e": 6,
+   "AdvanceToNextIntersectingElement+0x4d": 6,
+   "GetWorld+0x15": 6,
+   "AllocateSerialNumber+0x3c": 6,
+   "GetWorld": 6,
+   "AdvanceToNextIntersectingElement+0x211": 5,
+   "InitInternal_FindOrAddNameEntry<char>+0x8f": 5
+  },
+  "fileio_leaf": {},
+  "fileio_caller": {}
+ }
+]

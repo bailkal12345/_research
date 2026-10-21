@@ -1,0 +1,40 @@
+21:57:35.021 mon: t/s=28 ms/tick=33 frame_ms=35 busy=95% save=idle
+21:57:36.034 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:37.058 mon: t/s=28 ms/tick=33 frame_ms=35 busy=93% save=idle
+21:57:38.076 mon: t/s=29 ms/tick=32 frame_ms=33 busy=95% save=idle
+21:57:39.074 mon: t/s=29 ms/tick=31 frame_ms=34 busy=92% save=idle
+21:57:40.062 mon: t/s=28 ms/tick=32 frame_ms=35 busy=92% save=idle
+21:57:41.076 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:42.102 mon: t/s=27 ms/tick=36 frame_ms=36 busy=96% save=idle
+21:57:43.101 mon: t/s=29 ms/tick=32 frame_ms=34 busy=95% save=idle
+21:57:44.115 mon: t/s=29 ms/tick=33 frame_ms=33 busy=96% save=idle
+21:57:45.116 mon: t/s=30 ms/tick=31 frame_ms=33 busy=95% save=idle
+21:57:46.136 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:47.140 mon: t/s=28 ms/tick=32 frame_ms=35 busy=90% save=idle
+21:57:48.165 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:49.178 mon: t/s=28 ms/tick=35 frame_ms=35 busy=98% save=idle
+21:57:50.173 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:57:51.187 mon: t/s=29 ms/tick=32 frame_ms=33 busy=93% save=idle
+21:57:52.211 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:53.213 mon: t/s=30 ms/tick=30 frame_ms=33 busy=92% save=idle
+21:57:54.229 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:55.239 mon: t/s=27 ms/tick=35 frame_ms=36 busy=95% save=idle
+21:57:56.235 mon: t/s=29 ms/tick=31 frame_ms=34 busy=92% save=idle
+21:57:57.237 mon: t/s=30 ms/tick=32 frame_ms=33 busy=96% save=idle
+21:57:58.247 mon: t/s=27 ms/tick=34 frame_ms=37 busy=92% save=idle
+21:57:59.254 mon: t/s=27 ms/tick=35 frame_ms=36 busy=96% save=idle
+21:58:00.259 mon: t/s=28 ms/tick=30 frame_ms=35 busy=85% save=idle
+21:58:01.260 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:58:02.271 mon: t/s=27 ms/tick=35 frame_ms=36 busy=95% save=idle
+21:58:03.292 mon: t/s=28 ms/tick=35 frame_ms=35 busy=100% save=idle
+21:58:04.311 mon: t/s=29 ms/tick=32 frame_ms=34 busy=92% save=idle
+21:58:05.312 mon: t/s=29 ms/tick=33 frame_ms=34 busy=96% save=idle
+21:58:06.316 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:58:07.329 mon: t/s=28 ms/tick=33 frame_ms=35 busy=93% save=idle
+21:58:08.346 mon: t/s=27 ms/tick=34 frame_ms=36 busy=93% save=idle
+21:58:08.881 sampler stopped, 31679 samples
+21:58:08.882 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_631247234.bin (31679 samples)
+21:58:08.895 ожидание в syscall: 1883/31679 сэмплов (5%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_631247234.wait
+21:58:09.360 mon: t/s=27 ms/tick=34 frame_ms=36 busy=93% save=idle
+21:58:10.382 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+21:58:12.342 mon: t/s=4 ms/tick=61 frame_ms=217 busy=14% save=idle

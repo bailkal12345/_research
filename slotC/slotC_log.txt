@@ -1,0 +1,6 @@
+22:32:53 == СЛОТ C: A/B overlaptrim2 vs overlaptrim3 на реальном сейве ==
+22:32:53 --- РУКА A_trim2: overlaptrim 2 (прод-конфиг v1) ---
+22:32:53     сброс базы: overlapall 0 (возврат bGenerateOverlapEvents у всех)
+22:32:56     LOG: 22:32:53.760 overlapall: bGenerateOverlapEvents возвращён у 289926 компонентов
+22:32:56     арм TickProf.overlaptrim 2 -> Server received, But no response!!
+22:32:58     LOG: 22:32:56.890 overlaptrim: порог=2 отключено компонентов=24000 освобождено записей=193303

@@ -1,0 +1,131 @@
+[
+ {
+  "prof": "631247234",
+  "samples": 31681,
+  "waits": 1883,
+  "sysc": {
+   "ntdll.dll+0x161794": 1221,
+   "ntdll.dll+0x15ee84": 301,
+   "ntdll.dll+0x15efc4": 97,
+   "ntdll.dll+0x15eee4": 23,
+   "ntdll.dll+0x2bb65": 18,
+   "ntdll.dll+0x15ef04": 13,
+   "ntdll.dll+0x15efe4": 12,
+   "ntdll.dll+0x2bbb2": 11
+  },
+  "stack": {
+   "<нет exe-кадра>": 1739,
+   "exeDATA+0x491C6B0": 71,
+   "Malloc+0x237": 13,
+   "Malloc+0x77": 8,
+   "FreeInternal+0x3d3": 6,
+   "GetTLS+0x1e": 5,
+   "~FFrame+0x39": 5,
+   "ResizeAllocation+0x66": 4,
+   "exeDATA+0x4959090": 3,
+   "~FFrame+0xef": 3,
+   "execEqualEqual_ByteByte+0xc6": 3,
+   "GetAsShared+0xb9": 2
+  },
+  "owner": {
+   "<?>": 570,
+   "<491898304480>": 226,
+   "<491898297568>": 122,
+   "<1888060760512>": 103,
+   "ProcessContextOpcode+0x6c": 86,
+   "ProcessInternal+0xcf": 77,
+   "<140702061545136>": 47,
+   "<491898308176>": 42,
+   "CopyCompleteValueToScriptVM+0x49": 37,
+   "<491898298112>": 36,
+   "<0>": 36,
+   "<1901542690560>": 34
+  }
+ },
+ {
+  "prof": "512222984",
+  "samples": 3868,
+  "waits": 762,
+  "sysc": {
+   "ntdll.dll+0x15ee84": 624,
+   "ntdll.dll+0x161794": 22,
+   "ntdll.dll+0x15efc4": 20,
+   "ntdll.dll+0x15f1c4": 15,
+   "raw": 13,
+   "ntdll.dll+0x15f104": 10,
+   "win32u.dll+0x1974": 8,
+   "ntdll.dll+0x15f584": 7
+  },
+  "stack": {
+   "<нет exe-кадра>": 285,
+   "exeDATA+0x491C6B0": 270,
+   "ProcessTasksNamedThread+0x32d": 91,
+   "CallRemoteFunction+0x6a": 79,
+   "PopAllAndClose<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>+0x3e": 13,
+   "GetPlayerViewPoint+0x14a": 4,
+   "exeDATA+0x49ABBA0": 3,
+   "exeDATA+0x499F930": 2,
+   "~FFrame+0x39": 2,
+   "ToString+0x30": 1,
+   "exeDATA+0x4959090": 1,
+   "FreeInternal+0x3d3": 1
+  },
+  "owner": {
+   "<140708420263967>": 198,
+   "<0>": 35,
+   "<667557872592>": 22,
+   "<18446744073709551360>": 12,
+   "<18446744073709551614>": 10,
+   "<2768009245480>": 9,
+   "<2767429959680>": 7,
+   "<1>": 7,
+   "<140708420677453>": 6,
+   "<667557881216>": 6,
+   "<2758531218720>": 5,
+   "Invoke+0x2f8": 5
+  }
+ },
+ {
+  "prof": "301269000",
+  "samples": 30405,
+  "waits": 29395,
+  "sysc": {
+   "ntdll.dll+0x15f484": 29056,
+   "ntdll.dll+0x15ee84": 126,
+   "ntdll.dll+0x15f124": 46,
+   "ntdll.dll+0x15efc4": 33,
+   "win32u.dll+0x1974": 25,
+   "ntdll.dll+0x15eee4": 13,
+   "ntdll.dll+0x15f4c4": 13,
+   "ntdll.dll+0x15f5c4": 6
+  },
+  "stack": {
+   "<нет exe-кадра>": 22875,
+   "Tick": 6490,
+   "SlideAlongSurface+0xf5": 4,
+   "Malloc+0x77": 3,
+   "PumpMessages+0xae": 2,
+   "UtcNow+0x27": 2,
+   "Init+0x120": 2,
+   "Get+0x3d": 2,
+   "exeDATA+0x499F930": 2,
+   "GetStats+0x9c": 2,
+   "SetHitResultFromShapeAndFaceIndex+0x26f": 1,
+   "~TArray<TRefCountPtr<FGraphEvent>,TSizedInlineAllocator<4,32,TSizedDefaultAllocator<32>_>_>+0xd4": 1
+  },
+  "owner": {
+   "<?>": 23393,
+   "<140708461899012>": 5209,
+   "<140708420263967>": 84,
+   "<923328610928>": 80,
+   "<3725602800332112391>": 60,
+   "<0>": 36,
+   "<923328611136>": 34,
+   "<4294967295>": 25,
+   "<2662879723520>": 25,
+   "<923328607856>": 24,
+   "<923328617736>": 23,
+   "<140705985463968>": 22
+  }
+ }
+]

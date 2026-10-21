@@ -1,0 +1,30 @@
+[
+ {
+  "prof": "631247234",
+  "in_oct": 3624,
+  "callers": {
+   "<non-exe>": 2252,
+   "ProcessInternal+0xcf": 248,
+   "ProcessContextOpcode+0x6c": 204,
+   "CopyCompleteValueToScriptVM+0x49": 130,
+   "ProcessContextOpcode+0x44": 89,
+   "Invoke+0x2f8": 81,
+   "execPopExecutionFlowIfNot+0x32": 65,
+   "execLet+0x53": 40,
+   "GetFunctionCallspace+0x59": 39,
+   "execJumpIfNot+0x41": 30,
+   "execArray_Get+0x239": 29,
+   "execDynamicCast+0x48": 27,
+   "execAdd_IntInt+0x41": 23,
+   "execLetBool+0x48": 19,
+   "execBooleanOR+0x44": 19
+  }
+ },
+ {
+  "prof": "512222984",
+  "in_oct": 1,
+  "callers": {
+   "<non-exe>": 1
+  }
+ }
+]

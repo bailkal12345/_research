@@ -1,609 +1,114 @@
-=== prof_209283656: сэмплов 61165, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 39464 (64.5%), ntdll.dll 21258 (34.8%), KERNEL32.DLL 203 (0.3%), KERNELBASE.dll 103 (0.2%), win32u.dll 89 (0.1%), bcryptPrimitives.dll 17 (0.0%), WS2_32.dll 8 (0.0%), USER32.dll 8 (0.0%)
+=== prof_631247234: сэмплов 31679, wait-записей 1883 ===
+модули (лист RIP): ShooterGameServer.exe 28291 (89.3%), ntdll.dll 1836 (5.8%), MSVCR120.dll 1111 (3.5%), PhysX3_x64.dll 194 (0.6%), TickProf.dll 111 (0.4%), PhysX3Common_x64.dll 61 (0.2%), KERNEL32.DLL 27 (0.1%), win32u.dll 12 (0.0%)
 
 системные/GUI-DLL листья (именованные):
-   29.5% 18072  ZwDelayExecution+0x14
-    2.1%  1313  ZwWaitForSingleObject+0x14
-    0.4%   253  ZwQueryInformationProcess+0x14
-    0.4%   223  RtlLeaveCriticalSection+0x35
-    0.3%   207  RtlTryEnterCriticalSection+0x52
-    0.3%   170  ZwSetEvent+0x14
-    0.2%   118  ZwAllocateVirtualMemory+0x14
-    0.2%   108  ZwQuerySystemInformation+0x14
-    0.1%    86  TlsGetValue
-    0.1%    85  NtUserGetForegroundWindow+0x14
-    0.1%    69  RtlTryEnterCriticalSection+0x5
-    0.1%    56  RtlEnterCriticalSection+0x5c
+    3.9%  1221  ZwQueryDirectoryFileEx+0x14
+    1.0%   301  ZwWaitForSingleObject+0x14
+    0.4%   121  memmove+0xdb
+    0.3%   109  memmove+0x154
+    0.3%    97  ZwSetEvent+0x14
+    0.2%    78  memmove+0x128
+    0.2%    75  memmove+0x156
+    0.2%    75  memmove+0x12c
+    0.2%    59  sqrtf+0xcb
+    0.2%    58  memmove+0xc9
+    0.2%    52  memmove+0xde
+    0.1%    47  memmove
 
 топ-40 функций exe (по листу RIP):
+   11.4%  3624  rva 0x12871E0  ServerOctreeOverlapActors
+    8.8%  2778  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    4.5%  1424  rva 0x1FC3280  execDynamicCast
+    3.5%  1112  rva 0x1FC1FA0  ProcessContextOpcode
+    2.7%   862  rva 0x16724F0  CopyCompleteValueToScriptVM
+    2.7%   859  rva 0x1FC1620  execLet
+    2.5%   785  rva 0x1F867C0  Invoke
+    2.4%   748  rva 0x1FC0305  ProcessInternal+0x95
+    2.4%   745  rva 0x1FD7734  Get+0x4
+    2.3%   729  rva 0x1FBFEF0  CallFunction
+    1.7%   544  rva 0x276BB6C  ProcessChildren+0x11c
+    1.7%   533  rva 0x1FB8A00  CopyValuesInternal
+    1.6%   515  rva 0x2DD320  operator*
+    1.2%   394  rva 0x1FC108A  execLocalVariable+0x1a
+    1.2%   385  rva 0x1FC1070  execLocalVariable
+    1.2%   381  rva 0x1673AF0  CopyCompleteValueFromScriptVM
+    1.0%   312  rva 0x29AC410  execArray_Get
+    1.0%   308  rva 0x1FC1570  execPopExecutionFlowIfNot
+    0.9%   294  rva 0x1EAB2D  operator_enum_EMovementMode+0xd
+    0.9%   274  rva 0x1FC107A  execLocalVariable+0xa
+    0.9%   270  rva 0x1FC1CD0  execLetBool
+    0.8%   240  rva 0x6D13F0  BPIsTamed
+    0.8%   240  rva 0x25AB760  GetFunctionCallspace
+    0.7%   236  rva 0x29CBD80  execBooleanOR
+    0.7%   229  rva 0x1FC108E  execLocalVariable+0x1e
+    0.7%   228  rva 0x2471450  GetFunctionCallspace
+    0.7%   211  rva 0x1FC1CDF  execLetBool+0xf
+    0.7%   210  rva 0x1FC1284  execJump+0x4
+    0.6%   205  rva 0x1FC22D0  execFinalFunction
+    0.6%   205  rva 0x29B9880  execNot_PreBool
+    0.6%   200  rva 0x1FC1460  execPushExecutionFlow
+    0.6%   198  rva 0x29CBEF0  execBooleanAND
+    0.6%   198  rva 0x1FC1280  execJump
+    0.6%   192  rva 0x29C1860  execGreaterEqual_IntInt
+    0.6%   175  rva 0x1FC1DEC  execLetBool+0x11c
+    0.5%   160  rva 0x1FC12F0  execJumpIfNot
+    0.5%   156  rva 0x29CCB00  execAdd_IntInt
+    0.5%   155  rva 0x36553B0  __security_check_cookie
+    0.5%   152  rva 0x1FC1F90  execContext
+    0.5%   147  rva 0x29BFA90  execLess_IntInt
 
 топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
+    7.2%  2294  rva 0x1FC1FA0  ProcessContextOpcode
+    6.8%  2158  rva 0x1FC0305  ProcessInternal+0x95
+    2.9%   922  rva 0x16724F0  CopyCompleteValueToScriptVM
+    2.4%   763  rva 0x1F867C0  Invoke
+    1.8%   558  rva 0x29AC410  execArray_Get
+    1.6%   498  rva 0x2471450  GetFunctionCallspace
+    1.6%   492  rva 0x1FC1570  execPopExecutionFlowIfNot
+    1.0%   325  rva 0x1FC1620  execLet
+    0.9%   293  rva 0x1FBFEF0  CallFunction
+    0.8%   251  rva 0x29CBD80  execBooleanOR
+    0.7%   220  rva 0x1FC12F0  execJumpIfNot
+    0.7%   214  rva 0x29CCB00  execAdd_IntInt
+    0.7%   212  rva 0x1FC3280  execDynamicCast
+    0.6%   197  rva 0x1FC1CDF  execLetBool+0xf
+    0.6%   188  rva 0x29BFA90  execLess_IntInt
+    0.4%   125  rva 0x29CBEF0  execBooleanAND
+    0.3%   104  rva 0x1FC3480  execObjectToBool
+    0.3%    98  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    0.3%    97  rva 0x1FC1D85  execLetBool+0xb5
+    0.3%    83  rva 0x29AC170  execArray_Length
+    0.3%    80  rva 0x12871E0  ServerOctreeOverlapActors
+    0.1%    30  rva 0x29C1860  execGreaterEqual_IntInt
+    0.1%    29  rva 0x25AB473  GenericArray_Get+0x13
+    0.1%    24  rva 0x777E70  GetItemTemplateQuantity
+    0.1%    23  rva 0x2469810  TickActor
 
-
-=== prof_215945187: сэмплов 45777, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 35696 (78.0%), ntdll.dll 6704 (14.6%), PhysX3Common_x64.dll 2982 (6.5%), KERNEL32.DLL 225 (0.5%), KERNELBASE.dll 77 (0.2%), win32u.dll 27 (0.1%), bcryptPrimitives.dll 23 (0.1%), RPCRT4.dll 14 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-    8.8%  4016  ZwDelayExecution+0x14
-    2.1%   959  ZwWaitForSingleObject+0x14
-    1.6%   717  ?collideOBB@MeshRayCollider@@SAXAEBVBox@Gu@physx@@_NPEBVRTreeTriangleMesh@34@AEAU?$MeshHitCallback@UPxRaycastHit@physx@@@34@1@Z+0x143
-    1.4%   624  PhysX3Common_x64.dll+0x14C3F9
-    0.7%   301  RtlLeaveCriticalSection+0x35
-    0.5%   237  RtlTryEnterCriticalSection+0x52
-    0.5%   235  ZwAllocateVirtualMemory+0x14
-    0.2%    91  ZwSetEvent+0x14
-    0.2%    84  PhysX3Common_x64.dll+0x14C3C0
-    0.2%    72  PhysX3Common_x64.dll+0x14C49B
-    0.2%    70  PhysX3Common_x64.dll+0x14C3C3
-    0.1%    57  ZwQueryInformationProcess+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_218792531: сэмплов 45714, wait-записей 0 ===
-модули (лист RIP): ntdll.dll 42461 (92.9%), <ядро/вне модулей> 3005 (6.6%), win32u.dll 126 (0.3%), KERNELBASE.dll 52 (0.1%), KERNEL32.DLL 34 (0.1%), PhysX3Common_x64.dll 14 (0.0%), WS2_32.dll 8 (0.0%), USER32.dll 7 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   88.8% 40601  ZwDelayExecution+0x14
-    2.2%  1022  ZwWaitForSingleObject+0x14
-    0.7%   315  ZwQueryInformationProcess+0x14
-    0.4%   169  ZwSetEvent+0x14
-    0.3%   115  NtUserGetForegroundWindow+0x14
-    0.3%   115  ZwQuerySystemInformation+0x14
-    0.1%    30  ZwDeviceIoControlFile+0x14
-    0.1%    29  ZwDuplicateObject+0x14
-    0.0%    17  ZwReleaseMutant+0x14
-    0.0%    15  ZwClose+0x14
-    0.0%    15  RtlLeaveCriticalSection+0x35
-    0.0%    13  RtlTryEnterCriticalSection+0x52
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_242291359: сэмплов 20170, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 12037 (59.7%), ntdll.dll 7286 (36.1%), PhysX3Common_x64.dll 346 (1.7%), win32u.dll 129 (0.6%), KERNELBASE.dll 121 (0.6%), KERNEL32.DLL 118 (0.6%), WS2_32.dll 41 (0.2%), USER32.dll 38 (0.2%)
-
-системные/GUI-DLL листья (именованные):
-   24.4%  4915  ZwDelayExecution+0x14
-    4.1%   836  ZwWaitForSingleObject+0x14
-    1.6%   326  ZwQueryInformationProcess+0x14
-    1.6%   315  ZwSetEvent+0x14
-    1.4%   282  ZwQuerySystemInformation+0x14
-    1.2%   244  ZwDeviceIoControlFile+0x14
-    0.6%   121  NtUserGetForegroundWindow+0x14
-    0.2%    40  ZwDuplicateObject+0x14
-    0.2%    36  GlobalMemoryStatusEx
-    0.1%    27  ZwReleaseMutant+0x14
-    0.1%    26  _invalid_parameter+0x231
-    0.1%    25  PhysX3Common_x64.dll+0x15C963
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_242974328: сэмплов 12609, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 7382 (58.5%), ntdll.dll 4835 (38.3%), win32u.dll 112 (0.9%), GameNetworkingSockets.dll 81 (0.6%), KERNEL32.DLL 80 (0.6%), KERNELBASE.dll 67 (0.5%), NoSteam.dll 24 (0.2%), WS2_32.dll 13 (0.1%)
-
-системные/GUI-DLL листья (именованные):
-   26.1%  3285  ZwDelayExecution+0x14
-    6.2%   786  ZwWaitForSingleObject+0x14
-    1.9%   243  ZwQueryInformationProcess+0x14
-    1.1%   145  ZwSetEvent+0x14
-    0.9%   109  NtUserGetForegroundWindow+0x14
-    0.8%    96  ZwDeviceIoControlFile+0x14
-    0.4%    52  ZwQuerySystemInformation+0x14
-    0.2%    24  ZwClearEvent+0x14
-    0.2%    24  ZwDuplicateObject+0x14
-    0.2%    19  ZwClose+0x14
-    0.1%    14  TlsGetValue
-    0.1%    13  ZwReleaseMutant+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_249603546: сэмплов 45817, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 28723 (62.7%), ntdll.dll 16819 (36.7%), KERNEL32.DLL 147 (0.3%), KERNELBASE.dll 59 (0.1%), WS2_32.dll 20 (0.0%), win32u.dll 19 (0.0%), MSWSOCK.dll 12 (0.0%), USER32.dll 10 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   28.9% 13241  ZwDelayExecution+0x14
-    4.9%  2251  ZwWaitForSingleObject+0x14
-    0.6%   267  ZwSetEvent+0x14
-    0.4%   204  ZwFreeVirtualMemory+0x14
-    0.3%   128  ZwQuerySystemInformation+0x14
-    0.2%    89  ZwAllocateVirtualMemory+0x14
-    0.2%    85  ZwDeviceIoControlFile+0x14
-    0.2%    78  ZwQueryInformationProcess+0x14
-    0.1%    63  RtlLeaveCriticalSection+0x35
-    0.1%    51  RtlTryEnterCriticalSection+0x52
-    0.1%    35  TlsGetValue+0x7
-    0.1%    30  ZwDuplicateObject+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_250759015: сэмплов 30440, wait-записей 0 ===
-модули (лист RIP): ntdll.dll 15143 (49.7%), <ядро/вне модулей> 15014 (49.3%), libprotobuf.dll 126 (0.4%), KERNEL32.DLL 59 (0.2%), KERNELBASE.dll 58 (0.2%), MSWSOCK.dll 11 (0.0%), win32u.dll 11 (0.0%), WS2_32.dll 8 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   45.1% 13723  ZwDelayExecution+0x14
-    3.0%   901  ZwWaitForSingleObject+0x14
-    0.4%   116  ZwSetEvent+0x14
-    0.3%    95  ZwDeviceIoControlFile+0x14
-    0.2%    56  ZwQueryInformationProcess+0x14
-    0.1%    36  ?fopen@win32@internal@protobuf@google@@YAPEAU_iobuf@@PEBD0@Z+0x233
-    0.1%    33  ZwQuerySystemInformation+0x14
-    0.1%    31  libprotobuf.dll+0x201F0
-    0.1%    19  ZwFreeVirtualMemory+0x14
-    0.1%    16  RtlTryEnterCriticalSection+0x52
-    0.0%    15  GetCurrentThreadId+0x9
-    0.0%    15  RtlLeaveCriticalSection+0x35
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_254130656: сэмплов 14813, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 12824 (86.6%), libprotobuf.dll 1287 (8.7%), ntdll.dll 615 (4.2%), KERNEL32.DLL 44 (0.3%), KERNELBASE.dll 13 (0.1%), bcryptPrimitives.dll 8 (0.1%), combase.dll 7 (0.0%), RPCRT4.dll 4 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-    0.7%    98  ZwWaitForSingleObject+0x14
-    0.6%    96  RtlLeaveCriticalSection+0x35
-    0.5%    76  RtlTryEnterCriticalSection+0x52
-    0.4%    55  libprotobuf.dll+0x22B877
-    0.4%    54  ZwAllocateVirtualMemory+0x14
-    0.3%    43  ZwDelayExecution+0x14
-    0.2%    36  libprotobuf.dll+0x23CEA0
-    0.2%    26  libprotobuf.dll+0x22B873
-    0.2%    24  libprotobuf.dll+0x22AA3F
-    0.1%    19  libprotobuf.dll+0x22BA2D
-    0.1%    18  libprotobuf.dll+0x22B257
-    0.1%    18  ZwDeviceIoControlFile+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_254931828: сэмплов 15223, wait-записей 0 ===
-модули (лист RIP): <ядро/вне модулей> 13872 (91.1%), ntdll.dll 1248 (8.2%), KERNEL32.DLL 75 (0.5%), KERNELBASE.dll 8 (0.1%), bcryptPrimitives.dll 7 (0.0%), win32u.dll 6 (0.0%), combase.dll 2 (0.0%), RPCRT4.dll 2 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-    2.6%   391  ZwDelayExecution+0x14
-    1.4%   207  ZwWaitForSingleObject+0x14
-    0.7%   106  RtlLeaveCriticalSection+0x35
-    0.7%   105  RtlTryEnterCriticalSection+0x52
-    0.4%    64  ZwAllocateVirtualMemory+0x14
-    0.2%    31  RtlTryEnterCriticalSection+0x5
-    0.2%    28  ZwSetEvent+0x14
-    0.2%    24  RtlTryEnterCriticalSection+0x37
-    0.1%    18  GetCurrentThreadId+0x9
-    0.1%    17  RtlLeaveCriticalSection+0x5
-    0.1%    17  RtlFlsGetValue+0x44
-    0.1%    16  RtlTryEnterCriticalSection+0x27
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-
-=== prof_286899500: сэмплов 35638, wait-записей 16 ===
-модули (лист RIP): <ядро/вне модулей> 24988 (70.1%), ntdll.dll 9847 (27.6%), win32u.dll 343 (1.0%), KERNEL32.DLL 150 (0.4%), PhysX3Cooking_x64.dll 133 (0.4%), KERNELBASE.dll 102 (0.3%), USER32.dll 26 (0.1%), ucrtbase.dll 17 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   20.2%  7211  ZwDelayExecution+0x14
-    2.1%   736  ZwWaitForSingleObject+0x14
-    1.5%   524  ZwSetEvent+0x14
-    1.1%   385  ZwQueryInformationProcess+0x14
-    0.9%   335  NtUserGetForegroundWindow+0x14
-    0.5%   167  ZwDeviceIoControlFile+0x14
-    0.5%   161  ZwQuerySystemInformation+0x14
-    0.2%    82  ZwDuplicateObject+0x14
-    0.2%    68  RtlLeaveCriticalSection+0x35
-    0.1%    53  ZwClearEvent+0x14
-    0.1%    47  RtlTryEnterCriticalSection+0x52
-    0.1%    35  TlsGetValue
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (16 записей):
+стопки ожидания (1883 записей):
  syscall-сайты:
-   37.5%     6  ядро+0x1F866B80263
-   31.2%     5  ядро+0x1F866213900
-   12.5%     2  ядро+0x1F866B80260
-   12.5%     2  ядро+0x7FF93DFC30C0
-    6.2%     1  ядро+0x1F866213903
+   64.8%  1221  ZwQueryDirectoryFileEx+0x14
+   16.0%   301  ZwWaitForSingleObject+0x14
+    5.2%    97  ZwSetEvent+0x14
+    1.2%    23  ZwDeviceIoControlFile+0x14
+    1.0%    18  RtlTryEnterCriticalSection+0x5
+    0.7%    13  ZwWriteFile+0x14
+    0.6%    12  ZwClose+0x14
+    0.6%    11  RtlTryEnterCriticalSection+0x52
+    0.6%    11  NtUserGetForegroundWindow+0x14
+    0.5%     9  RtlTryEnterCriticalSection+0x27
+    0.5%     9  ZwDuplicateObject+0x14
+    0.5%     9  ZwClearEvent+0x14
  кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 16 (100.0%)
-
-=== prof_287642328: сэмплов 35630, wait-записей 15338 ===
-модули (лист RIP): <ядро/вне модулей> 20245 (56.8%), ntdll.dll 14707 (41.3%), win32u.dll 365 (1.0%), KERNELBASE.dll 127 (0.4%), KERNEL32.DLL 111 (0.3%), PhysX3Common_x64.dll 23 (0.1%), USER32.dll 22 (0.1%), WS2_32.dll 14 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   32.8% 11687  ZwDelayExecution+0x14
-    2.3%   810  ZwQueryInformationProcess+0x14
-    2.2%   780  ZwWaitForSingleObject+0x14
-    1.3%   467  ZwSetEvent+0x14
-    1.0%   359  NtUserGetForegroundWindow+0x14
-    0.6%   210  ZwQuerySystemInformation+0x14
-    0.4%   139  ZwDeviceIoControlFile+0x14
-    0.3%    94  ZwDuplicateObject+0x14
-    0.2%    61  ZwClearEvent+0x14
-    0.1%    46  ZwClose+0x14
-    0.1%    40  RtlLeaveCriticalSection+0x35
-    0.1%    37  ZwReleaseMutant+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (15338 записей):
- syscall-сайты:
-   76.2% 11687  ZwDelayExecution+0x14
-    5.3%   810  ZwQueryInformationProcess+0x14
-    5.1%   780  ZwWaitForSingleObject+0x14
-    3.0%   467  ZwSetEvent+0x14
-    2.3%   359  NtUserGetForegroundWindow+0x14
-    1.4%   210  ZwQuerySystemInformation+0x14
-    0.9%   139  ZwDeviceIoControlFile+0x14
-    0.6%    94  ZwDuplicateObject+0x14
-    0.4%    61  ZwClearEvent+0x14
-    0.3%    46  ZwClose+0x14
-    0.3%    40  RtlLeaveCriticalSection+0x35
-    0.2%    37  ZwReleaseMutant+0x14
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 15338 (100.0%)
-
-=== prof_288561984: сэмплов 30519, wait-записей 12018 ===
-модули (лист RIP): <ядро/вне модулей> 18385 (60.2%), ntdll.dll 11451 (37.5%), win32u.dll 329 (1.1%), KERNEL32.DLL 118 (0.4%), KERNELBASE.dll 92 (0.3%), SrvDiag.dll 33 (0.1%), PhysX3Cooking_x64.dll 32 (0.1%), WS2_32.dll 24 (0.1%)
-
-системные/GUI-DLL листья (именованные):
-   31.2%  9526  ZwDelayExecution+0x14
-    1.4%   430  ZwWaitForSingleObject+0x14
-    1.2%   353  ZwSetEvent+0x14
-    1.0%   319  NtUserGetForegroundWindow+0x14
-    0.8%   253  ZwQueryInformationProcess+0x14
-    0.6%   181  ZwDeviceIoControlFile+0x14
-    0.4%   117  ZwQuerySystemInformation+0x14
-    0.4%   115  ZwDuplicateObject+0x14
-    0.2%    53  ZwClose+0x14
-    0.2%    51  ZwReleaseMutant+0x14
-    0.1%    31  ZwClearEvent+0x14
-    0.1%    22  RtlTryEnterCriticalSection+0x52
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (12018 записей):
- syscall-сайты:
-   79.3%  9526  ZwDelayExecution+0x14
-    3.6%   430  ZwWaitForSingleObject+0x14
-    2.9%   353  ZwSetEvent+0x14
-    2.7%   319  NtUserGetForegroundWindow+0x14
-    2.1%   253  ZwQueryInformationProcess+0x14
-    1.5%   181  ZwDeviceIoControlFile+0x14
-    1.0%   117  ZwQuerySystemInformation+0x14
-    1.0%   115  ZwDuplicateObject+0x14
-    0.4%    53  ZwClose+0x14
-    0.4%    51  ZwReleaseMutant+0x14
-    0.3%    31  ZwClearEvent+0x14
-    0.2%    22  RtlTryEnterCriticalSection+0x52
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 12018 (100.0%)
-
-=== prof_294655390: сэмплов 30499, wait-записей 26464 ===
-модули (лист RIP): ntdll.dll 26422 (86.6%), <ядро/вне модулей> 3716 (12.2%), vivoxsdk.dll 318 (1.0%), KERNELBASE.dll 17 (0.1%), win32u.dll 17 (0.1%), KERNEL32.DLL 6 (0.0%), ucrtbase.dll 2 (0.0%), WS2_32.dll 1 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   85.6% 26092  ZwDelayExecution+0x14
-    0.5%   146  vivoxsdk.dll+0x5258CF
-    0.2%    48  ZwQueryInformationProcess+0x14
-    0.1%    45  ZwWriteFile+0x14
-    0.1%    43  ZwQuerySystemInformation+0x14
-    0.1%    41  ZwWaitForSingleObject+0x14
-    0.1%    30  ZwSetEvent+0x14
-    0.1%    29  vivoxsdk.dll+0x5256D5
-    0.1%    27  ZwReadFile+0x14
-    0.1%    25  vivoxsdk.dll+0x5256D6
-    0.1%    22  vivoxsdk.dll+0x525747
-    0.1%    16  ZwFreeVirtualMemory+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (26464 записей):
- syscall-сайты:
-   98.6% 26092  ZwDelayExecution+0x14
-    0.2%    48  ZwQueryInformationProcess+0x14
-    0.2%    45  ZwWriteFile+0x14
-    0.2%    43  ZwQuerySystemInformation+0x14
-    0.2%    41  ZwWaitForSingleObject+0x14
-    0.1%    30  ZwSetEvent+0x14
-    0.1%    27  ZwReadFile+0x14
-    0.1%    16  ZwFreeVirtualMemory+0x14
-    0.1%    16  NtUserGetForegroundWindow+0x14
-    0.0%    12  ZwDeviceIoControlFile+0x14
-    0.0%     6  RtlLeaveCriticalSection+0x35
-    0.0%     5  GlobalMemoryStatusEx+0x93
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 26464 (100.0%)
-
-=== prof_298529359: сэмплов 30463, wait-записей 25615 ===
-модули (лист RIP): ntdll.dll 25577 (84.0%), <ядро/вне модулей> 4514 (14.8%), vivoxsdk.dll 335 (1.1%), win32u.dll 19 (0.1%), KERNELBASE.dll 11 (0.0%), KERNEL32.DLL 3 (0.0%), MSWSOCK.dll 2 (0.0%), USER32.dll 2 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   83.2% 25330  ZwDelayExecution+0x14
-    0.5%   164  vivoxsdk.dll+0x5B58CF
-    0.2%    57  ZwQueryInformationProcess+0x14
-    0.2%    49  ZwQuerySystemInformation+0x14
-    0.1%    36  ZwSetEvent+0x14
-    0.1%    32  vivoxsdk.dll+0x5B5747
-    0.1%    32  ZwWaitForSingleObject+0x14
-    0.1%    29  vivoxsdk.dll+0x5B56D5
-    0.1%    21  vivoxsdk.dll+0x5B56D6
-    0.1%    16  NtUserGetForegroundWindow+0x14
-    0.0%    12  ZwDeviceIoControlFile+0x14
-    0.0%     9  vivoxsdk.dll+0x5B5750
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (25615 записей):
- syscall-сайты:
-   98.9% 25330  ZwDelayExecution+0x14
-    0.2%    57  ZwQueryInformationProcess+0x14
-    0.2%    49  ZwQuerySystemInformation+0x14
-    0.1%    36  ZwSetEvent+0x14
-    0.1%    32  ZwWaitForSingleObject+0x14
-    0.1%    16  NtUserGetForegroundWindow+0x14
-    0.0%    12  ZwDeviceIoControlFile+0x14
-    0.0%     5  ZwQueryDirectoryFileEx+0x14
-    0.0%     5  RtlTryEnterCriticalSection+0x52
-    0.0%     4  GlobalMemoryStatusEx+0x93
-    0.0%     4  ZwClose+0x14
-    0.0%     4  ZwDuplicateObject+0x14
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 25615 (100.0%)
-
-=== prof_301269000: сэмплов 30403, wait-записей 29395 ===
-модули (лист RIP): ntdll.dll 29347 (96.5%), <ядро/вне модулей> 1007 (3.3%), win32u.dll 27 (0.1%), KERNEL32.DLL 10 (0.0%), USER32.dll 6 (0.0%), KERNELBASE.dll 5 (0.0%), WS2_32.dll 1 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   95.6% 29056  ZwDelayExecution+0x14
-    0.4%   126  ZwWaitForSingleObject+0x14
-    0.2%    46  ZwQueryInformationProcess+0x14
-    0.1%    33  ZwSetEvent+0x14
-    0.1%    25  NtUserGetForegroundWindow+0x14
-    0.0%    13  ZwDeviceIoControlFile+0x14
-    0.0%    13  ZwQuerySystemInformation+0x14
-    0.0%     6  ZwClearEvent+0x14
-    0.0%     6  ZwDuplicateObject+0x14
-    0.0%     5  ZwClose+0x14
-    0.0%     5  ZwReleaseMutant+0x14
-    0.0%     4  ZwQueryDirectoryFileEx+0x14
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (29395 записей):
- syscall-сайты:
-   98.8% 29056  ZwDelayExecution+0x14
-    0.4%   126  ZwWaitForSingleObject+0x14
-    0.2%    46  ZwQueryInformationProcess+0x14
-    0.1%    33  ZwSetEvent+0x14
-    0.1%    25  NtUserGetForegroundWindow+0x14
-    0.0%    13  ZwDeviceIoControlFile+0x14
-    0.0%    13  ZwQuerySystemInformation+0x14
-    0.0%     6  ZwClearEvent+0x14
-    0.0%     6  ZwDuplicateObject+0x14
-    0.0%     5  ZwClose+0x14
-    0.0%     5  ZwReleaseMutant+0x14
-    0.0%     4  ZwQueryDirectoryFileEx+0x14
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 29395 (100.0%)
-
-=== prof_343238843: сэмплов 31039, wait-записей 29626 ===
-модули (лист RIP): ntdll.dll 29572 (95.3%), <ядро/вне модулей> 1405 (4.5%), KERNELBASE.dll 22 (0.1%), win32u.dll 22 (0.1%), KERNEL32.DLL 7 (0.0%), XAPOFX1_5.dll 3 (0.0%), WS2_32.dll 3 (0.0%), PxFoundation_x64.dll 2 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   93.3% 28953  ZwDelayExecution+0x14
-    1.0%   320  ZwWaitForSingleObject+0x14
-    0.4%   135  ZwQueryInformationProcess+0x14
-    0.2%    51  ZwSetEvent+0x14
-    0.1%    33  ZwQuerySystemInformation+0x14
-    0.1%    20  NtUserGetForegroundWindow+0x14
-    0.0%    10  ZwDeviceIoControlFile+0x14
-    0.0%    10  RtlLeaveCriticalSection+0x35
-    0.0%     5  ZwQueryFullAttributesFile+0x14
-    0.0%     4  ZwDuplicateObject+0x14
-    0.0%     4  ZwClearEvent+0x14
-    0.0%     4  K32GetProcessMemoryInfo
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (29626 записей):
- syscall-сайты:
-   97.7% 28953  ZwDelayExecution+0x14
-    1.1%   320  ZwWaitForSingleObject+0x14
-    0.5%   135  ZwQueryInformationProcess+0x14
-    0.2%    51  ZwSetEvent+0x14
-    0.1%    33  ZwQuerySystemInformation+0x14
-    0.1%    20  NtUserGetForegroundWindow+0x14
-    0.0%    10  ZwDeviceIoControlFile+0x14
-    0.0%    10  RtlLeaveCriticalSection+0x35
-    0.0%     5  ZwQueryFullAttributesFile+0x14
-    0.0%     4  ZwDuplicateObject+0x14
-    0.0%     4  ZwClearEvent+0x14
-    0.0%     4  K32GetProcessMemoryInfo
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 29626 (100.0%)
-
-=== prof_383773968: сэмплов 30557, wait-записей 8755 ===
-модули (лист RIP): <ядро/вне модулей> 21758 (71.2%), ntdll.dll 8393 (27.5%), win32u.dll 158 (0.5%), KERNEL32.DLL 89 (0.3%), KERNELBASE.dll 66 (0.2%), VERSION.dll 43 (0.1%), USER32.dll 25 (0.1%), MSWSOCK.dll 11 (0.0%)
-
-системные/GUI-DLL листья (именованные):
-   11.8%  3594  ZwDelayExecution+0x14
-   10.1%  3086  ZwWaitForSingleObject+0x14
-    0.9%   285  ZwSetEvent+0x14
-    0.8%   247  ZwQueryDirectoryFileEx+0x14
-    0.6%   184  ZwFreeVirtualMemory+0x14
-    0.5%   166  ZwQueryInformationProcess+0x14
-    0.5%   152  NtUserGetForegroundWindow+0x14
-    0.4%   133  ZwQuerySystemInformation+0x14
-    0.3%    93  ZwAllocateVirtualMemory+0x14
-    0.3%    85  ZwDeviceIoControlFile+0x14
-    0.2%    72  RtlLeaveCriticalSection+0x35
-    0.2%    57  RtlTryEnterCriticalSection+0x52
-
-топ-40 функций exe (по листу RIP):
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-
-стопки ожидания (8755 записей):
- syscall-сайты:
-   41.1%  3594  ZwDelayExecution+0x14
-   35.2%  3086  ZwWaitForSingleObject+0x14
-    3.3%   285  ZwSetEvent+0x14
-    2.8%   247  ZwQueryDirectoryFileEx+0x14
-    2.1%   184  ZwFreeVirtualMemory+0x14
-    1.9%   166  ZwQueryInformationProcess+0x14
-    1.7%   152  NtUserGetForegroundWindow+0x14
-    1.5%   133  ZwQuerySystemInformation+0x14
-    1.1%    93  ZwAllocateVirtualMemory+0x14
-    1.0%    85  ZwDeviceIoControlFile+0x14
-    0.8%    72  RtlLeaveCriticalSection+0x35
-    0.7%    57  RtlTryEnterCriticalSection+0x52
- кандидаты-вызовы в exe (код-слово ниже rip):
- без exe-слова в 4 верхних словах стека: 8755 (100.0%)
-
-=== prof_512222984: сэмплов 3866, wait-записей 762 ===
-модули (лист RIP): ShooterGameServer.exe 2739 (70.8%), ntdll.dll 732 (18.9%), PhysX3_x64.dll 113 (2.9%), PhysX3Common_x64.dll 100 (2.6%), MSVCR120.dll 81 (2.1%), TickProf.dll 36 (0.9%), GameNetworkingSockets.dll 14 (0.4%), <ядро/вне модулей> 13 (0.3%)
-
-системные/GUI-DLL листья (именованные):
-   16.1%   624  ZwWaitForSingleObject+0x14
-    0.6%    22  ZwQueryDirectoryFileEx+0x14
-    0.5%    20  ZwSetEvent+0x14
-    0.4%    15  ZwFreeVirtualMemory+0x14
-    0.3%    13  memmove+0x39
-    0.3%    10  ZwAllocateVirtualMemory+0x14
-    0.2%     8  TickProf.dll+0x2B64F
-    0.2%     8  NtUserGetForegroundWindow+0x14
-    0.2%     7  ZwDuplicateObject+0x14
-    0.2%     7  memset+0x23
-    0.1%     4  ZwDeviceIoControlFile+0x14
-    0.1%     4  TickProf.dll+0x2B5B5
-
-топ-40 функций exe (по листу RIP):
-    7.7%   297  rva 0x276A0B0  AdvanceToNextIntersectingElement
-    3.5%   134  rva 0x531870  TagFriendlyStructures
-    2.6%   100  rva 0x2762B10  Tick
-    2.4%    91  rva 0x228ED0  FindId
-    1.7%    66  rva 0x276BB6C  ProcessChildren+0x11c
-    1.4%    53  rva 0x1F577B0  InitInternal_FindOrAddNameEntry<char>
-    1.3%    51  rva 0x5D6820  Tick
-    1.1%    43  rva 0x4E3890  Tick
-    1.1%    43  rva 0x2738360  ExecuteTask
-    0.8%    30  rva 0x1FCBE00  AllocateSerialNumber
-    0.6%    25  rva 0x2DD320  operator*
-    0.6%    25  rva 0x270F040  QueueTickFunction
-    0.6%    23  rva 0x1F4ABE0  Malloc
-    0.6%    22  rva 0x2467F20  ExecuteTick
-    0.6%    22  rva 0x1F8ACD0  IncrementalPurgeGarbage
-    0.5%    20  rva 0x270BF20  FTickTaskLevel::QueueAllTicks
-    0.5%    20  rva 0x270DB60  FTickTaskManager::StartFrame
-    0.5%    20  rva 0x275A8A0  SetInternalOctreeMask
-    0.5%    19  rva 0xD66EF0  operator=
-    0.5%    19  rva 0x1ED7C70  PopAllAndClose<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>
-    0.5%    18  rva 0x1EAB180  DispatchSubsequents
-    0.5%    18  rva 0x431540  Tick
-    0.4%    16  rva 0x4D8870  IsSubmerged
-    0.4%    16  rva 0x26617D0  CompareProperties
-    0.4%    15  rva 0xA263E0  FindTarget
-    0.4%    14  rva 0x3D7A00  LinkIfHeadNotEqual
-    0.4%    14  rva 0x1F4A2D5  FreeInternal+0x25
-    0.4%    14  rva 0x1F867C0  Invoke
-    0.3%    13  rva 0x27381C0  CreateTask
-    0.3%    13  rva 0x270E2EC  FTickTaskManager::RunTickGroup+0x8c
-    0.3%    13  rva 0x1EDBE60  ReplaceList
-    0.3%    12  rva 0x1F99780  FindId
-    0.3%    11  rva 0x1FCDAC9  IsA+0x19
-    0.3%    11  rva 0x1FC0305  ProcessInternal+0x95
-    0.3%    11  rva 0x2478CC0  ConditionalTickComponent
-    0.3%    11  rva 0x1EAB2D  operator_enum_EMovementMode+0xd
-    0.3%    11  rva 0x1FBFEF0  CallFunction
-    0.3%    11  rva 0x1FC10CA  execInstanceVariable+0x1a
-    0.3%    10  rva 0xB13000  GetAimOffsets
-    0.3%    10  rva 0x1FC0DB0  ProcessEvent
-
-топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-    1.2%    46  rva 0x1F867C0  Invoke
-    0.4%    14  rva 0x2469810  TickActor
-    0.3%    12  rva 0x25D0180  UWorld::Tick
-    0.3%    12  rva 0x5D6820  Tick
-    0.3%    11  rva 0x1F1040  Cast<APrimalCharacter>
-    0.3%    11  rva 0x777E70  GetItemTemplateQuantity
-    0.3%    11  rva 0x24B9560  PerformMovement
-    0.3%    11  rva 0x270DB60  FTickTaskManager::StartFrame
-    0.3%    10  rva 0x2761C80  DuringPhysxTick
-    0.2%     9  rva 0x25C23E0  ProcessLatentActions
-    0.2%     9  rva 0x24CAC60  PhysWalking
-    0.2%     9  rva 0x4E3890  Tick
-    0.2%     8  rva 0x1DD4A0  IsBound_Internal<UObject>
-    0.2%     8  rva 0x1F9FBB0  Emplace<UObject_*___ptr64_const_&___ptr64>
-    0.2%     8  rva 0x431540  Tick
-    0.2%     8  rva 0x1FC1CDF  execLetBool+0xf
-    0.2%     8  rva 0x261DBD0  Tick
-    0.2%     7  rva 0x1FC0305  ProcessInternal+0x95
-    0.2%     7  rva 0x562300  TickStatus
-    0.2%     7  rva 0x275ABB0  OverlapMultiInternalOctree
-    0.2%     7  rva 0x2471450  GetFunctionCallspace
-    0.2%     7  rva 0x276A0B0  AdvanceToNextIntersectingElement
-    0.2%     7  rva 0x25FEB90  ServerReplicateActorsParallel
-    0.2%     6  rva 0xB36420  Tick
-    0.2%     6  rva 0x2738360  ExecuteTask
-
-стопки ожидания (762 записей):
- syscall-сайты:
-   81.9%   624  ZwWaitForSingleObject+0x14
-    2.9%    22  ZwQueryDirectoryFileEx+0x14
-    2.6%    20  ZwSetEvent+0x14
-    2.0%    15  ZwFreeVirtualMemory+0x14
-    1.3%    10  ZwAllocateVirtualMemory+0x14
-    1.0%     8  NtUserGetForegroundWindow+0x14
-    0.9%     7  ZwDuplicateObject+0x14
-    0.7%     5  ядро+0x2817605B250
-    0.5%     4  ZwDeviceIoControlFile+0x14
-    0.4%     3  RtlTryEnterCriticalSection+0x37
-    0.4%     3  ZwQueryInformationProcess+0x14
-    0.4%     3  ядро+0x28104AC0C6E
- кандидаты-вызовы в exe (код-слово ниже rip):
-   11.9%    91  rva 0x1EA8650  ProcessTasksNamedThread
-   10.4%    79  rva 0x2478240  CallRemoteFunction
-    1.7%    13  rva 0x1ED7C70  PopAllAndClose<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>
-    0.5%     4  rva 0xE777E0  GetPlayerViewPoint
-    0.4%     3  rva 0x1FA56A0  ~FFrame
-    0.3%     2  rva 0x1F4A3D0  FreeInternal+0x120
-    0.3%     2  rva 0x1F4ABE0  Malloc
-    0.1%     1  rva 0x1F432B0  ToString
-    0.1%     1  rva 0x1CFBA0  operator!=<APrimalDinoAIController,FWeakObjectPtr,FIndexToObject>
-    0.1%     1  rva 0x3580CF0  getEntry
-    0.1%     1  rva 0x1ED2160  Free
-    0.1%     1  rva 0x253B2E0  Tick
- без exe-слова в 4 верхних словах стека: 562 (73.8%)
+    1.1%    21  rva 0x1F4ABE0  Malloc
+    0.4%     8  rva 0x1FA56A0  ~FFrame
+    0.4%     8  rva 0x1F4A3D0  FreeInternal+0x120
+    0.3%     5  rva 0x3D7DE0  GetTLS
+    0.2%     4  rva 0x1BE440  ResizeAllocation
+    0.2%     3  rva 0x29C6A50  execEqualEqual_ByteByte
+    0.1%     2  rva 0x1B51C0  GetAsShared
+    0.1%     2  rva 0x347190  IBaseDelegateInstance_RetVal_TwoParams<FReply,FGeometry_const_&___ptr64,FPointerEvent_const_&___ptr64>
+    0.1%     2  rva 0x1ED2160  Free
+    0.1%     2  rva 0x25F1125  SlideAlongSurface+0xb5
+    0.1%     2  rva 0x1ED7EA0  PopAll<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>
+    0.1%     1  rva 0x1F4B36E  Realloc+0x27e
+ без exe-слова в 4 верхних словах стека: 1813 (96.3%)

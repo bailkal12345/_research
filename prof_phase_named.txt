@@ -1,0 +1,115 @@
+╨╖╨░╨┐╨╕╤ü╨░╨╜╨╛: C:\Dev\_research\prof_named_report.txt ╨┐╤Ç╨╛╤ä╨╕╨╗╨╡╨╣: 1
+=== prof_631247234: ╤ü╤ì╨╝╨┐╨╗╨╛╨▓ 31679, wait-╨╖╨░╨┐╨╕╤ü╨╡╨╣ 1883 ===
+╨╝╨╛╨┤╤â╨╗╨╕ (╨╗╨╕╤ü╤é RIP): ShooterGameServer.exe 28291 (89.3%), ntdll.dll 1836 (5.8%), MSVCR120.dll 1111 (3.5%), PhysX3_x64.dll 194 (0.6%), TickProf.dll 111 (0.4%), PhysX3Common_x64.dll 61 (0.2%), KERNEL32.DLL 27 (0.1%), win32u.dll 12 (0.0%)
+
+╤ü╨╕╤ü╤é╨╡╨╝╨╜╤ï╨╡/GUI-DLL ╨╗╨╕╤ü╤é╤î╤Å (╨╕╨╝╨╡╨╜╨╛╨▓╨░╨╜╨╜╤ï╨╡):
+    3.9%  1221  ZwQueryDirectoryFileEx+0x14
+    1.0%   301  ZwWaitForSingleObject+0x14
+    0.4%   121  memmove+0xdb
+    0.3%   109  memmove+0x154
+    0.3%    97  ZwSetEvent+0x14
+    0.2%    78  memmove+0x128
+    0.2%    75  memmove+0x156
+    0.2%    75  memmove+0x12c
+    0.2%    59  sqrtf+0xcb
+    0.2%    58  memmove+0xc9
+    0.2%    52  memmove+0xde
+    0.1%    47  memmove
+
+╤é╨╛╨┐-40 ╤ä╤â╨╜╨║╤å╨╕╨╣ exe (╨┐╨╛ ╨╗╨╕╤ü╤é╤â RIP):
+   11.4%  3624  rva 0x12871E0  ServerOctreeOverlapActors
+    8.8%  2778  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    4.5%  1424  rva 0x1FC3280  execDynamicCast
+    3.5%  1112  rva 0x1FC1FA0  ProcessContextOpcode
+    2.7%   862  rva 0x16724F0  CopyCompleteValueToScriptVM
+    2.7%   859  rva 0x1FC1620  execLet
+    2.5%   785  rva 0x1F867C0  Invoke
+    2.4%   748  rva 0x1FC0305  ProcessInternal+0x95
+    2.4%   745  rva 0x1FD7734  Get+0x4
+    2.3%   729  rva 0x1FBFEF0  CallFunction
+    1.7%   544  rva 0x276BB6C  ProcessChildren+0x11c
+    1.7%   533  rva 0x1FB8A00  CopyValuesInternal
+    1.6%   515  rva 0x2DD320  operator*
+    1.2%   394  rva 0x1FC108A  execLocalVariable+0x1a
+    1.2%   385  rva 0x1FC1070  execLocalVariable
+    1.2%   381  rva 0x1673AF0  CopyCompleteValueFromScriptVM
+    1.0%   312  rva 0x29AC410  execArray_Get
+    1.0%   308  rva 0x1FC1570  execPopExecutionFlowIfNot
+    0.9%   294  rva 0x1EAB2D  operator_enum_EMovementMode+0xd
+    0.9%   274  rva 0x1FC107A  execLocalVariable+0xa
+    0.9%   270  rva 0x1FC1CD0  execLetBool
+    0.8%   240  rva 0x6D13F0  BPIsTamed
+    0.8%   240  rva 0x25AB760  GetFunctionCallspace
+    0.7%   236  rva 0x29CBD80  execBooleanOR
+    0.7%   229  rva 0x1FC108E  execLocalVariable+0x1e
+    0.7%   228  rva 0x2471450  GetFunctionCallspace
+    0.7%   211  rva 0x1FC1CDF  execLetBool+0xf
+    0.7%   210  rva 0x1FC1284  execJump+0x4
+    0.6%   205  rva 0x1FC22D0  execFinalFunction
+    0.6%   205  rva 0x29B9880  execNot_PreBool
+    0.6%   200  rva 0x1FC1460  execPushExecutionFlow
+    0.6%   198  rva 0x29CBEF0  execBooleanAND
+    0.6%   198  rva 0x1FC1280  execJump
+    0.6%   192  rva 0x29C1860  execGreaterEqual_IntInt
+    0.6%   175  rva 0x1FC1DEC  execLetBool+0x11c
+    0.5%   160  rva 0x1FC12F0  execJumpIfNot
+    0.5%   156  rva 0x29CCB00  execAdd_IntInt
+    0.5%   155  rva 0x36553B0  __security_check_cookie
+    0.5%   152  rva 0x1FC1F90  execContext
+    0.5%   147  rva 0x29BFA90  execLess_IntInt
+
+╤é╨╛╨┐-25 ╤ä╤â╨╜╨║╤å╨╕╨╣ exe (╨┐╨╛ ret [RSP], ╤é.╨╡. ╨╛╤é╨║╤â╨┤╨░ ╨▓╤ï╨╖╨▓╨░╨╜ ╨╗╨╕╤ü╤é):
+    7.2%  2294  rva 0x1FC1FA0  ProcessContextOpcode
+    6.8%  2158  rva 0x1FC0305  ProcessInternal+0x95
+    2.9%   922  rva 0x16724F0  CopyCompleteValueToScriptVM
+    2.4%   763  rva 0x1F867C0  Invoke
+    1.8%   558  rva 0x29AC410  execArray_Get
+    1.6%   498  rva 0x2471450  GetFunctionCallspace
+    1.6%   492  rva 0x1FC1570  execPopExecutionFlowIfNot
+    1.0%   325  rva 0x1FC1620  execLet
+    0.9%   293  rva 0x1FBFEF0  CallFunction
+    0.8%   251  rva 0x29CBD80  execBooleanOR
+    0.7%   220  rva 0x1FC12F0  execJumpIfNot
+    0.7%   214  rva 0x29CCB00  execAdd_IntInt
+    0.7%   212  rva 0x1FC3280  execDynamicCast
+    0.6%   197  rva 0x1FC1CDF  execLetBool+0xf
+    0.6%   188  rva 0x29BFA90  execLess_IntInt
+    0.4%   125  rva 0x29CBEF0  execBooleanAND
+    0.3%   104  rva 0x1FC3480  execObjectToBool
+    0.3%    98  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    0.3%    97  rva 0x1FC1D85  execLetBool+0xb5
+    0.3%    83  rva 0x29AC170  execArray_Length
+    0.3%    80  rva 0x12871E0  ServerOctreeOverlapActors
+    0.1%    30  rva 0x29C1860  execGreaterEqual_IntInt
+    0.1%    29  rva 0x25AB473  GenericArray_Get+0x13
+    0.1%    24  rva 0x777E70  GetItemTemplateQuantity
+    0.1%    23  rva 0x2469810  TickActor
+
+╤ü╤é╨╛╨┐╨║╨╕ ╨╛╨╢╨╕╨┤╨░╨╜╨╕╤Å (1883 ╨╖╨░╨┐╨╕╤ü╨╡╨╣):
+ syscall-╤ü╨░╨╣╤é╤ï:
+   64.8%  1221  ZwQueryDirectoryFileEx+0x14
+   16.0%   301  ZwWaitForSingleObject+0x14
+    5.2%    97  ZwSetEvent+0x14
+    1.2%    23  ZwDeviceIoControlFile+0x14
+    1.0%    18  RtlTryEnterCriticalSection+0x5
+    0.7%    13  ZwWriteFile+0x14
+    0.6%    12  ZwClose+0x14
+    0.6%    11  RtlTryEnterCriticalSection+0x52
+    0.6%    11  NtUserGetForegroundWindow+0x14
+    0.5%     9  RtlTryEnterCriticalSection+0x27
+    0.5%     9  ZwDuplicateObject+0x14
+    0.5%     9  ZwClearEvent+0x14
+ ╨║╨░╨╜╨┤╨╕╨┤╨░╤é╤ï-╨▓╤ï╨╖╨╛╨▓╤ï ╨▓ exe (╨║╨╛╨┤-╤ü╨╗╨╛╨▓╨╛ ╨╜╨╕╨╢╨╡ rip):
+    1.1%    21  rva 0x1F4ABE0  Malloc
+    0.4%     8  rva 0x1FA56A0  ~FFrame
+    0.4%     8  rva 0x1F4A3D0  FreeInternal+0x120
+    0.3%     5  rva 0x3D7DE0  GetTLS
+    0.2%     4  rva 0x1BE440  ResizeAllocation
+    0.2%     3  rva 0x29C6A50  execEqualEqual_ByteByte
+    0.1%     2  rva 0x1B51C0  GetAsShared
+    0.1%     2  rva 0x347190  IBaseDelegateInstance_RetVal_TwoParams<FReply,FGeometry_const_&___ptr64,FPointerEvent_const_&___ptr64>
+    0.1%     2  rva 0x1ED2160  Free
+    0.1%     2  rva 0x25F1125  SlideAlongSurface+0xb5
+    0.1%     2  rva 0x1ED7EA0  PopAll<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>
+    0.1%     1  rva 0x1F4B36E  Realloc+0x27e
+ ╨▒╨╡╨╖ exe-╤ü╨╗╨╛╨▓╨░ ╨▓ 4 ╨▓╨╡╤Ç╤à╨╜╨╕╤à ╤ü╨╗╨╛╨▓╨░╤à ╤ü╤é╨╡╨║╨░: 1813 (96.3%)

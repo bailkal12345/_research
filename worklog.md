@@ -2246,3 +2246,28 @@ frame 16 мс, ms/tick 8-12 (внешний на чистом под-режим�
   рука B -> ST_AB_B_WINDOW. Сборка успешна; на сервер ставится при следующем буте.
 - bptrace (ARCH.md 3.5) НЕ делал: низкий приоритет, требует A/B перед выкаткой,
   байты патча по умолчанию не ставить.
+
+## 2026-10-21 21:53-23:00 Слот B: фаза поймана живым профилем, источник назван
+- ФАЗА поймана вживую: 21:57:04, t/s 59 -> 28-33, busy 20% -> 92-96%.
+  Критерий тот же (t/s<45 три строки подряд). Профиль 60 с ВНУТРИ плато:
+  prof_631247234 (31679 сэмплов), ticklist до/после фазы сняты.
+- Профиль фазы vs плотная база (20.10) vs idle - РАЗНЫЕ картины:
+  * ФАЗА: 64.8% ожиданий = NtQueryDirectoryFileEx (файловый поиск), 16% = NtWaitForSingleObject;
+    54.4% CPU exe = Blueprint-VM (execDynamicCast, ProcessContextOpcode, ProcessInternal,
+    Invoke, CallFunction, CopyCompleteValueToScriptVM) против 6.0% на плотной базе;
+    11.4% CPU = ServerOctreeOverlapActors (0x12871E0), и по [RSP] эти вызовы идут ИЗ
+    Blueprint-диспетчеризации (ProcessInternal+0xcf 6.8%, ProcessContextOpcode+0x6c 5.6%,
+    CopyCompleteValueToScriptVM+0x49 3.6%, Invoke+0x2f8 2.2%) - не из C++ турелей.
+    На плотной базе ServerOctreeOverlapActors = 1 сэмпл.
+  * ПЛОТНАЯ БАЗА: 81.9% = NtWaitForSingleObject, 35.4% стека = &GNatives (UObject-диспетчеризация).
+  * IDLE: 98.8% = ZwDelayExecution (Sleep-pacing).
+- Владелец файлового IO в фазе назван статически: ZwQueryDirectoryFileEx <- KERNELBASE
+  FindNextFileW (KERNELBASE+0x9c14e) <- FWindowsPlatformFile::IterateDirectory
+  (windowsplatformfile.cpp:273/283) <- FFileManagerGeneric::FindFiles /
+  FPluginManager::DiscoverAllPlugins::FindPluginsRecursively / UWorldComposition::Rescan.
+  DiscoverAllPlugins - разовая инициализация, значит источник - FindFiles или Rescan.
+  ЧЕСТНО: exe-кадр глубже 4 слов стека, прямой вызывающий не разрешён; сэмплов exe
+  внутри IterateDirectory/FindFiles/Rescan в профиле НЕТ => сканирование идёт не из кода игры.
+- Сервер умер сразу после профиля (известный паттерн "смерть после профиля", не авария).
+  Перезапущен (22:22, pid 17532), прод-конфиг §2 переприменён (22:30).
+- Отчёт: C:/Dev/_research/REPORT-SLOT-B.md
