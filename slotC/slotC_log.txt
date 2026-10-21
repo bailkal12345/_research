@@ -14,3 +14,39 @@
 22:47:18     арм TickProf.overlaptrim3 2 -> Server received, But no response!!
 22:47:21     LOG: 22:47:18.369 overlapall: bGenerateOverlapEvents возвращён у 24001 компонентов
 22:47:21     арм TickProf.overlaptrim3 2 -> Server received, But no response!!
+22:57:03     якорь: сейв завершён в 22:57:01 (3000 мс) -> окно 300 с
+22:57:06     якорь: сейв завершён в 22:57:01 (3000 мс) -> окно 300 с
+23:02:17     РЕЗУЛЬТАТ B_trim3: {"tag": "B_trim3", "arm": "TickProf.overlaptrim3 2", "n_rows": 302, "ts_mean": 52.3, "ts_min": 13, "ts_max": 61, "ms_mean": 11.25, "busy_mean": 47.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:17 == СРАВНЕНИЕ ==
+23:02:17    A: {"tag": "A_trim2", "arm": "TickProf.overlaptrim 2", "n_rows": 300, "ts_mean": 50.65, "ts_min": 23, "ts_max": 61, "ms_mean": 12.4, "busy_mean": 49.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:17    B: {"tag": "B_trim3", "arm": "TickProf.overlaptrim3 2", "n_rows": 302, "ts_mean": 52.3, "ts_min": 13, "ts_max": 61, "ms_mean": 11.25, "busy_mean": 47.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:17    ДЕЛЬТА B-A: t/s +1.65, мс/тик -1.15
+23:02:17    ВЕРДИКТ: trim3 не хуже trim2
+23:02:17 == ОТКАТ: overlapall 0 + рестарт сервера ==
+23:02:20     РЕЗУЛЬТАТ B_trim3: {"tag": "B_trim3", "arm": "TickProf.overlaptrim3 2", "n_rows": 300, "ts_mean": 52.25, "ts_min": 13, "ts_max": 61, "ms_mean": 11.31, "busy_mean": 47.6, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:20 == СРАВНЕНИЕ ==
+23:02:20    A: {"tag": "A_trim2", "arm": "TickProf.overlaptrim 2", "n_rows": 300, "ts_mean": 50.65, "ts_min": 23, "ts_max": 61, "ms_mean": 12.4, "busy_mean": 49.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:20    B: {"tag": "B_trim3", "arm": "TickProf.overlaptrim3 2", "n_rows": 300, "ts_mean": 52.25, "ts_min": 13, "ts_max": 61, "ms_mean": 11.31, "busy_mean": 47.6, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:02:20    ДЕЛЬТА B-A: t/s +1.60, мс/тик -1.09
+23:02:20    ВЕРДИКТ: trim3 не хуже trim2
+23:02:20 == ОТКАТ: overlapall 0 + рестарт сервера ==
+23:02:21     LOG: 23:02:18.007 overlapall: bGenerateOverlapEvents возвращён у 795 компонентов
+23:02:21     LOG: 23:02:20.260 overlapall: bGenerateOverlapEvents возвращён у 0 компонентов
+23:02:21     РЕСТАРТ сервера (проверка отката)...
+23:02:23     LOG: 23:02:20.260 overlapall: bGenerateOverlapEvents возвращён у 0 компонентов
+23:02:23     РЕСТАРТ сервера (проверка отката)...
+23:06:19     сервер запускается, ждём RCON...
+23:06:21     сервер запускается, ждём RCON...
+23:17:28 == КОНТРОЛЬНОЕ ОКНО C: базовая линия после отката (без обрезки) ==
+23:17:28    TickProf.maxfps 60       тикрейт 60                   -> Server received, But no response!!
+23:17:30    TickProf.fixclamp 0      снять зажим тикрейта         -> Server received, But no response!!
+23:17:32    TickProf.fncache 1       fncache                      -> Server received, But no response!!
+23:17:33    TickProf.iscache 1       iscache                      -> Server received, But no response!!
+23:17:35    TickProf.cachename 1     cachename                    -> Server received, But no response!!
+23:17:36    TickProf.nochart 1       nochart                      -> Server received, But no response!!
+23:17:38    ждём якорь (завершение автосейва)...
+23:25:58    якорь: сейв завершён в 23:25:58 (3016 мс) -> окно 300 с
+23:26:24     RCON не поднялся
+23:26:24 == СЛОТ C: ГОТОВО ==
+23:31:12    РЕЗУЛЬТАТ C: {"tag": "C_after_rollback", "arm": "без обрезки (после overlapall 0 + рестарт)", "n_rows": 300, "ts_mean": 53.36, "ts_min": 30, "ts_max": 61, "ms_mean": 10.06, "busy_mean": 46.0, "save_nonidle_rows": 0, "verdict": "VALID"}
+23:31:12 == слот C: контрольное окно готово ==
