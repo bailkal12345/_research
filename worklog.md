@@ -2209,3 +2209,40 @@ frame 16 мс, ms/tick 8-12 (внешний на чистом под-режим�
   по-прежнему падает с ClassNotFoundException.
 - Слот B (живой профиль в фазе) и C (overlaptrim3) не начаты: на живом сервере
   (pid 17496) плагина TickProf нет, разворачивание - отдельная согласованная операция.
+
+## 2026-10-21 21:30-22:05 Слоты B и C: стенд поднят, правка A2 + фикс selftest
+- Согласовано с владельцем: Mimalloc-эксперимент на Server1 остановлен, его плагины
+  забэкаплены в C:/asmdata/_backup_/plugins_20261021_212759 (Mimalloc.dll+лог+pdb,
+  EngineSwap, PLUGINS_LIST.txt). Владелец продолжит свой эксперимент позже.
+- Server1 остановлен через RCON save+exit, затем taskkill (RCON не глушит процесс сам).
+  Последний автосейв TheIsland 21:27:48 - данные не потеряны.
+- Стенд собран: TickProf (новая сборка) установлен в активные плагины, Mimalloc и
+  EngineSwap вынесены в _backup. tickprof_noclamp.txt создан (плагин не поднимает
+  зажим тикрейта при загрузке), GameUserSettings.ini защищён read-only (движок
+  теряет RCON-ключи при перезаписи) - RCON-ключи на месте.
+- Бут Genesis (pid 6620, game thread tid=7124). ВАЖНО: RCON-клиент из прошлых слотов
+  (rcon.py) использует формат пакета (id+type) БЕЗ ведущего size - Source-RCON
+  формат НЕ работает, отсюда "Keep Alive" вместо ответа. Рабочий: rcon.py.
+- Прод-конфиг §2 + чек-лист применены (21:51-21:52): maxfps 60 (NetServerMaxTickRate
+  30 -> 60), fixclamp (штатные 120), fncache 1, iscache 1, cachename 1, nochart 1,
+  overlaptrim 2 -> отключено 23951 компонентов, освобождено 193720 записей.
+  После trim t/s вырос 45-54 -> 57-59.
+- Слот B: авто-мониторинг 1 Гц запущен (slotB_run.py), ждёт фазу (t/s<45 три строки
+  подряд), затем снимет профиль 60 с внутри плато + ticklist до/после.
+- Слот C (код): белый список по A2 - добавлены ABaseBoxTrigger, AHazardTrigger_Slide,
+  APrimalStructureBearTrap, APrimalStructureTurretBallista, APrimalStructureTurret,
+  APrimalProjectileGrapplingHook, APrimalDinoCharacter; широкие подстроки
+  Trigger/Turret/GrapplingHook УБРАНЫ (ловили чужие классы). Файл
+  tickprof_overlap_keep.txt обновлён и в исходниках, и на сервере.
+- Слот C (A/B на реальном сейве) - скрипт slotC_ab.py готов (окна 300 с после
+  протокола сейва, рука A = overlaptrim 2, рука B = overlaptrim3, откат через
+  overlapall 0 + контрольное окно, автопометка VALID/CONTAMINATED).
+- §4: починен perf.selftest (горячий цикл). Причина: в фазе ST_AB_A_WINDOW ставилось
+  g_st_mark = now + 3000 (метка в БУДУЩЕМ) => elapsed_s = (now - g_st_mark)/1000
+  подпитывался в uint64 => условие "elapsed_s > 120" всегда истинно => окно
+  переармливалось каждый кадр. Плюс ST_AB_B_PREP делал StSet(сам в себя) - "рука A
+  закрыта" логировалось каждый кадр. Исправлено: знаковый elapsed_s (int64), флаги
+  g_st_arm_a/g_st_arm_b (окно запускается один раз), рука A -> ST_AB_B_PREP,
+  рука B -> ST_AB_B_WINDOW. Сборка успешна; на сервер ставится при следующем буте.
+- bptrace (ARCH.md 3.5) НЕ делал: низкий приоритет, требует A/B перед выкаткой,
+  байты патча по умолчанию не ставить.
