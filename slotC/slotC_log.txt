@@ -4,3 +4,13 @@
 22:32:56     LOG: 22:32:53.760 overlapall: bGenerateOverlapEvents возвращён у 289926 компонентов
 22:32:56     арм TickProf.overlaptrim 2 -> Server received, But no response!!
 22:32:58     LOG: 22:32:56.890 overlaptrim: порог=2 отключено компонентов=24000 освобождено записей=193303
+22:42:04     якорь: сейв завершён в 22:42:01 (3000 мс) -> окно 300 с
+22:42:04     якорь: сейв завершён в 22:42:01 (3000 мс) -> окно 300 с
+22:47:18     РЕЗУЛЬТАТ A_trim2: {"tag": "A_trim2", "arm": "TickProf.overlaptrim 2", "n_rows": 300, "ts_mean": 50.65, "ts_min": 23, "ts_max": 61, "ms_mean": 12.4, "busy_mean": 49.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+22:47:18 --- РУКА B_trim3: overlaptrim3 (белый список A2) ---
+22:47:18     сброс базы: overlapall 0 (возврат bGenerateOverlapEvents у всех)
+22:47:18     РЕЗУЛЬТАТ A_trim2: {"tag": "A_trim2", "arm": "TickProf.overlaptrim 2", "n_rows": 300, "ts_mean": 50.65, "ts_min": 23, "ts_max": 61, "ms_mean": 12.4, "busy_mean": 49.4, "save_nonidle_rows": 0, "verdict": "VALID"}
+22:47:18 --- РУКА B_trim3: overlaptrim3 (белый список A2) ---
+22:47:18     арм TickProf.overlaptrim3 2 -> Server received, But no response!!
+22:47:21     LOG: 22:47:18.369 overlapall: bGenerateOverlapEvents возвращён у 24001 компонентов
+22:47:21     арм TickProf.overlaptrim3 2 -> Server received, But no response!!
