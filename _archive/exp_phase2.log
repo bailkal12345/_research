@@ -1,0 +1,44 @@
+game thread tid=13792
+
+[1] census ╨┐╨╡╤Ç╨╡╤ü╨╡╤ç╨╡╨╜╨╕╨╣
+      overlapsizes: ╨║╨╛╨╝╨┐╨╛╨╜╨╡╨╜╤é╨╛╨▓=51077 ╤ü bGenerateOverlapEvents=3615 ╨▓╤ü╨╡╨│╨╛ ╨┐╨╡╤Ç╨╡╤ü╨╡╤ç╨╡╨╜╨╕╨╣=8888
+
+[2] baseline
+   BASELINE           cpu 0.969 -> 0.523 s/s | frames=583 wall=41s cpu=347s busy=844% frame_wall=70701us frame_cpu=596858us
+
+[3] ╨║╤ì╤ê Kismet-╨║╨░╨╜╨▓╨░╤ü╨╛╨▓
+      canvas: ╤à╤â╨║ DoGetCanvasByName ╤â╤ü╤é╨░╨╜╨╛╨▓╨╗╨╡╨╜
+      canvas: ╨║╤ì╤ê ╨▓╨║╨╗╤Ä╤ç╤æ╨╜
+   CANVAS             cpu 0.664 -> 0.547 s/s | frames=1133 wall=40s cpu=379s busy=948% frame_wall=35318us frame_cpu=335061us
+
+[4] ╨╛╨▒╤Ç╨╡╨╖╨║╨░ ╨┐╨╡╤Ç╨╡╨│╤Ç╤â╨╢╨╡╨╜╨╜╤ï╤à ╨║╨╛╨╝╨┐╨╛╨╜╨╡╨╜╤é╨╛╨▓ (╨┐╨╛╤Ç╨╛╨│ 32)
+      overlaptrim: ╨┐╨╛╤Ç╨╛╨│=32 ╨╛╤é╨║╨╗╤Ä╤ç╨╡╨╜╨╛ ╨║╨╛╨╝╨┐╨╛╨╜╨╡╨╜╤é╨╛╨▓=787 ╨╛╤ü╨▓╨╛╨▒╨╛╨╢╨┤╨╡╨╜╨╛ ╨╖╨░╨┐╨╕╤ü╨╡╨╣=260278
+   TRIM_32            cpu 0.445 -> 0.359 s/s | frames=1188 wall=40s cpu=409s busy=1023% frame_wall=33682us frame_cpu=344867us
+
+[5] ╨┐╨╛╤Ç╨╛╨│ 8
+      overlaptrim: ╨┐╨╛╤Ç╨╛╨│=32 ╨╛╤é╨║╨╗╤Ä╤ç╨╡╨╜╨╛ ╨║╨╛╨╝╨┐╨╛╨╜╨╡╨╜╤é╨╛╨▓=787 ╨╛╤ü╨▓╨╛╨▒╨╛╨╢╨┤╨╡╨╜╨╛ ╨╖╨░╨┐╨╕╤ü╨╡╨╣=260278
+      overlaptrim: ╨┐╨╛╤Ç╨╛╨│=8 ╨╛╤é╨║╨╗╤Ä╤ç╨╡╨╜╨╛ ╨║╨╛╨╝╨┐╨╛╨╜╨╡╨╜╤é╨╛╨▓=24369 ╨╛╤ü╨▓╨╛╨▒╨╛╨╢╨┤╨╡╨╜╨╛ ╨╖╨░╨┐╨╕╤ü╨╡╨╣=495051
+   TRIM_8             cpu 0.336 -> 0.172 s/s | frames=1192 wall=40s cpu=428s busy=1071% frame_wall=33557us frame_cpu=359414us
+
+[6] ╨┐╨░╤é╤ç bAllowConcurrentTicks (A/B/A)
+      concurrent: ╨▓╨║╨╗╤Ä╤ç╤æ╨╜ (0x00
+   PATCH_A            cpu 0.172 -> 0.141 s/s | frames=1196 wall=40s cpu=437s busy=1093% frame_wall=33458us frame_cpu=365972us
+      concurrent: ╨▓╨║╨╗╤Ä╤ç╤æ╨╜ (0x00
+      concurrent: ╨▓╤ï╨║╨╗╤Ä╤ç╨╡╨╜ (0x01
+   PATCH_OFF          cpu 0.156 -> 0.125 s/s | frames=1197 wall=40s cpu=446s busy=1115% frame_wall=33429us frame_cpu=372924us
+      tickflags mode=4 filter=0 (╨┐╤Ç╨░╨▓╨╕╨╗ 0) : ╨▓╤ü╨╡╨│╨╛=52780 c prerequisites=103 ╤â╨╢╨╡ ╨┐╨╛╨╝╨╡╤ç╨╡╨╜╨╛=0 ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╛=52780
+   FLAGS_4            cpu 0.164 -> 0.141 s/s | frames=1196 wall=40s cpu=454s busy=1136% frame_wall=33457us frame_cpu=380108us
+      tickflags mode=4 filter=0 (╨┐╤Ç╨░╨▓╨╕╨╗ 0) : ╨▓╤ü╨╡╨│╨╛=52780 c prerequisites=103 ╤â╨╢╨╡ ╨┐╨╛╨╝╨╡╤ç╨╡╨╜╨╛=0 ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╛=52780
+      tickflags mode=0 filter=0 (╨┐╤Ç╨░╨▓╨╕╨╗ 0) : ╨▓╤ü╨╡╨│╨╛=276292 c prerequisites=5281 ╤â╨╢╨╡ ╨┐╨╛╨╝╨╡╤ç╨╡╨╜╨╛=52766 ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╛=52766
+      tickflags mode=2 filter=0 (╨┐╤Ç╨░╨▓╨╕╨╗ 0) : ╨▓╤ü╨╡╨│╨╛=276292 c prerequisites=5281 ╤â╨╢╨╡ ╨┐╨╛╨╝╨╡╤ç╨╡╨╜╨╛=0 ╨╕╨╖╨╝╨╡╨╜╨╡╨╜╨╛=0
+   FLAGS_2            cpu 0.125 -> 0.102 s/s | frames=1197 wall=40s cpu=462s busy=1156% frame_wall=33429us frame_cpu=386669us
+
+[╨╕╤é╨╛╨│]
+   baseline   cpu=0.746 s/s
+   canvas     cpu=0.605 s/s
+   trim32     cpu=0.402 s/s
+   trim8      cpu=0.254 s/s
+   patch_A    cpu=0.156 s/s
+   patch_B    cpu=0.141 s/s
+   mode4      cpu=0.152 s/s
+   mode2      cpu=0.113 s/s

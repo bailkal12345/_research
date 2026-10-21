@@ -1,0 +1,78 @@
+
+## 2026-10-18 00:01 ╨Æ╨É╨Ñ╨ó╨É
+╤ü╤é╨░╤Ç╤é ╨▓╨░╤à╤é╤ï: ╨▒╤Ä╨┤╨╢╨╡╤é 160 ╨╝╨╕╨╜, ╨┐╨╛╤é╨╛╨╗╨╛╨║ ╨╜╨░ ╤ü╨╡╨╣╨▓ 55 ╨╝╨╕╨╜
+
+
+## 2026-10-18 00:01 ╨Æ╨É╨Ñ╨ó╨É
+╨╛╤ç╨╡╤Ç╨╡╨┤╤î ╨░╤Ç╤à╨╕╨▓╨╛╨▓: Genesis.zip, TheIsland.7z, Fjordur.7z
+
+
+## 2026-10-18 00:01 ╨Æ╨É╨Ñ╨ó╨É
+╨┤╨╡╨┐╨╗╨╛╨╣ Genesis.zip: ╨│╨░╤ê╤â ╤ü╤é╨╡╨╜╨┤ (0 ╨┐╤Ç╨╛╤å╨╡╤ü╤ü╨╛╨▓)
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+   00:06:02 ╤ü╤é╨╡╨╜╨┤ ╨│╤Ç╤â╨╖╨╕╤é╤ü╤Å, CPU = 0.88
+   00:06:34 ╤ü╤é╨╡╨╜╨┤ ╨│╤Ç╤â╨╖╨╕╤é╤ü╤Å, CPU = 0.98
+   00:07:11 ╨ù╨É╨£╨₧╨á╨₧╨ù╨Ü╨É: pid 5144, ╨┤╨╛╨╗╤Å CPU = 0.002 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ 1/2)
+   00:07:47 ╨ù╨É╨£╨₧╨á╨₧╨ù╨Ü╨É: pid 5144, ╨┤╨╛╨╗╤Å CPU = 0.003 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ 2/2)
+   00:07:47 ╨┐╤Ç╨╛╤å╨╡╤ü╤ü ╨╢╨╕╨▓, ╨╜╨╛ ╨╜╨╡ ╤é╨╕╨║╨░╨╡╤é ΓÇö ╨╖╨░╨╝╨╛╤Ç╨╛╨╖╨║╨░ ╨┐╨╛╨┤╤é╨▓╨╡╤Ç╨╢╨┤╨╡╨╜╨░, ╤ü╨╜╨╕╨╝╨░╤Ä ╨╡╨│╨╛
+   00:07:47 ╨ƒ╨á╨₧╨ƒ╨ú╨í╨Ü: RCON ╨╜╨╡ ╨╛╤é╨▓╨╡╤é╨╕╨╗ ╨╖╨░ 15 ╨╝╨╕╨╜╤â╤é
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨í╨¢╨₧╨ó Genesis: ╨┤╨╡╨┐╨╗╨╛╨╣ ╨╜╨╡ ╤â╨┤╨░╨╗╤ü╤Å ΓÇö 00:07:47 ╨ƒ╨á╨₧╨ƒ╨ú╨í╨Ü: RCON ╨╜╨╡ ╨╛╤é╨▓╨╡╤é╨╕╨╗ ╨╖╨░ 15 ╨╝╨╕╨╜╤â╤é. ╨ƒ╨á╨₧╨ƒ╨ú╨í╨Ü, ╤ü╨╗╨╡╨┤╤â╤Ä╤ë╨╕╨╣ ╨░╤Ç╤à╨╕╨▓.
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨┤╨╡╨┐╨╗╨╛╨╣ TheIsland.7z: ╨│╨░╤ê╤â ╤ü╤é╨╡╨╜╨┤ (1 ╨┐╤Ç╨╛╤å╨╡╤ü╤ü╨╛╨▓)
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+       ...<4 lines>...
+                                cwd,
+                                ^^^^
+                                startupinfo)
+                                ^^^^^^^^^^^^
+   FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨í╨¢╨₧╨ó TheIsland: ╨┤╨╡╨┐╨╗╨╛╨╣ ╨╜╨╡ ╤â╨┤╨░╨╗╤ü╤Å ΓÇö FileNotFoundError: [WinError 2] The system cannot find the file specified. ╨ƒ╨á╨₧╨ƒ╨ú╨í╨Ü, ╤ü╨╗╨╡╨┤╤â╤Ä╤ë╨╕╨╣ ╨░╤Ç╤à╨╕╨▓.
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨┤╨╡╨┐╨╗╨╛╨╣ Fjordur.7z: ╨│╨░╤ê╤â ╤ü╤é╨╡╨╜╨┤ (0 ╨┐╤Ç╨╛╤å╨╡╤ü╤ü╨╛╨▓)
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+       ...<4 lines>...
+                                cwd,
+                                ^^^^
+                                startupinfo)
+                                ^^^^^^^^^^^^
+   FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨í╨¢╨₧╨ó Fjordur: ╨┤╨╡╨┐╨╗╨╛╨╣ ╨╜╨╡ ╤â╨┤╨░╨╗╤ü╤Å ΓÇö FileNotFoundError: [WinError 2] The system cannot find the file specified. ╨ƒ╨á╨₧╨ƒ╨ú╨í╨Ü, ╤ü╨╗╨╡╨┤╤â╤Ä╤ë╨╕╨╣ ╨░╤Ç╤à╨╕╨▓.
+
+Exception in thread Thread-9 (_readerthread):
+Traceback (most recent call last):
+  File "C:\Program Files\Python314\Lib\threading.py", line 1082, in _bootstrap_inner
+    self._context.run(self.run)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\threading.py", line 1024, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Python314\Lib\subprocess.py", line 1614, in _readerthread
+    buffer.append(fh.read())
+                  ~~~~~~~^^
+  File "C:\Program Files\Python314\Lib\encodings\cp1252.py", line 23, in decode
+    return codecs.charmap_decode(input,self.errors,decoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x81 in position 9: character maps to <undefined>
+
+## 2026-10-18 00:07 ╨Æ╨É╨Ñ╨ó╨É
+╨╕╤é╨╛╨│ ╨▓╨░╤à╤é╤ï: [["Genesis", "╨┐╤Ç╨╛╨┐╤â╤ü╨║: ╨┤╨╡╨┐╨╗╨╛╨╣"], ["TheIsland", "╨┐╤Ç╨╛╨┐╤â╤ü╨║: ╨┤╨╡╨┐╨╗╨╛╨╣"], ["Fjordur", "╨┐╤Ç╨╛╨┐╤â╤ü╨║: ╨┤╨╡╨┐╨╗╨╛╨╣"]]
+

@@ -1,0 +1,44 @@
+[wait] server ready, pid=15420
+[step] loading plugin
+Failed to load plugin - Plugin TickProf was already loaded
+[step] game thread tid=6484
+[baseline] GameThread cpu=0.934 s/s (93.4% of a core)
+[step] phase 1: sampling WITHOUT hooks for 150 s
+  start: Server received, But no response!! 
+ 
+  stop: Server received, But no response!! 
+ 
+  status: Server received, But no response!! 
+ 
+[step] phase 2: installing hooks one by one
+  -> hook 3  UWorld.RunTickGroup
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.422 s/s -> ok
+  -> hook 4  FTickTaskManager.StartFrame
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.333 s/s -> ok
+  -> hook 5  FTickTaskManager.EndFrame
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.292 s/s -> ok
+  -> hook 6  UNetDriver.TickDispatch
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.255 s/s -> ok
+  -> hook 7  Global.CollectGarbage
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.250 s/s -> ok
+  -> hook 8  AShooterGameMode.Tick
+     rcon: Server received, But no response!! 
+ 
+     game thread cpu=0.177 s/s -> DEAD?
+[abort] hook 8 (AShooterGameMode.Tick) killed the tick; stopping
+[step] sampling with hooks for 150 s
+  start: <TimeoutError>
+  stop: <ConnectionRefusedError>
+  artifact: C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_209283656.bin
+  artifact: C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_209283656.csv
+  artifact: C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_209283656.modules.txt

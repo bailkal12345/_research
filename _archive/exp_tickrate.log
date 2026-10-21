@@ -1,0 +1,58 @@
+game thread tid=18168
+
+[╨╗╨╕╨╝╨╕╤é 30]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=30         ╤é╨╕╨║╨╛╨▓/╤ü    15.5 | cpu 0.961 s/s | 62.00 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╗╨╕╨╝╨╕╤é 60]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=60         ╤é╨╕╨║╨╛╨▓/╤ü    53.8 | cpu 0.977 s/s | 18.14 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╗╨╕╨╝╨╕╤é 120]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 60 -> 120 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=120        ╤é╨╕╨║╨╛╨▓/╤ü    53.8 | cpu 0.938 s/s | 17.41 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╗╨╕╨╝╨╕╤é 300]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 60 -> 120 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 120 -> 300 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=300        ╤é╨╕╨║╨╛╨▓/╤ü    82.9 | cpu 0.898 s/s | 10.83 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╗╨╕╨╝╨╕╤é 1000]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 60 -> 120 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 120 -> 300 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 300 -> 1000 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=1000       ╤é╨╕╨║╨╛╨▓/╤ü   110.2 | cpu 0.672 s/s | 6.10 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╗╨╕╨╝╨╕╤é 200000]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 60 -> 120 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 120 -> 300 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 300 -> 1000 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 1000 -> 200000 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+   ╨╗╨╕╨╝╨╕╤é=200000     ╤é╨╕╨║╨╛╨▓/╤ü   114.1 | cpu 0.531 s/s | 4.66 ╨╝╤ü CPU ╨╜╨░ ╤é╨╕╨║
+
+[╨╕╤é╨╛╨│ ╨┐╨╛ ╨╗╨╕╨╝╨╕╤é╨░╨╝]
+   ╨╗╨╕╨╝╨╕╤é           ╤é╨╕╨║╨╛╨▓/╤ü       ╨╝╤ü/╤é╨╕╨║
+   30                 15.5        62.00
+   60                 53.8        18.14
+   120                53.8        17.41
+   300                82.9        10.83
+   1000              110.2         6.10
+   200000            114.1         4.66
+
+[╨▓╨╛╨╖╨▓╤Ç╨░╤é ╨║ ╤ê╤é╨░╤é╨╜╨╛╨╝╤â ╨╗╨╕╨╝╨╕╤é╤â]
+      maxfps: NetServerMaxTickRate 0 -> 30 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 30 -> 60 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 60 -> 120 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 120 -> 300 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 300 -> 1000 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 1000 -> 200000 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)
+      maxfps: NetServerMaxTickRate 200000 -> 0 (╨┐╤Ç╨╛╨▓╨╡╤Ç╨║╨░ ╨╛╨║)

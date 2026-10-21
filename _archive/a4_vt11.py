@@ -1,0 +1,32 @@
+import sqlite3, struct
+c = sqlite3.connect(r'C:\Dev\_research\v361.sqlite')
+p = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.exe'
+data = open(p,'rb').read()
+e_lfanew = struct.unpack_from('<I', data, 0x3C)[0]
+nsec = struct.unpack_from('<H', data, e_lfanew+6)[0]
+optsz = struct.unpack_from('<H', data, e_lfanew+20)[0]
+sec0 = e_lfanew+24+optsz
+secs=[]
+for i in range(nsec):
+    o = sec0+40*i
+    vsz, va, rsz, ra = struct.unpack_from('<IIII', data, o+8)
+    secs.append((va, vsz, ra, rsz))
+def rva2off(rva):
+    for va,vsz,ra,rsz in secs:
+        if va<=rva<va+max(vsz,rsz): return ra+(rva-va)
+    return None
+names = {}
+for rva, nm in c.execute("select rva,name from fn where rva is not null"):
+    if rva: names.setdefault(rva, []).append(nm)
+def show(va):
+    l = names.get(va-0x140000000)
+    return l[0] if l else "?"
+VT=0x4004F40
+for i in (5,11,19,106,218,267,318,319,320):
+    v = struct.unpack_from('<Q', data, rva2off(VT+i*8))[0]
+    print("APrimalDinoCharacter::vftable idx %3d +0x%03X = %016X %s" % (i, i*8, v, show(v)))
+print()
+# what is at 0x14052AFA0 (APrimalCharacter::AllowSaving) - list all names
+for rva in (0x52AFA0,):
+    rows=c.execute("select name,size from fn where rva=?",(rva,)).fetchall()
+    print("RVA %08X:"%rva, rows)

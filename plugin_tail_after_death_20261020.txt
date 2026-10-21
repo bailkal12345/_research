@@ -1,0 +1,120 @@
+12:47:30.364 mon: t/s=23 ms/tick=37 frame_ms=42 busy=86% save=idle
+12:47:31.359 mon: t/s=23 ms/tick=37 frame_ms=43 busy=85% save=idle
+12:47:32.374 mon: t/s=22 ms/tick=37 frame_ms=44 busy=83% save=idle
+12:47:33.382 mon: t/s=24 ms/tick=35 frame_ms=41 busy=85% save=idle
+12:47:34.389 mon: t/s=20 ms/tick=39 frame_ms=48 busy=80% save=idle
+12:47:35.403 mon: t/s=23 ms/tick=36 frame_ms=42 busy=84% save=idle
+12:47:36.536 mon: t/s=14 ms/tick=60 frame_ms=70 busy=76% save=idle
+12:47:37.551 mon: t/s=22 ms/tick=39 frame_ms=44 busy=87% save=idle
+12:47:38.570 mon: t/s=24 ms/tick=36 frame_ms=40 busy=87% save=idle
+12:47:39.582 mon: t/s=22 ms/tick=40 frame_ms=44 busy=89% save=idle
+12:47:40.598 mon: t/s=19 ms/tick=38 frame_ms=50 busy=75% save=idle
+12:47:41.626 mon: t/s=18 ms/tick=44 frame_ms=54 busy=80% save=idle
+12:47:42.659 mon: t/s=18 ms/tick=46 frame_ms=54 busy=83% save=idle
+12:47:43.704 mon: t/s=20 ms/tick=45 frame_ms=49 busy=88% save=idle
+12:47:44.720 mon: t/s=21 ms/tick=41 frame_ms=46 busy=89% save=idle
+12:47:45.731 mon: t/s=20 ms/tick=40 frame_ms=48 busy=81% save=idle
+12:47:46.744 mon: t/s=23 ms/tick=39 frame_ms=42 busy=90% save=idle
+12:47:47.751 mon: t/s=22 ms/tick=37 frame_ms=45 busy=82% save=idle
+12:47:48.791 mon: t/s=24 ms/tick=37 frame_ms=40 busy=89% save=idle
+12:47:49.858 mon: t/s=24 ms/tick=35 frame_ms=40 busy=82% save=idle
+12:47:50.855 mon: t/s=21 ms/tick=39 frame_ms=47 busy=82% save=idle
+12:47:51.897 mon: t/s=21 ms/tick=42 frame_ms=46 busy=87% save=idle
+12:47:52.884 mon: t/s=20 ms/tick=42 frame_ms=50 busy=85% save=idle
+12:47:53.894 mon: t/s=25 ms/tick=37 frame_ms=40 busy=93% save=idle
+12:47:54.928 mon: t/s=23 ms/tick=36 frame_ms=43 busy=83% save=idle
+12:47:55.944 mon: t/s=22 ms/tick=35 frame_ms=44 busy=78% save=idle
+12:47:56.947 mon: t/s=24 ms/tick=33 frame_ms=40 busy=81% save=idle
+12:47:57.964 mon: t/s=23 ms/tick=33 frame_ms=42 busy=78% save=idle
+12:47:58.987 mon: t/s=23 ms/tick=36 frame_ms=42 busy=84% save=idle
+12:48:00.017 mon: t/s=24 ms/tick=34 frame_ms=41 busy=81% save=idle
+12:48:01.021 mon: t/s=22 ms/tick=39 frame_ms=45 busy=87% save=idle
+12:48:02.011 mon: t/s=22 ms/tick=41 frame_ms=45 busy=90% save=idle
+12:48:03.012 mon: t/s=23 ms/tick=38 frame_ms=43 busy=89% save=idle
+12:48:04.039 mon: t/s=23 ms/tick=36 frame_ms=42 busy=84% save=idle
+12:48:05.044 mon: t/s=21 ms/tick=36 frame_ms=46 busy=76% save=idle
+12:48:06.053 mon: t/s=24 ms/tick=35 frame_ms=41 busy=84% save=idle
+12:48:07.065 mon: t/s=25 ms/tick=34 frame_ms=39 busy=87% save=idle
+12:48:08.070 mon: t/s=24 ms/tick=34 frame_ms=41 busy=82% save=idle
+12:48:09.058 mon: t/s=22 ms/tick=35 frame_ms=45 busy=78% save=idle
+12:48:10.081 mon: t/s=24 ms/tick=34 frame_ms=40 busy=83% save=idle
+12:48:11.096 mon: t/s=23 ms/tick=36 frame_ms=42 busy=84% save=idle
+12:48:12.091 mon: t/s=25 ms/tick=31 frame_ms=40 busy=79% save=idle
+12:48:13.107 mon: t/s=22 ms/tick=35 frame_ms=44 busy=78% save=idle
+12:48:14.110 mon: t/s=22 ms/tick=34 frame_ms=45 busy=75% save=idle
+12:48:15.132 mon: t/s=25 ms/tick=36 frame_ms=39 busy=92% save=idle
+12:48:16.136 mon: t/s=23 ms/tick=35 frame_ms=42 busy=81% save=idle
+12:48:17.193 mon: t/s=21 ms/tick=39 frame_ms=45 busy=82% save=idle
+12:48:18.224 mon: t/s=23 ms/tick=35 frame_ms=42 busy=80% save=idle
+12:48:19.229 mon: t/s=20 ms/tick=41 frame_ms=48 busy=84% save=idle
+12:48:20.243 mon: t/s=22 ms/tick=37 frame_ms=44 busy=83% save=idle
+12:48:21.253 mon: t/s=23 ms/tick=36 frame_ms=43 busy=84% save=idle
+12:48:22.278 mon: t/s=22 ms/tick=35 frame_ms=44 busy=77% save=idle
+12:48:23.290 mon: t/s=24 ms/tick=35 frame_ms=40 busy=86% save=idle
+12:48:24.299 mon: t/s=25 ms/tick=34 frame_ms=40 busy=85% save=idle
+12:48:25.320 mon: t/s=21 ms/tick=38 frame_ms=46 busy=83% save=idle
+12:48:26.329 mon: t/s=23 ms/tick=35 frame_ms=42 busy=83% save=idle
+12:48:27.340 mon: t/s=23 ms/tick=34 frame_ms=42 busy=80% save=idle
+12:48:28.353 mon: t/s=23 ms/tick=38 frame_ms=42 busy=89% save=idle
+12:48:29.377 mon: t/s=22 ms/tick=35 frame_ms=44 busy=79% save=idle
+12:48:30.380 mon: t/s=26 ms/tick=34 frame_ms=38 busy=89% save=idle
+12:48:31.388 mon: t/s=22 ms/tick=36 frame_ms=44 busy=81% save=idle
+12:48:32.392 mon: t/s=23 ms/tick=37 frame_ms=43 busy=85% save=idle
+12:48:33.418 mon: t/s=26 ms/tick=32 frame_ms=38 busy=81% save=idle
+12:48:34.433 mon: t/s=24 ms/tick=31 frame_ms=40 busy=76% save=idle
+12:48:35.443 mon: t/s=25 ms/tick=33 frame_ms=40 busy=82% save=idle
+12:48:36.457 mon: t/s=24 ms/tick=34 frame_ms=40 busy=84% save=idle
+12:48:37.464 mon: t/s=22 ms/tick=35 frame_ms=44 busy=80% save=idle
+12:48:38.496 mon: t/s=25 ms/tick=34 frame_ms=39 busy=84% save=idle
+12:48:39.514 mon: t/s=24 ms/tick=34 frame_ms=40 busy=84% save=idle
+12:48:40.534 mon: t/s=25 ms/tick=31 frame_ms=39 busy=79% save=idle
+12:48:41.557 mon: t/s=22 ms/tick=37 frame_ms=44 busy=80% save=idle
+12:48:42.561 mon: t/s=24 ms/tick=35 frame_ms=41 busy=84% save=idle
+12:48:43.565 mon: t/s=24 ms/tick=37 frame_ms=41 busy=90% save=idle
+12:48:44.579 mon: t/s=22 ms/tick=37 frame_ms=44 busy=84% save=idle
+12:48:45.600 mon: t/s=20 ms/tick=40 frame_ms=48 busy=81% save=idle
+12:48:46.600 mon: t/s=24 ms/tick=36 frame_ms=41 busy=87% save=idle
+12:48:47.636 mon: t/s=22 ms/tick=36 frame_ms=43 busy=80% save=idle
+12:48:48.666 mon: t/s=23 ms/tick=37 frame_ms=43 busy=84% save=idle
+12:48:49.692 mon: t/s=23 ms/tick=36 frame_ms=42 busy=84% save=idle
+12:48:50.691 mon: t/s=24 ms/tick=37 frame_ms=41 busy=89% save=idle
+12:48:51.699 mon: t/s=22 ms/tick=33 frame_ms=44 busy=73% save=idle
+12:48:52.733 mon: t/s=24 ms/tick=34 frame_ms=41 busy=80% save=idle
+12:48:53.747 mon: t/s=23 ms/tick=35 frame_ms=42 busy=81% save=idle
+12:48:54.750 mon: t/s=23 ms/tick=31 frame_ms=43 busy=73% save=idle
+12:48:55.777 mon: t/s=24 ms/tick=36 frame_ms=41 busy=84% save=idle
+12:48:56.783 mon: t/s=25 ms/tick=32 frame_ms=40 busy=81% save=idle
+12:48:57.806 mon: t/s=22 ms/tick=38 frame_ms=44 busy=83% save=idle
+12:48:58.843 mon: t/s=27 ms/tick=28 frame_ms=36 busy=75% save=idle
+12:48:59.860 mon: t/s=24 ms/tick=31 frame_ms=40 busy=76% save=idle
+12:49:00.879 mon: t/s=26 ms/tick=33 frame_ms=37 busy=87% save=idle
+12:52:03.145 ticklist: уровней=142 акторов=106556 (зарегистрировано тик 1507) компонентов=403398 (тикующих 3374)
+12:52:11.304 ticksets: уровней=143 (непустых 133) | AllEnabledTickFunctions=1264433 | FastPath=7478592801 | FastPathTickAfter=14028876021 | AllDisabled=12929146766 | NewlySpawned=16103559480
+12:52:19.637 overlapsizes: компонентов=270538 с bGenerateOverlapEvents=6527 всего пересечений=199422
+12:52:19.639    1 Class /Script/Engine.BrushComponent x5118
+12:52:19.639    2 Class /Script/Engine.BrushComponent x5001
+12:52:19.639    3 Class /Script/Engine.BrushComponent x4986
+12:52:19.639    4 Class /Script/Engine.BrushComponent x3785
+12:52:19.640    5 Class /Script/Engine.BrushComponent x2997
+12:52:19.640    6 Class /Script/Engine.BrushComponent x2236
+12:52:19.640    7 Class /Script/Engine.BrushComponent x2196
+12:52:19.640    8 Class /Script/Engine.BrushComponent x2196
+12:52:19.640    9 Class /Script/Engine.BrushComponent x2180
+12:52:19.641    10 Class /Script/Engine.BrushComponent x2180
+12:52:19.641    11 Class /Script/Engine.BrushComponent x2142
+12:52:19.641    12 Class /Script/Engine.BrushComponent x2142
+12:52:19.642    13 Class /Script/Engine.BrushComponent x1977
+12:52:19.642    14 Class /Script/Engine.BrushComponent x1977
+12:52:19.642    15 Class /Script/Engine.BrushComponent x1545
+12:52:19.642    16 Class /Script/Engine.BrushComponent x1487
+12:52:19.642    17 Class /Script/Engine.BrushComponent x1459
+12:52:19.643    18 Class /Script/Engine.BrushComponent x1366
+12:52:19.643    19 Class /Script/Engine.BrushComponent x1340
+12:52:19.643    20 Class /Script/Engine.BrushComponent x1287
+12:53:20.317 ticklist: уровней=142 акторов=106534 (зарегистрировано тик 1485) компонентов=404117 (тикующих 3374)
+12:53:23.499 start: сэмплирование 60 с
+12:53:23.512 sampler: модулей в процессе 117
+12:53:23.513 sampler started, tid=18080
+12:54:23.532 sampler stopped, 3866 samples
+12:54:23.536 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_512222984.bin (3866 samples)
+12:54:23.548 ожидание в syscall: 762/3866 сэмплов (19%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_512222984.wait

@@ -1,0 +1,61 @@
+samples: 30499, image base: 0x7FF757110000
+idle (Sleep/Wait in ntdll): 26376 samples = 86.5% of wall time
+
+=> ╨╜╨╕╨╢╨╡ ╤Ç╨░╤ü╨┐╤Ç╨╡╨┤╨╡╨╗╨╡╨╜╨╕╨╡ ╤é╨╛╨╗╤î╨║╨╛ ╨┐╨╛ ╨╕╤ü╨┐╨╛╨╗╨╜╤Å╨╡╨╝╨╛╨╝╤â ╨║╨╛╨┤╤â (4123 ╤ü╤ì╨╝╨┐╨╗╨╛╨▓)
+
+resolved in image: 82.0%, external: 18.0%, unknown: 0.0%
+
+=== TOP 25 self time ===
+cnt    share     function
+395      9.58%  UProperty::ShouldSerializeValue
+367      8.90%  TMemoryWriter<32>::Serialize
+266      6.45%  UObjectBaseUtility::IsA
+159      3.86%  [MSVCR120.dll+0x3C3F9]
+157      3.81%  UStruct::SerializeTaggedProperties
+146      3.54%  [TickProf.dll+0x258CF]
+119      2.89%  FSaveFileObjectWriter::operator<<
+118      2.86%  FWeakObjectPtr::IsValid
+118      2.86%  UPrimalInventoryComponent::GetItemTemplateQuantity
+104      2.52%  UPrimalItem::IsValidForCrafting
+63       1.53%  UBoolProperty::Identical
+40       0.97%  FName::InitInternal_FindOrAddNameEntry<char>
+40       0.97%  FMallocBinned::FreeInternal
+38       0.92%  TArray<TEnumAsByte<enum EPrimalCharacterStatusValue::Type>,TSizedDefaultAllocator<32> >::AddUninitialized
+34       0.82%  UWorld::SaveToFile
+34       0.82%  TProperty_WithEqualityAndSerializer<float,UNumericProperty>::Identical
+31       0.75%  TProperty_WithEqualityAndSerializer<unsigned int,UNumericProperty>::Identical
+31       0.75%  TSet<TPair<FMaterialShaderMap * __ptr64,TScopedPointer<TArray<unsigned char,TSizedDefaultAllocator<32> > > >,TDefaultMapKeyFuncs<FMaterialShaderMap * __ptr64,TScopedPointer<TArray<unsigned char,TSizedDefaultAllocator<32> > >,0>,FDefaultSetAllocator>::FindId
+30       0.73%  StaticFindObjectFastInternalThreadSafe
+29       0.70%  [TickProf.dll+0x256D5]
+29       0.70%  TProperty_WithEqualityAndSerializer<double,UNumericProperty>::Identical
+28       0.68%  TOctree<UPrimitiveComponent * __ptr64,FInternalPrimitiveOctreeSemantics>::TConstElementBoxMaskedIterator<TSizedInlineAllocator<99,32,TSizedDefaultAllocator<32> > >::AdvanceToNextIntersectingElement
+27       0.65%  TProperty_WithEqualityAndSerializer<unsigned char,UNumericProperty>::Identical
+27       0.65%  FPropertyTag::FPropertyTag
+25       0.61%  [TickProf.dll+0x256D6]
+
+=== TOP 25 by class ===
+741     17.97%  (external module)
+405      9.82%  UProperty
+367      8.90%  TMemoryWriter<32>
+267      6.48%  UObjectBaseUtility
+194      4.71%  UPrimalItem
+157      3.81%  UStruct
+145      3.52%  UPrimalInventoryComponent
+127      3.08%  FWeakObjectPtr
+119      2.89%  FSaveFileObjectWriter
+104      2.52%  UObject
+96       2.33%  (global)
+63       1.53%  UBoolProperty
+57       1.38%  FLockFreeVoidPointerListBase::FLink
+56       1.36%  FMallocBinned
+49       1.19%  FPropertyTag
+48       1.16%  FName
+48       1.16%  APrimalCharacter
+40       0.97%  UWorld
+38       0.92%  TArray<TEnumAsByte<enum EPrimalCharacterStatusValue::Type>,TSizedDefaultAllocator<32> >
+36       0.87%  AActor
+36       0.87%  TProperty_WithEqualityAndSerializer<unsigned int,UNumericProperty>
+34       0.82%  TSet<TPair<FMaterialShaderMap * __ptr64,TScopedPointer<TArray<unsigned char,TSizedDefaultAllocator<32> > > >,TDefaultMapKeyFuncs<FMaterialShaderMap * __ptr64,TScopedPointer<TArray<unsigned char,TSizedDefaultAllocator<32> > >,0>,FDefaultSetAllocator>
+34       0.82%  TProperty_WithEqualityAndSerializer<float,UNumericProperty>
+29       0.70%  TProperty_WithEqualityAndSerializer<double,UNumericProperty>
+28       0.68%  TOctree<UPrimitiveComponent * __ptr64,FInternalPrimitiveOctreeSemantics>::TConstElementBoxMaskedIterator<TSizedInlineAllocator<99,32,TSizedDefaultAllocator<32> > >

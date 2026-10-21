@@ -1,0 +1,8 @@
+game thread tid=5780
+╨▒╨░╨╖╨╛╨▓╨░╤Å ╨╖╨░╨│╤Ç╤â╨╖╨║╨░ GameThread: 0.070 s/s -> ╨û╨ÿ╨Æ
+   BASELINE | ╨╛╤é╤ç╤æ╤é ╨╜╨╡ ╨┐╨╛╨╗╤â╤ç╨╡╨╜
+
+=== PATCH bAllowConcurrentTicks=true ===
+   > TickProf.fix concurrent 1 -> <TimeoutError>
+   > TickProf.verify -> <TimeoutError>
+   GameThread cpu=0.000 s/s -> ╨£╨ü╨á╨ó╨Æ
