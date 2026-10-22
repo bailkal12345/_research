@@ -8,9 +8,10 @@ import subprocess
 import sys
 import time
 
+sys.path.insert(0, r'C:\Dev\_research')
+from tputils import PLUGIN_LOG as LOG
 MAP = sys.argv[1] if len(sys.argv) > 1 else 'TheIsland'
 R = r'C:\Dev\_research'
-LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
 WARMUP_S = 600
 WIN_S = 240
 ENV = {'RCON_HOST': '192.168.8.218', 'RCON_PORT': '32330', 'RCON_PASS': '0ub7OuAD6V68cbzc'}

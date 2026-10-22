@@ -2483,3 +2483,22 @@ Scope (owner-approved):
   stand re-parked after (saveworld/exit, 0 processes).
 Known limits: historical Russian .txt logs and the worklog history above remain
 Russian by design (raw data / append-only history, untouched).
+
+## 23.10 23:15 Refactoring pass (test stopped mid-validation, to be resumed)
+
+Scope confirmed by user: deep reorganization of TickProf.cpp, scripts dedup into tputils.py, docs compress+merge park.
+
+TickProf.cpp (3297 lines, was 3460):
+- Table-driven RCON command registry (kCommands, 45 entries) replaces 40 forwarding lambdas; Plugin_Unload now removes the full set (was incomplete: bptrace.*, fnflags, mon, arkstate, arkpoll, perf.selftest leaked).
+- EnsureHook(prefix, fn, detour, trampoline, installed&) replaces 7 identical SetHook blocks (fncache, iscache, overlaps, canvas, nochart, tickq, cull).
+- ForEachComponentOf<T> template + ForEachComponent / ForEachPrimitiveComponent / ForEachActor replace three copy-pasted level+actor walks and two GetObjectsOfClass walks (CmdTickFlags, CmdTickList, CmdActorTickOff).
+- LogTopCounts(rows, limit) replaces the three identical sort+top-N census printers (CmdOverlapsReport, CmdOverlapSizes, CmdTickClasses).
+- Fixes: DoOverlapTrim missing return (C4715), no-op g_game_tid.load() removed (C4834); remaining warnings: 3x pre-existing C4018.
+- Comment cleanup: 108 lines of narrative/history comments removed via text-anchored script (_research/strip_comments.py); ABI facts kept (PDB offsets, signatures, patch bytes, scalar-new invariant, GUObjectArray AV note, cull/actortickoff crash notices).
+- Build: clean, DLL 367104 B (baseline 398848 B). Deployed to Plugins_\TickProf\TickProf.dll; live-boot check: plugin loads (loaded (Plugin_Init), bptrace v2 init OK).
+
+Scripts: tputils.py created (rcon client from rcon3, HOSTS/PORT/PW, PLUGIN_LOG consts, log_lines+hms/s_hms, marker regexes). rcon3.py is a compatibility shim (wait_ready import intact); rcon.py CLI delegates to tputils.core. Migrated 14 scripts (monparse, stop_server, stand_start, stand_config, slotB_monitor, slotB_run, slotC_ab, slotC_control, slotD_ab, slotD_ab2, slotD_ab_parse, slotE_ab, slotE_matrix, slotE_measure); others have no applicable duplication and are untouched. All py_compile pass.
+
+Docs: merges done - REPORT-B.md (B1+B2+B3, -67%), REPORT-MAPS.md (Fjordur+TheIsland, -74%); sources deleted (git keeps history). In flight at test stop: REPORT-PLAYER merge, REPORT-Genesis phases fold, RE.md merge, security/SECURITY.md merge, master+slot reports compression.
+
+Validation status: fresh Genesis boot pid 2156 (22:59), plugin loaded at 23:00:41, game thread tid found 23:07:49; RCON real-payload probes returned no response over ~13 min (world load slower than usual); user paused the test. Stand left parked: server killed, plugin folder only in Plugins_, DLL 367104 B in place. Resumption plan: boot once more, prod config via rcon (status/maxfps 60/fixclamp 0/fncache 1/iscache 1/cachename 1/nochart 1/overlaptrim 2), then validators: ticklist, overlaps 5 + overlapsreport, tickclasses, cachestat, window 20, after cooldown expiry bptrace 2 + bptrace.report, verify markers unchanged in TickProf.log; then saveworld+exit park.

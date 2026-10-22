@@ -5,7 +5,8 @@
 import re
 import sys
 
-LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
+sys.path.insert(0, r'C:\Dev\_research')
+from tputils import PLUGIN_LOG as LOG
 NUM = re.compile(r'window result: t/s=([\d.]+) cpu=([\d.]+)s ms/tick=([\d.]+) frame_ms=([\d.]+) '
                   r'busy=([\d.]+)% save=(\w+) (VALID|CONTAMINATED)')
 CONT = re.compile(r'window result: contaminated by a world save, (\d+) of (\d+) frames')

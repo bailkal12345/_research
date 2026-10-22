@@ -2,50 +2,14 @@
 # Server1 stand startup: Genesis + prod config §2 (ARCH.md) + post-boot checklist.
 # IMPORTANT (doit6 §2): TickProf.maxfps 60 and fixclamp 0 must be set VIA RCON right after
 # boot - the ini value does not reach runtime.
-import os, re, socket, struct, subprocess, sys, time, io
+import os, re, subprocess, sys, time
+sys.path.insert(0, r'C:\Dev\_research')
+from tputils import PW, PLUG_DIR, rcon
 
 EXE = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.exe'
 CFG = r'C:\asmdata\Servers\Server1\ShooterGame\Saved\Config\WindowsServer'
 GUS = os.path.join(CFG, 'GameUserSettings.ini')
 MAP = sys.argv[1] if len(sys.argv) > 1 else 'Genesis'
-PORT = 32330
-PW = '0ub7OuAD6V68cbzc'
-HOSTS = ['127.0.0.1', '192.168.8.218']
-
-
-def _pack(rid, payload):
-    b = payload.encode('utf-8') + b'\x00\x00'
-    return struct.pack('<ii', len(b) + 8, rid) + b
-
-
-def rcon(cmd, timeout=8):
-    for h in HOSTS:
-        try:
-            s = socket.create_connection((h, PORT), 4)
-        except Exception:
-            continue
-        try:
-            s.settimeout(timeout)
-            s.sendall(_pack(1, PW))
-            try:
-                s.recv(4096)
-            except Exception:
-                pass
-            s.sendall(_pack(2, cmd))
-            buf = b''
-            try:
-                while True:
-                    d = s.recv(65536)
-                    if not d:
-                        break
-                    buf += d
-            except socket.timeout:
-                pass
-            s.close()
-            return buf.decode('utf-8', 'replace')
-        except Exception:
-            continue
-    return None
 
 
 def ensure_rcon_keys():
@@ -86,7 +50,8 @@ def start():
 def wait_rcon(limit=240):
     t0 = time.time()
     while time.time() - t0 < limit:
-        if rcon('status') is not None:
+        r = rcon('status', timeout=8, wait=3.0)
+        if r and len(r.strip()) > 3:
             print('  RCON responding after %.0f s' % (time.time() - t0))
             return True
         time.sleep(5)

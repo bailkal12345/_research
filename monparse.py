@@ -1,58 +1,35 @@
 # -*- coding: utf-8 -*-
 # Phases over the t/s series (plugin tick counter): a phase = 3+ consecutive lines with t/s<45.
 # Classification: high busy% (CPU) or low (blocking). Correlation with save markers.
-import re
+import sys
 
-LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
-
-re_mon = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ mon: t/s=(\d+)(?: +ms/tick=(\d+) +frame_ms=(\d+) +busy=(\d+)% +save=(\w+))?')
-re_boot = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ loaded \(Plugin_Init\)')
-re_save_start = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: .ark write started')
-re_save_end = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: \.ark write finished, duration (\d+) ms')
-
-
-def hms(t):
-    hh, mm, ss = map(int, t.split(':'))
-    return hh * 3600 + mm * 60 + ss
-
-
-def s_hms(s):
-    return '%02d:%02d:%02d' % ((s // 3600) % 24, (s % 3600) // 60, s % 60)
+sys.path.insert(0, r'C:\Dev\_research')
+from tputils import log_lines, s_hms
+from tputils import RE_MON, RE_BOOT, RE_SAVE_START, RE_SAVE_END
 
 
 def main():
     ev = []
-    day = 0
-    prev = None
-    with open(LOG, 'r', encoding='utf-8', errors='replace') as f:
-        for line in f:
-            line = line.rstrip('\n')
-            if not re.match(r'^\d\d:\d\d:\d\d', line):
-                continue
-            t = hms(line[:8])
-            if prev is not None and t + 24 * 3600 < prev - 6 * 3600:
-                day += 24 * 3600
-            t += day
-            prev = t
-            if re_boot.match(line):
-                ev.append((t, 'boot', None))
+    for t, line in log_lines():
+        if RE_BOOT.match(line):
+            ev.append((t, 'boot', None))
+        else:
+            m = RE_MON.match(line)
+            if m:
+                ts = int(m.group(2))
+                msk = int(m.group(3)) if m.group(3) else None
+                fr = int(m.group(4)) if m.group(4) else None
+                busy = int(m.group(5)) if m.group(5) else None
+                sv = m.group(6) if m.group(6) else None
+                ev.append((t, 'mon', (ts, msk, fr, busy, sv)))
             else:
-                m = re_mon.match(line)
+                m = RE_SAVE_START.match(line)
                 if m:
-                    ts = int(m.group(2))
-                    msk = int(m.group(3)) if m.group(3) else None
-                    fr = int(m.group(4)) if m.group(4) else None
-                    busy = int(m.group(5)) if m.group(5) else None
-                    sv = m.group(6) if m.group(6) else None
-                    ev.append((t, 'mon', (ts, msk, fr, busy, sv)))
+                    ev.append((t, 'save_start', None))
                 else:
-                    m = re_save_start.match(line)
+                    m = RE_SAVE_END.match(line)
                     if m:
-                        ev.append((t, 'save_start', None))
-                    else:
-                        m = re_save_end.match(line)
-                        if m:
-                            ev.append((t, 'save_end', int(m.group(2))))
+                        ev.append((t, 'save_end', int(m.group(2))))
 
     idx = [i for i, e in enumerate(ev) if e[1] == 'boot']
     print('boots: %d' % len(idx))

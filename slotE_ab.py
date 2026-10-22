@@ -12,7 +12,7 @@ sys.path.insert(0, r'C:\Dev\_research')
 from slotD_ab2 import count_windows, log_lines, rcon, wait_next_clean_slot  # noqa: E402
 
 WIN = 120
-LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
+from tputils import PLUGIN_LOG as LOG
 
 
 def last_window_line():

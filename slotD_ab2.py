@@ -16,7 +16,7 @@ os.environ.setdefault('RCON_HOST', '192.168.8.218')
 os.environ.setdefault('RCON_PORT', '32330')
 import rcon as RC
 
-LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
+from tputils import PLUGIN_LOG as LOG
 OUT = r'C:\Dev\_research\slotD\ab_pairs2.json'
 WIN = 300
 PAIRS = 3

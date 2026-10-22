@@ -1,45 +1,9 @@
 # -*- coding: utf-8 -*-
 # Clean ARK server shutdown: RCON save + RCON exit, then wait for the process.
-import socket, struct, sys, time, io, subprocess
+import sys, time, io, subprocess
 
-PORT = 32330
-PW = '0ub7OuAD6V68cbzc'
-HOSTS = ['127.0.0.1', '192.168.8.218']
-
-
-def _pack(rid, payload):
-    b = payload.encode('utf-8') + b'\x00\x00'
-    return struct.pack('<ii', len(b) + 8, rid) + b
-
-
-def rcon(cmd, timeout=8, port=PORT, pw=PW):
-    for h in HOSTS:
-        try:
-            s = socket.create_connection((h, port), 4)
-        except Exception:
-            continue
-        try:
-            s.settimeout(timeout)
-            s.sendall(_pack(1, pw))
-            try:
-                s.recv(4096)
-            except Exception:
-                pass
-            s.sendall(_pack(2, cmd))
-            buf = b''
-            try:
-                while True:
-                    d = s.recv(65536)
-                    if not d:
-                        break
-                    buf += d
-            except socket.timeout:
-                pass
-            s.close()
-            return buf.decode('utf-8', 'replace')
-        except Exception:
-            continue
-    return None
+sys.path.insert(0, r'C:\Dev\_research')
+from tputils import rcon
 
 
 def proc_ids():
