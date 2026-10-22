@@ -1,0 +1,86 @@
+23:50:39.183 bptrace: выключен (вызовов 0)
+23:50:54.430 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:11:36.210 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:23:27.001 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:36:52.864 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:47:06.541 bptrace: установка хука ОТКЛЮЧЕНА (безопасный способ не найден: 3 попытки привели к падению сервера); байты патча не установлены
+00:47:06.541 bptrace: имя UFunction доступно (FFrame::Node = UFunction*), счётчик готов, но данных пока нет
+11:38:02.779 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+11:56:58.054 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+11:57:42.047 bptrace: подмена Func у 40638 скриптовых UFunction (всего UFunction=40639)
+11:57:42.049 bptrace: включён (патч ДАННЫХ UFunction::Func, код процесса не тронут)
+11:59:34.582 bptrace: вызовов всего 631903
+11:59:34.584 bptrace: различных функций 166
+11:59:34.584 bptrace: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables = 255816
+11:59:34.585 bptrace: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer = 148104
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick = 104346
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick = 23562
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick = 10098
+11:59:34.586 bptrace: Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick = 9015
+11:59:34.586 bptrace: Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick = 7351
+11:59:34.587 bptrace: Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer = 4932
+11:59:34.587 bptrace: Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage = 3808
+11:59:34.587 bptrace: Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick = 3366
+11:59:34.587 bptrace: Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick = 3366
+11:59:34.587 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick = 3366
+11:59:34.589 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature = 3366
+11:59:34.589 bptrace: Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated = 3366
+11:59:34.589 bptrace: Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick = 3366
+11:59:34.589 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer = 2649
+11:59:34.590 bptrace: Function /Game/PrimalEarth/Dinos/Para/Para_Character_BP.Para_Character_BP_C:ReceiveTick = 2566
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:ThrottledTick = 2186
+11:59:34.591 bptrace: Function /Game/PrimalEarth/Dinos/Stego/Stego_Character_BP.Stego_Character_BP_C:ReceiveTick = 1713
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation = 1683
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:EvaluateGraphExposedInputs_ExecuteUbergraph_VRMainBossSkMeshActor_AnimBlueprint_AnimGraphNode_BlendListByInt_125 = 1683
+11:59:34.592 bptrace: Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick = 1108
+11:59:34.592 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer = 889
+12:01:33.112 bptrace: выключен (вызовов 0), подмен снят с 40638 UFunction
+12:01:39.978 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+12:04:25.719 bptrace: подмена Func у 40638 скриптовых UFunction (всего UFunction=40639)
+12:04:25.720 bptrace: включён (патч ДАННЫХ UFunction::Func, код процесса не тронут)
+12:06:37.456 bptrace: вызовов всего 695851
+12:06:37.456 bptrace: различных функций 76
+12:06:37.457 bptrace: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables = 283556
+12:06:37.457 bptrace: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer = 164164
+12:06:37.457 bptrace: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick = 115661
+12:06:37.457 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick = 26117
+12:06:37.458 bptrace: Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick = 16451
+12:06:37.458 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick = 11193
+12:06:37.458 bptrace: Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer = 5491
+12:06:37.458 bptrace: Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick = 5267
+12:06:37.459 bptrace: Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage = 4216
+12:06:37.459 bptrace: Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature = 3731
+12:06:37.461 bptrace: Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick = 3731
+12:06:37.462 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer = 2947
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:ThrottledTick = 2347
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation = 1866
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:EvaluateGraphExposedInputs_ExecuteUbergraph_VRMainBossSkMeshActor_AnimBlueprint_AnimGraphNode_BlendListByInt_125 = 1866
+12:06:37.463 bptrace: Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick = 1300
+12:06:37.463 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:Damage Victims In Radius = 1076
+12:06:37.463 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer = 999
+12:06:37.463 bptrace: Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers = 857
+12:07:29.286 bptrace: выключен (вызовов 0), подмен снят с 40638 UFunction
+13:29:58.513 crashfilter: exc=0xC0000005 rip=0x7FF8ED6F6166 tid=6816
+crashfilter: модуль: exe=0x7FF687C20000 1FD003A001D000D 015D2C6C7250 000000000000 00000000005A 8806000097F54842 7FF8ED70D964 000000000000 000000000000 000000000061 015D2C6C6550 000000000000 7FF93B4EDDAB 015D7D530000 0000000001EF 000000000061 015D2C6C6550 
+13:29:58.513 crashfilter: конец стека
+13:30:08.580 crashfilter: exc=0xC0000005 rip=0x7FF8ED6F6166 tid=6816
+crashfilter: модуль: exe=0x7FF687C20000 3B1400000000 00000001205C 000000011FFC 000000011FEC 000000000000 7FF8ED70D9BF 002A00000003 7FF8ED71CCB8 000000000000 002AF5E9DFB8 000000000000 002AF5E9DB70 002AF5E9CEC0 000000000000 002AF5E9E4D0 00000003D964 
+13:30:08.580 crashfilter: конец стека

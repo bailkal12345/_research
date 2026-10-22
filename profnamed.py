@@ -106,9 +106,16 @@ def main():
         if os.path.exists(wpath):
             wdata = open(wpath, 'rb').read()
             wcnt = struct.unpack_from('<Q', wdata, 0)[0]
-            words = struct.unpack_from('<%dQ' % (wcnt * 5), wdata, 8)
-            wait_stacks = [words[i * 5:(i + 1) * 5] for i in range(wcnt)]
-
+            # формат v2: hdr = [count, words_per_record]; v1: words=5, записи с 8-го байта
+            wwords = 5
+            wbase = 8
+            if len(wdata) >= 16:
+                w2 = struct.unpack_from('<Q', wdata, 8)[0]
+                if 0 < w2 <= 32:
+                    wwords = w2
+                    wbase = 16
+            words = struct.unpack_from('<%dQ' % (wcnt * wwords), wdata, wbase)
+            wait_stacks = [words[i * wwords:(i + 1) * wwords] for i in range(wcnt)]
         for rip, ret in zip(rips, rets):
             short, off, is_sys = pa.mod_of(rip, mods, bases)[0], pa.mod_of(rip, mods, bases)[1], None
             cls = pa.mod_of(rip, mods, bases)

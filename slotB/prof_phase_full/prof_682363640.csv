@@ -1,0 +1,11 @@
+phase,calls,total_ms,avg_us,max_ms
+UWorld.RunTickGroup,0,0.000,0.000,0.000
+FTickTaskManager.StartFrame,0,0.000,0.000,0.000
+FTickTaskManager.EndFrame,0,0.000,0.000,0.000
+UNetDriver.TickDispatch,0,0.000,0.000,0.000
+Global.CollectGarbage,0,0.000,0.000,0.000
+FTickTaskManager.FillLevelList,0,0.000,0.000,0.000
+FTickTaskLevel.QueueAllTicks,0,0.000,0.000,0.000
+FTickTaskLevel.QueueNewlySpawned,0,0.000,0.000,0.000
+
+frames,4480

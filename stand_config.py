@@ -45,7 +45,7 @@ if __name__ == '__main__':
         ('TickProf.iscache 1', 'прод-конфиг §2 #2'),
         ('TickProf.cachename 1', 'прод-конфиг §2 #3'),
         ('TickProf.nochart 1', 'прод-конфиг §2 #4'),
-        ('TickProf.overlaptrim 2', 'прод-конфиг §2 #5 (v1-схема, порог 2)'),
+        ('TickProf.overlaptrim3', 'прод-конфиг §2 #5 (схема v2, белый список A2) - подтверждено A/B: 4 валидные пары, медиана +3.5 t/s'),
         ('TickProf.status', 'итоговое состояние'),
     ])
     print('\n=== хвост лога ===')

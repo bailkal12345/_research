@@ -1,0 +1,25 @@
+=== окна серии (из лога) ===
+ 1 trim2  t/s=50.0   ms/tick=9.0    busy=46.0   save=idle    VALID 
+ 2 trim3  t/s=54.0   ms/tick=6.0    busy=34.0   save=idle    CONTAMINATED грязных кадров 178 из 16459
+ 3 trim2  t/s=56.0   ms/tick=4.0    busy=26.0   save=idle    VALID 
+ 4 trim3  t/s=50.0   ms/tick=9.0    busy=48.0   save=idle    CONTAMINATED грязных кадров 60 из 15002
+ 5 trim2  t/s=51.0   ms/tick=9.0    busy=47.0   save=idle    VALID 
+ 6 trim3  t/s=54.0   ms/tick=6.0    busy=33.0   save=idle    VALID 
+ 7 trim2  t/s=51.0   ms/tick=9.0    busy=49.0   save=idle    VALID 
+ 8 trim3  t/s=55.0   ms/tick=6.0    busy=33.0   save=idle    VALID 
+ 9 trim2  t/s=50.0   ms/tick=10.0   busy=51.0   save=idle    VALID 
+10 trim3  t/s=56.0   ms/tick=5.0    busy=32.0   save=idle    VALID 
+11 trim2  t/s=52.0   ms/tick=9.0    busy=49.0   save=idle    VALID 
+12 trim3  t/s=55.0   ms/tick=5.0    busy=33.0   save=idle    VALID 
+
+=== пары (A=trim2, B=trim3) ===
+пара 1: A t/s=50.0   ms/tick=9.0    VALID | B t/s=54.0   ms/tick=6.0    CONTAMINATED | d(t/s)=+4.00 d(ms/tick)=-3.00 не принято (окно невалидно)
+пара 2: A t/s=56.0   ms/tick=4.0    VALID | B t/s=50.0   ms/tick=9.0    CONTAMINATED | d(t/s)=-6.00 d(ms/tick)=+5.00 не принято (окно невалидно)
+пара 3: A t/s=51.0   ms/tick=9.0    VALID | B t/s=54.0   ms/tick=6.0    VALID | d(t/s)=+3.00 d(ms/tick)=-3.00 ПРИНЯТО
+пара 4: A t/s=51.0   ms/tick=9.0    VALID | B t/s=55.0   ms/tick=6.0    VALID | d(t/s)=+4.00 d(ms/tick)=-3.00 ПРИНЯТО
+пара 5: A t/s=50.0   ms/tick=10.0   VALID | B t/s=56.0   ms/tick=5.0    VALID | d(t/s)=+6.00 d(ms/tick)=-5.00 ПРИНЯТО
+пара 6: A t/s=52.0   ms/tick=9.0    VALID | B t/s=55.0   ms/tick=5.0    VALID | d(t/s)=+3.00 d(ms/tick)=-4.00 ПРИНЯТО
+
+принятых пар: 4
+d(t/s):      мин +3.00, медиана +3.50, макс +6.00
+d(ms/tick):  мин -5.00, медиана -3.50, макс -3.00

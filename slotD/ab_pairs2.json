@@ -1,0 +1,95 @@
+[
+  {
+    "pair": 1,
+    "A": {
+      "hand": "A#1 (trim2)",
+      "trim": "TickProf.overlaptrim 2",
+      "state": "15:17:56.753 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462",
+      "raw": "15:23:08.803 window окно: t/s=51 cpu=147s ms/tick=9 frame_ms=19 busy=49% save=idle VALID",
+      "tps": 51.0,
+      "cpu_s": 147.0,
+      "ms_tick": 9.0,
+      "frame_ms": 19.0,
+      "busy": 49.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    },
+    "B": {
+      "hand": "B#1 (trim3)",
+      "trim": "TickProf.overlaptrim3",
+      "state": "15:23:34.190 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990",
+      "raw": "15:28:46.253 window окно: t/s=55 cpu=100s ms/tick=6 frame_ms=18 busy=33% save=idle VALID",
+      "tps": 55.0,
+      "cpu_s": 100.0,
+      "ms_tick": 6.0,
+      "frame_ms": 18.0,
+      "busy": 33.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    }
+  },
+  {
+    "pair": 2,
+    "A": {
+      "hand": "A#2 (trim2)",
+      "trim": "TickProf.overlaptrim 2",
+      "state": "15:32:51.689 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462",
+      "raw": "15:38:03.758 window окно: t/s=50 cpu=155s ms/tick=10 frame_ms=19 busy=51% save=idle VALID",
+      "tps": 50.0,
+      "cpu_s": 155.0,
+      "ms_tick": 10.0,
+      "frame_ms": 19.0,
+      "busy": 51.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    },
+    "B": {
+      "hand": "B#2 (trim3)",
+      "trim": "TickProf.overlaptrim3",
+      "state": "15:38:29.183 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990",
+      "raw": "15:43:41.247 window окно: t/s=56 cpu=96s ms/tick=5 frame_ms=17 busy=32% save=idle VALID",
+      "tps": 56.0,
+      "cpu_s": 96.0,
+      "ms_tick": 5.0,
+      "frame_ms": 17.0,
+      "busy": 32.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    }
+  },
+  {
+    "pair": 3,
+    "A": {
+      "hand": "A#3 (trim2)",
+      "trim": "TickProf.overlaptrim 2",
+      "state": "15:47:56.691 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462",
+      "raw": "15:53:08.734 window окно: t/s=52 cpu=147s ms/tick=9 frame_ms=19 busy=49% save=idle VALID",
+      "tps": 52.0,
+      "cpu_s": 147.0,
+      "ms_tick": 9.0,
+      "frame_ms": 19.0,
+      "busy": 49.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    },
+    "B": {
+      "hand": "B#3 (trim3)",
+      "trim": "TickProf.overlaptrim3",
+      "state": "15:53:34.209 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990",
+      "raw": "15:58:46.270 window окно: t/s=55 cpu=99s ms/tick=5 frame_ms=17 busy=33% save=idle VALID",
+      "tps": 55.0,
+      "cpu_s": 99.0,
+      "ms_tick": 5.0,
+      "frame_ms": 17.0,
+      "busy": 33.0,
+      "save": "idle",
+      "valid": "VALID",
+      "contaminated": "14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров"
+    }
+  }
+]

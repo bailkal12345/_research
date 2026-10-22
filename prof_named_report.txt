@@ -1,114 +1,114 @@
-=== prof_631247234: сэмплов 31679, wait-записей 1883 ===
-модули (лист RIP): ShooterGameServer.exe 28291 (89.3%), ntdll.dll 1836 (5.8%), MSVCR120.dll 1111 (3.5%), PhysX3_x64.dll 194 (0.6%), TickProf.dll 111 (0.4%), PhysX3Common_x64.dll 61 (0.2%), KERNEL32.DLL 27 (0.1%), win32u.dll 12 (0.0%)
+=== prof_687851390: сэмплов 10151, wait-записей 520 ===
+модули (лист RIP): ShooterGameServer.exe 6516 (64.2%), PhysX3_x64.dll 1118 (11.0%), PhysX3Common_x64.dll 613 (6.0%), MSVCR120.dll 576 (5.7%), Mimalloc.dll 544 (5.4%), ntdll.dll 452 (4.5%), TickProf.dll 189 (1.9%), KERNEL32.DLL 49 (0.5%)
 
 системные/GUI-DLL листья (именованные):
-    3.9%  1221  ZwQueryDirectoryFileEx+0x14
-    1.0%   301  ZwWaitForSingleObject+0x14
-    0.4%   121  memmove+0xdb
-    0.3%   109  memmove+0x154
-    0.3%    97  ZwSetEvent+0x14
-    0.2%    78  memmove+0x128
-    0.2%    75  memmove+0x156
-    0.2%    75  memmove+0x12c
-    0.2%    59  sqrtf+0xcb
-    0.2%    58  memmove+0xc9
-    0.2%    52  memmove+0xde
-    0.1%    47  memmove
+    2.1%   218  ZwWaitForSingleObject+0x14
+    1.3%   132  memset+0x23
+    1.1%   111  Mimalloc.dll+0xEBA4
+    0.7%    66  PhysX3_x64.dll+0x12B877
+    0.6%    61  ZwQueryDirectoryFileEx+0x14
+    0.5%    49  TickProf.dll+0x2F7CF
+    0.4%    43  Mimalloc.dll+0xC9A9
+    0.4%    38  Mimalloc.dll+0xC9A1
+    0.3%    34  memmove+0x3
+    0.3%    32  PhysX3_x64.dll+0x12B257
+    0.3%    28  PhysX3_x64.dll+0x70230
+    0.2%    25  PhysX3Common_x64.dll+0x158D7C
 
 топ-40 функций exe (по листу RIP):
-   11.4%  3624  rva 0x12871E0  ServerOctreeOverlapActors
-    8.8%  2778  rva 0x276A0B0  AdvanceToNextIntersectingElement
-    4.5%  1424  rva 0x1FC3280  execDynamicCast
-    3.5%  1112  rva 0x1FC1FA0  ProcessContextOpcode
-    2.7%   862  rva 0x16724F0  CopyCompleteValueToScriptVM
-    2.7%   859  rva 0x1FC1620  execLet
-    2.5%   785  rva 0x1F867C0  Invoke
-    2.4%   748  rva 0x1FC0305  ProcessInternal+0x95
-    2.4%   745  rva 0x1FD7734  Get+0x4
-    2.3%   729  rva 0x1FBFEF0  CallFunction
-    1.7%   544  rva 0x276BB6C  ProcessChildren+0x11c
-    1.7%   533  rva 0x1FB8A00  CopyValuesInternal
-    1.6%   515  rva 0x2DD320  operator*
-    1.2%   394  rva 0x1FC108A  execLocalVariable+0x1a
-    1.2%   385  rva 0x1FC1070  execLocalVariable
-    1.2%   381  rva 0x1673AF0  CopyCompleteValueFromScriptVM
-    1.0%   312  rva 0x29AC410  execArray_Get
-    1.0%   308  rva 0x1FC1570  execPopExecutionFlowIfNot
-    0.9%   294  rva 0x1EAB2D  operator_enum_EMovementMode+0xd
-    0.9%   274  rva 0x1FC107A  execLocalVariable+0xa
-    0.9%   270  rva 0x1FC1CD0  execLetBool
-    0.8%   240  rva 0x6D13F0  BPIsTamed
-    0.8%   240  rva 0x25AB760  GetFunctionCallspace
-    0.7%   236  rva 0x29CBD80  execBooleanOR
-    0.7%   229  rva 0x1FC108E  execLocalVariable+0x1e
-    0.7%   228  rva 0x2471450  GetFunctionCallspace
-    0.7%   211  rva 0x1FC1CDF  execLetBool+0xf
-    0.7%   210  rva 0x1FC1284  execJump+0x4
-    0.6%   205  rva 0x1FC22D0  execFinalFunction
-    0.6%   205  rva 0x29B9880  execNot_PreBool
-    0.6%   200  rva 0x1FC1460  execPushExecutionFlow
-    0.6%   198  rva 0x29CBEF0  execBooleanAND
-    0.6%   198  rva 0x1FC1280  execJump
-    0.6%   192  rva 0x29C1860  execGreaterEqual_IntInt
-    0.6%   175  rva 0x1FC1DEC  execLetBool+0x11c
-    0.5%   160  rva 0x1FC12F0  execJumpIfNot
-    0.5%   156  rva 0x29CCB00  execAdd_IntInt
-    0.5%   155  rva 0x36553B0  __security_check_cookie
-    0.5%   152  rva 0x1FC1F90  execContext
-    0.5%   147  rva 0x29BFA90  execLess_IntInt
+    3.7%   372  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    3.3%   338  rva 0x1F577B0  InitInternal_FindOrAddNameEntry<char>
+    1.9%   189  rva 0x12871E0  ServerOctreeOverlapActors
+    1.5%   156  rva 0x228ED0  FindId
+    1.3%   128  rva 0x276BB6C  ProcessChildren+0x11c
+    1.1%   112  rva 0x1FC3280  execDynamicCast
+    1.0%    99  rva 0x1FB8A00  CopyValuesInternal
+    0.9%    95  rva 0x1FD2810  InitProperties
+    0.8%    77  rva 0x1FC0305  ProcessInternal+0x95
+    0.7%    75  rva 0x2DD320  operator*
+    0.7%    74  rva 0x1FBFEF0  CallFunction
+    0.7%    73  rva 0x1F867C0  Invoke
+    0.7%    72  rva 0x1FD3C70  StaticFindObjectFastInternalThreadSafe
+    0.7%    71  rva 0x2820910  SetHitResultFromShapeAndFaceIndex
+    0.6%    65  rva 0x1FC1FA0  ProcessContextOpcode
+    0.6%    61  rva 0x1FC1620  execLet
+    0.6%    60  rva 0x200E90  Find
+    0.6%    58  rva 0x5D6820  Tick
+    0.6%    57  rva 0x24E3050  AddUniqueImpl<FOverlapInfo>
+    0.5%    52  rva 0x28AEA0  IterateToNext
+    0.5%    50  rva 0x1F99780  FindId
+    0.5%    50  rva 0x1FD7734  Get+0x4
+    0.4%    43  rva 0x16724F0  CopyCompleteValueToScriptVM
+    0.4%    42  rva 0x4E3890  Tick
+    0.4%    39  rva 0x1EAB2D  operator_enum_EMovementMode+0xd
+    0.4%    36  rva 0x1F7E900  SerializeTaggedProperties
+    0.4%    36  rva 0x1F9C9E0  FindId
+    0.3%    35  rva 0x1FC108A  execLocalVariable+0x1a
+    0.3%    34  rva 0x3B0970  IsValidNPCEntry
+    0.3%    31  rva 0x1FCBE00  AllocateSerialNumber
+    0.3%    29  rva 0x1FC1070  execLocalVariable
+    0.3%    29  rva 0x1673AF0  CopyCompleteValueFromScriptVM
+    0.3%    28  rva 0x1BE440  ResizeAllocation
+    0.3%    27  rva 0x4D8870  IsSubmerged
+    0.3%    26  rva 0x1FA0610  AddUninitialized
+    0.3%    26  rva 0x1FCDAC9  IsA+0x19
+    0.3%    26  rva 0x1FC1460  execPushExecutionFlow
+    0.2%    24  rva 0x29AC410  execArray_Get
+    0.2%    24  rva 0x2844CB0  GeomOverlapMulti_PhysX<0>
+    0.2%    24  rva 0x1F6D290  InitNonNativeProperty
 
 топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):
-    7.2%  2294  rva 0x1FC1FA0  ProcessContextOpcode
-    6.8%  2158  rva 0x1FC0305  ProcessInternal+0x95
-    2.9%   922  rva 0x16724F0  CopyCompleteValueToScriptVM
-    2.4%   763  rva 0x1F867C0  Invoke
-    1.8%   558  rva 0x29AC410  execArray_Get
-    1.6%   498  rva 0x2471450  GetFunctionCallspace
-    1.6%   492  rva 0x1FC1570  execPopExecutionFlowIfNot
-    1.0%   325  rva 0x1FC1620  execLet
-    0.9%   293  rva 0x1FBFEF0  CallFunction
-    0.8%   251  rva 0x29CBD80  execBooleanOR
-    0.7%   220  rva 0x1FC12F0  execJumpIfNot
-    0.7%   214  rva 0x29CCB00  execAdd_IntInt
-    0.7%   212  rva 0x1FC3280  execDynamicCast
-    0.6%   197  rva 0x1FC1CDF  execLetBool+0xf
-    0.6%   188  rva 0x29BFA90  execLess_IntInt
-    0.4%   125  rva 0x29CBEF0  execBooleanAND
-    0.3%   104  rva 0x1FC3480  execObjectToBool
-    0.3%    98  rva 0x276A0B0  AdvanceToNextIntersectingElement
-    0.3%    97  rva 0x1FC1D85  execLetBool+0xb5
-    0.3%    83  rva 0x29AC170  execArray_Length
-    0.3%    80  rva 0x12871E0  ServerOctreeOverlapActors
-    0.1%    30  rva 0x29C1860  execGreaterEqual_IntInt
-    0.1%    29  rva 0x25AB473  GenericArray_Get+0x13
-    0.1%    24  rva 0x777E70  GetItemTemplateQuantity
-    0.1%    23  rva 0x2469810  TickActor
+    1.8%   180  rva 0x1FC0305  ProcessInternal+0x95
+    1.6%   166  rva 0x1FC1FA0  ProcessContextOpcode
+    0.9%    92  rva 0x1FD2810  InitProperties
+    0.6%    62  rva 0x16724F0  CopyCompleteValueToScriptVM
+    0.5%    50  rva 0x1F867C0  Invoke
+    0.5%    47  rva 0x29AC410  execArray_Get
+    0.4%    41  rva 0x2471450  GetFunctionCallspace
+    0.4%    36  rva 0x1FC1570  execPopExecutionFlowIfNot
+    0.3%    35  rva 0x1FDBC90  Emplace<UObjectBase_*___ptr64_const_&___ptr64>
+    0.3%    33  rva 0x28265F0  RaycastMulti
+    0.3%    32  rva 0x1BE440  ResizeAllocation
+    0.3%    31  rva 0x1FC1620  execLet
+    0.3%    31  rva 0x1FBFEF0  CallFunction
+    0.3%    30  rva 0x2825B10  preFilter
+    0.3%    26  rva 0x1F7E900  SerializeTaggedProperties
+    0.2%    24  rva 0x1FD5930  HashObject
+    0.2%    21  rva 0x1FC12F0  execJumpIfNot
+    0.2%    20  rva 0x1F83280  CopyScriptStruct
+    0.2%    20  rva 0x1F43140  Init
+    0.2%    19  rva 0x1FD45D0  GetObjectsWithOuter
+    0.2%    19  rva 0x2689E60  ContainsNaN
+    0.2%    18  rva 0x276A0B0  AdvanceToNextIntersectingElement
+    0.2%    18  rva 0x29CBD80  execBooleanOR
+    0.2%    18  rva 0x1F577B0  InitInternal_FindOrAddNameEntry<char>
+    0.2%    18  rva 0x29CCB00  execAdd_IntInt
 
-стопки ожидания (1883 записей):
+стопки ожидания (520 записей):
  syscall-сайты:
-   64.8%  1221  ZwQueryDirectoryFileEx+0x14
-   16.0%   301  ZwWaitForSingleObject+0x14
-    5.2%    97  ZwSetEvent+0x14
-    1.2%    23  ZwDeviceIoControlFile+0x14
-    1.0%    18  RtlTryEnterCriticalSection+0x5
-    0.7%    13  ZwWriteFile+0x14
-    0.6%    12  ZwClose+0x14
-    0.6%    11  RtlTryEnterCriticalSection+0x52
-    0.6%    11  NtUserGetForegroundWindow+0x14
-    0.5%     9  RtlTryEnterCriticalSection+0x27
-    0.5%     9  ZwDuplicateObject+0x14
-    0.5%     9  ZwClearEvent+0x14
+   41.9%   218  ZwWaitForSingleObject+0x14
+   11.7%    61  ZwQueryDirectoryFileEx+0x14
+    4.2%    22  ZwAllocateVirtualMemory+0x14
+    2.7%    14  TlsGetValue
+    2.5%    13  ZwDeviceIoControlFile+0x14
+    2.3%    12  ZwSetEvent+0x14
+    1.7%     9  RtlFlsGetValue+0x44
+    1.7%     9  TlsSetValue
+    1.7%     9  GetCurrentThreadId+0x9
+    1.7%     9  RtlEnterCriticalSection+0x5c
+    1.5%     8  RtlFlsGetValue
+    1.3%     7  RtlSetLastWin32Error+0x4
  кандидаты-вызовы в exe (код-слово ниже rip):
-    1.1%    21  rva 0x1F4ABE0  Malloc
-    0.4%     8  rva 0x1FA56A0  ~FFrame
-    0.4%     8  rva 0x1F4A3D0  FreeInternal+0x120
-    0.3%     5  rva 0x3D7DE0  GetTLS
-    0.2%     4  rva 0x1BE440  ResizeAllocation
-    0.2%     3  rva 0x29C6A50  execEqualEqual_ByteByte
-    0.1%     2  rva 0x1B51C0  GetAsShared
-    0.1%     2  rva 0x347190  IBaseDelegateInstance_RetVal_TwoParams<FReply,FGeometry_const_&___ptr64,FPointerEvent_const_&___ptr64>
-    0.1%     2  rva 0x1ED2160  Free
-    0.1%     2  rva 0x25F1125  SlideAlongSurface+0xb5
-    0.1%     2  rva 0x1ED7EA0  PopAll<TArray<FBaseGraphTask_*___ptr64,TSizedDefaultAllocator<32>_>,FBaseGraphTask_*___ptr64>
-    0.1%     1  rva 0x1F4B36E  Realloc+0x27e
- без exe-слова в 4 верхних словах стека: 1813 (96.3%)
+    1.7%     9  rva 0x1FA56A0  ~FFrame
+    0.8%     4  rva 0x1EEC140  GetString
+    0.4%     2  rva 0x22A2A10  operator=
+    0.2%     1  rva 0x282145E  ConvertQueryImpactHit+0x67e
+    0.2%     1  rva 0x23AAF0  AddZeroed
+    0.2%     1  rva 0x1F4ABE0  Malloc
+    0.2%     1  rva 0x834770  Emplace<unsigned_short>
+    0.2%     1  rva 0x275A968  UpdateInternalOctreeTransform+0x28
+    0.2%     1  rva 0x293A770  UpdateDampingProperties
+    0.2%     1  rva 0x1EF41E0  Rotator
+    0.2%     1  rva 0x1F577B0  InitInternal_FindOrAddNameEntry<char>
+    0.2%     1  rva 0x3D7DE0  GetTLS
+ без exe-слова в 4 верхних словах стека: 496 (95.4%)
