@@ -1,0 +1,2351 @@
+21:35:08.292 loaded (Plugin_Init)
+21:35:08.293 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+21:41:26.559 game thread tid=7124
+21:51:19.996 status: sampling=no tid=7124 samples=0 frames=15150
+21:51:31.224 status: sampling=no tid=7124 samples=0 frames=15456
+21:51:51.688 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+21:51:53.243 tickclamp: уже штатные 120
+21:51:54.812 fncache: хук UClass.FindFunctionByName установлен
+21:51:54.813 fncache: кэш включён
+21:51:54.813 fncache: счётчики попаданий/промахов обнулены
+21:51:56.474 iscache: хук UStruct.IsChildOf установлен
+21:51:56.475 iscache: кэш включён
+21:51:58.040 canvas: хук DoGetCanvasByName установлен
+21:51:58.041 canvas: кэш включён
+21:51:59.999 nochart: хук UEngine.TickFPSChart установлен
+21:52:00.007 nochart: статистика FPS отключена
+21:52:02.060 overlaptrim: порог=2 отключено компонентов=23951 освобождено записей=193720
+21:52:04.027 status: sampling=no tid=7124 samples=0 frames=16453
+21:52:27.630 mon: 1800 с, раз в секунду t/s / ms/tick / frame / busy / save
+21:52:28.638 mon: t/s=53 ms/tick=4 frame_ms=18 busy=25% save=idle
+21:52:29.624 mon: t/s=54 ms/tick=4 frame_ms=18 busy=23% save=idle
+21:52:30.646 mon: t/s=49 ms/tick=6 frame_ms=20 busy=30% save=idle
+21:52:31.641 mon: t/s=45 ms/tick=3 frame_ms=22 busy=17% save=idle
+21:52:32.647 mon: t/s=54 ms/tick=4 frame_ms=18 busy=26% save=idle
+21:52:33.642 mon: t/s=50 ms/tick=5 frame_ms=20 busy=25% save=idle
+21:52:34.661 mon: t/s=50 ms/tick=5 frame_ms=19 busy=26% save=idle
+21:52:35.659 mon: t/s=52 ms/tick=5 frame_ms=19 busy=29% save=idle
+21:52:36.672 mon: t/s=48 ms/tick=7 frame_ms=20 busy=36% save=idle
+21:52:37.676 mon: t/s=47 ms/tick=3 frame_ms=21 busy=18% save=idle
+21:52:38.679 mon: t/s=47 ms/tick=6 frame_ms=21 busy=31% save=idle
+21:52:39.677 mon: t/s=49 ms/tick=4 frame_ms=20 busy=21% save=idle
+21:52:40.681 mon: t/s=54 ms/tick=5 frame_ms=18 busy=31% save=idle
+21:52:41.677 mon: t/s=52 ms/tick=4 frame_ms=19 busy=25% save=idle
+21:52:42.676 mon: t/s=51 ms/tick=5 frame_ms=19 busy=29% save=idle
+21:52:43.673 mon: t/s=52 ms/tick=5 frame_ms=19 busy=29% save=idle
+21:52:44.674 mon: t/s=51 ms/tick=5 frame_ms=19 busy=26% save=idle
+21:52:45.674 mon: t/s=48 ms/tick=4 frame_ms=20 busy=23% save=idle
+21:52:46.711 mon: t/s=40 ms/tick=7 frame_ms=24 busy=30% save=idle
+21:52:47.715 mon: t/s=50 ms/tick=4 frame_ms=20 busy=20% save=idle
+21:52:48.702 mon: t/s=45 ms/tick=4 frame_ms=22 busy=21% save=idle
+21:52:49.706 mon: t/s=54 ms/tick=4 frame_ms=18 busy=21% save=idle
+21:52:50.703 mon: t/s=54 ms/tick=5 frame_ms=18 busy=29% save=idle
+21:52:51.707 mon: t/s=55 ms/tick=5 frame_ms=18 busy=28% save=idle
+21:52:52.704 mon: t/s=49 ms/tick=5 frame_ms=20 busy=28% save=idle
+21:52:53.706 mon: t/s=46 ms/tick=6 frame_ms=21 busy=29% save=idle
+21:52:54.713 mon: t/s=51 ms/tick=6 frame_ms=19 busy=31% save=idle
+21:52:55.752 mon: t/s=48 ms/tick=5 frame_ms=20 busy=25% save=idle
+21:52:56.752 mon: t/s=52 ms/tick=5 frame_ms=19 busy=29% save=idle
+21:52:57.752 mon: t/s=50 ms/tick=4 frame_ms=20 busy=20% save=idle
+21:52:58.758 mon: t/s=50 ms/tick=5 frame_ms=20 busy=25% save=idle
+21:52:59.761 mon: t/s=53 ms/tick=5 frame_ms=18 busy=29% save=idle
+21:53:00.766 mon: t/s=50 ms/tick=3 frame_ms=19 busy=18% save=idle
+21:53:01.772 mon: t/s=47 ms/tick=6 frame_ms=21 busy=29% save=idle
+21:53:02.809 mon: t/s=50 ms/tick=6 frame_ms=19 busy=30% save=idle
+21:53:03.810 mon: t/s=48 ms/tick=5 frame_ms=20 busy=28% save=idle
+21:53:04.805 mon: t/s=53 ms/tick=5 frame_ms=18 busy=26% save=idle
+21:53:05.820 mon: t/s=46 ms/tick=5 frame_ms=21 busy=24% save=idle
+21:53:06.813 mon: t/s=51 ms/tick=6 frame_ms=19 busy=32% save=idle
+21:53:07.855 mon: t/s=50 ms/tick=6 frame_ms=19 busy=31% save=idle
+21:53:08.879 mon: t/s=48 ms/tick=5 frame_ms=20 busy=27% save=idle
+21:53:09.893 mon: t/s=46 ms/tick=6 frame_ms=21 busy=29% save=idle
+21:53:10.890 mon: t/s=54 ms/tick=6 frame_ms=18 busy=32% save=idle
+21:53:11.385 mon: 3600 с, раз в секунду t/s / ms/tick / frame / busy / save
+21:53:12.388 mon: t/s=48 ms/tick=7 frame_ms=20 busy=34% save=idle
+21:53:23.127 mon: t/s=2 ms/tick=1653 frame_ms=413 busy=37% save=idle
+21:53:24.129 mon: t/s=43 ms/tick=6 frame_ms=23 busy=28% save=idle
+21:53:26.127 mon: t/s=43 ms/tick=4 frame_ms=23 busy=20% save=idle
+21:53:27.131 mon: t/s=56 ms/tick=5 frame_ms=17 busy=29% save=idle
+21:53:28.135 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:53:29.144 mon: t/s=58 ms/tick=4 frame_ms=17 busy=27% save=idle
+21:53:30.142 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:53:31.149 mon: t/s=58 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:53:32.147 mon: t/s=58 ms/tick=2 frame_ms=17 busy=14% save=idle
+21:53:33.143 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:53:34.147 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:35.142 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:53:36.140 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:37.144 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:53:38.144 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:39.145 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:53:40.144 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:53:41.142 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:53:42.143 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:53:43.142 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:53:44.139 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:53:45.145 mon: t/s=61 ms/tick=2 frame_ms=16 busy=12% save=idle
+21:53:46.141 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:47.141 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:48.145 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:49.143 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:53:50.140 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:51.141 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:53:52.145 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:53:53.144 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:53:54.148 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:53:55.140 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:53:56.149 mon: t/s=61 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:53:57.146 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:53:58.153 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:53:59.149 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:00.160 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:01.157 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:02.157 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:03.160 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:54:04.157 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:05.161 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:06.155 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:07.161 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:08.157 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:09.158 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:54:10.162 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:11.159 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:12.159 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:13.158 mon: t/s=60 ms/tick=7 frame_ms=16 busy=45% save=idle
+21:54:14.156 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:15.161 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+21:54:16.166 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:54:17.162 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:18.164 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:19.167 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:20.175 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:21.180 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:22.178 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:23.180 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:24.174 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:25.176 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:54:26.174 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:54:27.176 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:54:28.174 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:29.179 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:54:30.173 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:31.176 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:32.174 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:33.180 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:34.174 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:35.177 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:36.184 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:37.189 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:38.194 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:39.199 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:54:40.209 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:41.223 mon: t/s=60 ms/tick=3 frame_ms=16 busy=19% save=idle
+21:54:42.226 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:43.218 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:54:44.221 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:45.220 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:46.220 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:54:47.229 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:48.222 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:54:49.222 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:50.227 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:54:51.222 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:54:52.218 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:54:53.221 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:54:54.222 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:54:55.224 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:54:56.224 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:54:57.231 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:54:58.232 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:54:59.226 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:55:00.232 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:01.229 mon: t/s=58 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:55:02.226 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:55:03.229 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:55:04.246 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:55:05.234 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:55:06.239 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:07.237 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:08.237 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:09.236 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:55:10.236 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:55:11.240 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:55:12.235 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:13.236 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:55:14.238 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:55:15.235 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:55:16.239 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:55:17.237 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:55:18.235 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:55:19.239 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:20.238 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:21.236 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:22.234 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:23.240 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:24.242 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:25.241 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:55:26.255 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+21:55:27.251 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:28.252 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+21:55:29.253 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:55:30.251 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+21:55:31.257 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:32.251 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:55:33.251 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:34.251 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:55:35.253 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+21:55:36.251 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:55:37.273 mon: t/s=58 ms/tick=4 frame_ms=17 busy=24% save=idle
+21:55:38.290 mon: t/s=58 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:55:39.293 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:40.292 mon: t/s=58 ms/tick=4 frame_ms=17 busy=28% save=idle
+21:55:41.298 mon: t/s=57 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:42.299 mon: t/s=58 ms/tick=4 frame_ms=17 busy=26% save=idle
+21:55:43.300 mon: t/s=58 ms/tick=3 frame_ms=17 busy=20% save=idle
+21:55:44.301 mon: t/s=56 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:45.297 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:46.300 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:47.301 mon: t/s=58 ms/tick=3 frame_ms=17 busy=20% save=idle
+21:55:48.300 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:55:49.297 mon: t/s=57 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:50.298 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:51.301 mon: t/s=58 ms/tick=2 frame_ms=17 busy=15% save=idle
+21:55:52.302 mon: t/s=58 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:55:53.313 mon: t/s=58 ms/tick=2 frame_ms=17 busy=15% save=idle
+21:55:54.318 mon: t/s=58 ms/tick=5 frame_ms=17 busy=29% save=idle
+21:55:55.321 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:55:56.351 mon: t/s=56 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:55:57.352 mon: t/s=57 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:55:58.358 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+21:55:59.347 mon: t/s=57 ms/tick=3 frame_ms=17 busy=20% save=idle
+21:56:00.355 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:56:01.343 mon: t/s=57 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:56:02.359 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+21:56:03.373 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:56:04.372 mon: t/s=58 ms/tick=2 frame_ms=17 busy=17% save=idle
+21:56:05.358 mon: t/s=57 ms/tick=4 frame_ms=17 busy=25% save=idle
+21:56:06.359 mon: t/s=58 ms/tick=4 frame_ms=17 busy=25% save=idle
+21:56:07.372 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:56:08.374 mon: t/s=58 ms/tick=2 frame_ms=17 busy=16% save=idle
+21:56:09.377 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:56:10.385 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:56:11.376 mon: t/s=58 ms/tick=2 frame_ms=17 busy=14% save=idle
+21:56:12.376 mon: t/s=58 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:56:13.385 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+21:56:14.381 mon: t/s=57 ms/tick=2 frame_ms=17 busy=15% save=idle
+21:56:15.382 mon: t/s=57 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:56:16.378 mon: t/s=58 ms/tick=8 frame_ms=17 busy=51% save=idle
+21:56:17.390 mon: t/s=58 ms/tick=3 frame_ms=17 busy=19% save=idle
+21:56:18.404 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+21:56:19.405 mon: t/s=57 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:56:20.410 mon: t/s=58 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:56:21.418 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+21:56:22.420 mon: t/s=58 ms/tick=2 frame_ms=17 busy=17% save=idle
+21:56:23.406 mon: t/s=57 ms/tick=2 frame_ms=17 busy=15% save=idle
+21:56:24.407 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:56:25.407 mon: t/s=57 ms/tick=4 frame_ms=17 busy=28% save=idle
+21:56:26.412 mon: t/s=58 ms/tick=3 frame_ms=17 busy=20% save=idle
+21:56:27.439 mon: t/s=56 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:56:28.438 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+21:56:29.444 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+21:56:30.453 mon: t/s=57 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:56:31.460 mon: t/s=59 ms/tick=5 frame_ms=16 busy=29% save=idle
+21:56:32.460 mon: t/s=58 ms/tick=3 frame_ms=17 busy=20% save=idle
+21:56:33.462 mon: t/s=58 ms/tick=4 frame_ms=17 busy=23% save=idle
+21:56:34.463 mon: t/s=58 ms/tick=3 frame_ms=17 busy=21% save=idle
+21:56:35.464 mon: t/s=58 ms/tick=3 frame_ms=17 busy=18% save=idle
+21:56:36.463 mon: t/s=58 ms/tick=4 frame_ms=17 busy=26% save=idle
+21:56:37.466 mon: t/s=58 ms/tick=7 frame_ms=17 busy=42% save=idle
+21:56:38.452 mon: t/s=57 ms/tick=8 frame_ms=17 busy=48% save=idle
+21:56:39.452 mon: t/s=58 ms/tick=5 frame_ms=17 busy=34% save=idle
+21:56:40.455 mon: t/s=58 ms/tick=7 frame_ms=17 busy=43% save=idle
+21:56:41.465 mon: t/s=58 ms/tick=7 frame_ms=17 busy=43% save=idle
+21:56:42.459 mon: t/s=57 ms/tick=7 frame_ms=17 busy=40% save=idle
+21:56:43.453 mon: t/s=57 ms/tick=9 frame_ms=17 busy=56% save=idle
+21:56:44.457 mon: t/s=58 ms/tick=11 frame_ms=17 busy=68% save=idle
+21:56:45.453 mon: t/s=57 ms/tick=11 frame_ms=17 busy=65% save=idle
+21:56:46.467 mon: t/s=58 ms/tick=11 frame_ms=17 busy=68% save=idle
+21:56:47.458 mon: t/s=56 ms/tick=13 frame_ms=17 busy=73% save=idle
+21:56:48.459 mon: t/s=57 ms/tick=14 frame_ms=17 busy=82% save=idle
+21:56:49.461 mon: t/s=56 ms/tick=11 frame_ms=17 busy=65% save=idle
+21:56:50.462 mon: t/s=56 ms/tick=16 frame_ms=17 busy=90% save=idle
+21:56:51.455 mon: t/s=53 ms/tick=17 frame_ms=18 busy=95% save=idle
+21:56:52.459 mon: t/s=54 ms/tick=18 frame_ms=18 busy=98% save=idle
+21:56:53.463 mon: t/s=54 ms/tick=17 frame_ms=18 busy=96% save=idle
+21:56:54.456 mon: t/s=40 ms/tick=23 frame_ms=25 busy=95% save=idle
+21:56:55.453 mon: t/s=39 ms/tick=24 frame_ms=25 busy=93% save=idle
+21:56:56.454 mon: t/s=39 ms/tick=24 frame_ms=25 busy=95% save=idle
+21:56:57.466 mon: t/s=39 ms/tick=24 frame_ms=25 busy=96% save=idle
+21:56:58.478 mon: t/s=36 ms/tick=24 frame_ms=27 busy=87% save=idle
+21:56:59.494 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+21:57:00.498 mon: t/s=34 ms/tick=28 frame_ms=29 busy=96% save=idle
+21:57:01.507 mon: t/s=31 ms/tick=29 frame_ms=31 busy=92% save=idle
+21:57:02.517 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+21:57:03.529 mon: t/s=33 ms/tick=29 frame_ms=30 busy=96% save=idle
+21:57:04.529 mon: t/s=33 ms/tick=30 frame_ms=30 busy=100% save=idle
+21:57:05.671 ticklist: уровней=142 акторов=106305 (зарегистрировано тик 839) компонентов=453992 (тикующих 1978)
+21:57:05.747 mon: t/s=27 ms/tick=43 frame_ms=36 busy=96% save=idle
+21:57:06.763 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+21:57:07.788 mon: t/s=32 ms/tick=29 frame_ms=30 busy=95% save=idle
+21:57:08.783 mon: t/s=32 ms/tick=29 frame_ms=31 busy=95% save=idle
+21:57:08.875 start: сэмплирование 60 с
+21:57:08.888 sampler: модулей в процессе 116
+21:57:08.888 sampler started, tid=7124
+21:57:09.783 mon: t/s=28 ms/tick=34 frame_ms=35 busy=95% save=idle
+21:57:10.793 mon: t/s=31 ms/tick=31 frame_ms=32 busy=98% save=idle
+21:57:11.795 mon: t/s=32 ms/tick=28 frame_ms=31 busy=90% save=idle
+21:57:12.801 mon: t/s=31 ms/tick=30 frame_ms=31 busy=93% save=idle
+21:57:13.816 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+21:57:14.812 mon: t/s=30 ms/tick=31 frame_ms=33 busy=93% save=idle
+21:57:15.834 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+21:57:16.873 mon: t/s=30 ms/tick=34 frame_ms=33 busy=100% save=idle
+21:57:17.884 mon: t/s=27 ms/tick=33 frame_ms=36 busy=90% save=idle
+21:57:18.876 mon: t/s=29 ms/tick=32 frame_ms=34 busy=95% save=idle
+21:57:19.881 mon: t/s=29 ms/tick=32 frame_ms=34 busy=95% save=idle
+21:57:21.899 mon: t/s=29 ms/tick=31 frame_ms=33 busy=90% save=idle
+21:57:22.913 mon: t/s=27 ms/tick=33 frame_ms=36 busy=90% save=idle
+21:57:23.918 mon: t/s=29 ms/tick=34 frame_ms=34 busy=100% save=idle
+21:57:24.941 mon: t/s=28 ms/tick=34 frame_ms=35 busy=93% save=idle
+21:57:25.946 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+21:57:26.956 mon: t/s=28 ms/tick=33 frame_ms=35 busy=93% save=idle
+21:57:27.977 mon: t/s=30 ms/tick=33 frame_ms=32 busy=99% save=idle
+21:57:28.998 mon: t/s=29 ms/tick=31 frame_ms=33 busy=92% save=idle
+21:57:29.989 mon: t/s=30 ms/tick=30 frame_ms=33 busy=92% save=idle
+21:57:31.006 mon: t/s=30 ms/tick=32 frame_ms=32 busy=96% save=idle
+21:57:32.012 mon: t/s=31 ms/tick=30 frame_ms=32 busy=95% save=idle
+21:57:33.007 mon: t/s=31 ms/tick=30 frame_ms=32 busy=95% save=idle
+21:57:34.003 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:57:35.021 mon: t/s=28 ms/tick=33 frame_ms=35 busy=95% save=idle
+21:57:36.034 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:37.058 mon: t/s=28 ms/tick=33 frame_ms=35 busy=93% save=idle
+21:57:38.076 mon: t/s=29 ms/tick=32 frame_ms=33 busy=95% save=idle
+21:57:39.074 mon: t/s=29 ms/tick=31 frame_ms=34 busy=92% save=idle
+21:57:40.062 mon: t/s=28 ms/tick=32 frame_ms=35 busy=92% save=idle
+21:57:41.076 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:42.102 mon: t/s=27 ms/tick=36 frame_ms=36 busy=96% save=idle
+21:57:43.101 mon: t/s=29 ms/tick=32 frame_ms=34 busy=95% save=idle
+21:57:44.115 mon: t/s=29 ms/tick=33 frame_ms=33 busy=96% save=idle
+21:57:45.116 mon: t/s=30 ms/tick=31 frame_ms=33 busy=95% save=idle
+21:57:46.136 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:47.140 mon: t/s=28 ms/tick=32 frame_ms=35 busy=90% save=idle
+21:57:48.165 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:49.178 mon: t/s=28 ms/tick=35 frame_ms=35 busy=98% save=idle
+21:57:50.173 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:57:51.187 mon: t/s=29 ms/tick=32 frame_ms=33 busy=93% save=idle
+21:57:52.211 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+21:57:53.213 mon: t/s=30 ms/tick=30 frame_ms=33 busy=92% save=idle
+21:57:54.229 mon: t/s=28 ms/tick=34 frame_ms=35 busy=96% save=idle
+21:57:55.239 mon: t/s=27 ms/tick=35 frame_ms=36 busy=95% save=idle
+21:57:56.235 mon: t/s=29 ms/tick=31 frame_ms=34 busy=92% save=idle
+21:57:57.237 mon: t/s=30 ms/tick=32 frame_ms=33 busy=96% save=idle
+21:57:58.247 mon: t/s=27 ms/tick=34 frame_ms=37 busy=92% save=idle
+21:57:59.254 mon: t/s=27 ms/tick=35 frame_ms=36 busy=96% save=idle
+21:58:00.259 mon: t/s=28 ms/tick=30 frame_ms=35 busy=85% save=idle
+21:58:01.260 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:58:02.271 mon: t/s=27 ms/tick=35 frame_ms=36 busy=95% save=idle
+21:58:03.292 mon: t/s=28 ms/tick=35 frame_ms=35 busy=100% save=idle
+21:58:04.311 mon: t/s=29 ms/tick=32 frame_ms=34 busy=92% save=idle
+21:58:05.312 mon: t/s=29 ms/tick=33 frame_ms=34 busy=96% save=idle
+21:58:06.316 mon: t/s=29 ms/tick=32 frame_ms=34 busy=93% save=idle
+21:58:07.329 mon: t/s=28 ms/tick=33 frame_ms=35 busy=93% save=idle
+21:58:08.346 mon: t/s=27 ms/tick=34 frame_ms=36 busy=93% save=idle
+21:58:08.881 sampler stopped, 31679 samples
+21:58:08.882 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_631247234.bin (31679 samples)
+21:58:08.895 ожидание в syscall: 1883/31679 сэмплов (5%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_631247234.wait
+21:58:09.360 mon: t/s=27 ms/tick=34 frame_ms=36 busy=93% save=idle
+21:58:10.382 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+21:58:12.342 mon: t/s=4 ms/tick=61 frame_ms=217 busy=14% save=idle
+22:23:56.263 loaded (Plugin_Init)
+22:23:56.264 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+22:30:01.308 game thread tid=6220
+22:30:02.362 overlaptrim: порог=2 отключено компонентов=68 освобождено записей=320
+22:30:04.203 status: sampling=no tid=6220 samples=0 frames=22
+22:30:26.075 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+22:30:27.720 tickclamp: уже штатные 120
+22:30:29.341 fncache: хук UClass.FindFunctionByName установлен
+22:30:29.341 fncache: кэш включён
+22:30:29.342 fncache: счётчики попаданий/промахов обнулены
+22:30:31.089 iscache: хук UStruct.IsChildOf установлен
+22:30:31.090 iscache: кэш включён
+22:30:32.902 canvas: хук DoGetCanvasByName установлен
+22:30:32.902 canvas: кэш включён
+22:30:34.727 nochart: хук UEngine.TickFPSChart установлен
+22:30:34.729 nochart: статистика FPS отключена
+22:30:36.526 overlaptrim: порог=2 отключено компонентов=12473 освобождено записей=101777
+22:30:38.372 status: sampling=no tid=6220 samples=0 frames=407
+22:30:49.102 overlaptrim: порог=2 отключено компонентов=16915 освобождено записей=141438
+22:32:53.760 overlapall: bGenerateOverlapEvents возвращён у 289926 компонентов
+22:32:56.890 overlaptrim: порог=2 отключено компонентов=24000 освобождено записей=193303
+22:35:39.999 overlaptrim3: порог=2 правил белой метки=11 отключено=795 сохранено по метке=23251 освобождено записей=97562
+22:41:58.553 save: начало записи .ark (файлов 23)
+22:42:01.565 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
+22:42:04.165 mon: 300 с, раз в секунду t/s / ms/tick / frame / busy / save
+22:42:04.601 mon: 300 с, раз в секунду t/s / ms/tick / frame / busy / save
+22:42:05.606 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:06.605 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:07.598 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:08.596 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:42:09.605 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:10.598 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:11.609 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:12.615 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:13.611 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:14.617 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:42:15.611 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:16.616 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:17.612 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:42:18.618 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:19.618 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:20.609 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:21.619 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:22.612 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:23.616 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:24.614 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:42:25.613 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:42:26.611 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:27.617 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:28.612 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:29.611 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:30.612 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:31.611 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:32.614 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:33.612 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:34.611 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:35.615 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:36.625 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:42:37.625 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:38.628 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:39.625 mon: t/s=57 ms/tick=3 frame_ms=17 busy=21% save=idle
+22:42:40.625 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:41.625 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:42:42.627 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:43.633 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:42:44.627 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:42:45.629 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:42:46.629 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:42:47.628 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:48.625 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:49.628 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:42:50.624 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:42:51.626 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:42:52.628 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:42:53.634 mon: t/s=60 ms/tick=4 frame_ms=16 busy=29% save=idle
+22:42:54.630 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:42:55.640 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:42:56.647 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:57.642 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:42:58.647 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:42:59.645 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:00.648 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:01.649 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:43:02.641 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:43:03.641 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:43:04.643 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:05.646 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:06.647 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:07.641 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:08.644 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:09.641 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:10.644 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:11.646 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:43:12.644 mon: t/s=61 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:13.639 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:14.642 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:15.649 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:43:16.646 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:17.641 mon: t/s=60 ms/tick=5 frame_ms=16 busy=34% save=idle
+22:43:18.646 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:19.650 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:20.655 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:21.662 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:22.668 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:23.676 mon: t/s=59 ms/tick=4 frame_ms=16 busy=24% save=idle
+22:43:24.671 mon: t/s=59 ms/tick=5 frame_ms=16 busy=29% save=idle
+22:43:25.673 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:43:26.676 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:27.676 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:28.676 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:29.678 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:30.672 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:31.671 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:32.677 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:33.681 mon: t/s=61 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:34.679 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:35.690 mon: t/s=59 ms/tick=4 frame_ms=16 busy=27% save=idle
+22:43:36.686 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:37.691 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:38.689 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:43:39.694 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:40.694 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:43:41.701 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:42.705 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:43.708 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:43:44.702 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:43:45.703 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:46.709 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:47.703 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:43:48.706 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:43:49.708 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:50.707 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:51.702 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:52.708 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:53.710 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:54.706 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:43:55.708 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:43:56.707 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:57.709 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:43:58.721 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:43:59.718 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:00.720 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:44:01.719 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:02.726 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:44:03.738 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:04.734 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:05.734 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:44:06.738 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:44:07.742 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:44:08.734 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:09.733 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:10.735 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:11.737 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:12.736 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:13.733 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:44:14.736 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:44:15.739 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:16.737 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:44:17.736 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:18.740 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:44:19.740 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:20.741 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:21.751 mon: t/s=60 ms/tick=2 frame_ms=16 busy=16% save=idle
+22:44:22.754 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+22:44:23.751 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:44:24.754 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:25.750 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:44:26.755 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:44:27.752 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:28.752 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:44:29.757 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:30.751 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:31.754 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:32.751 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:44:33.750 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:34.755 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:44:35.752 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:44:36.750 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:37.750 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:44:38.756 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:44:39.756 mon: t/s=59 ms/tick=5 frame_ms=16 busy=32% save=idle
+22:44:40.752 mon: t/s=59 ms/tick=9 frame_ms=16 busy=56% save=idle
+22:44:41.750 mon: t/s=59 ms/tick=10 frame_ms=16 busy=59% save=idle
+22:44:42.758 mon: t/s=60 ms/tick=8 frame_ms=16 busy=51% save=idle
+22:44:43.756 mon: t/s=59 ms/tick=8 frame_ms=16 busy=50% save=idle
+22:44:44.750 mon: t/s=59 ms/tick=8 frame_ms=16 busy=51% save=idle
+22:44:45.756 mon: t/s=60 ms/tick=7 frame_ms=16 busy=46% save=idle
+22:44:46.758 mon: t/s=59 ms/tick=8 frame_ms=16 busy=50% save=idle
+22:44:47.754 mon: t/s=59 ms/tick=8 frame_ms=16 busy=51% save=idle
+22:44:48.753 mon: t/s=59 ms/tick=9 frame_ms=16 busy=56% save=idle
+22:44:49.756 mon: t/s=59 ms/tick=10 frame_ms=16 busy=60% save=idle
+22:44:50.757 mon: t/s=59 ms/tick=9 frame_ms=16 busy=53% save=idle
+22:44:51.754 mon: t/s=59 ms/tick=8 frame_ms=16 busy=48% save=idle
+22:44:52.751 mon: t/s=59 ms/tick=9 frame_ms=16 busy=53% save=idle
+22:44:53.752 mon: t/s=60 ms/tick=9 frame_ms=16 busy=54% save=idle
+22:44:54.754 mon: t/s=60 ms/tick=8 frame_ms=16 busy=48% save=idle
+22:44:55.753 mon: t/s=59 ms/tick=8 frame_ms=16 busy=48% save=idle
+22:44:56.764 mon: t/s=60 ms/tick=9 frame_ms=16 busy=59% save=idle
+22:44:57.758 mon: t/s=59 ms/tick=11 frame_ms=16 busy=65% save=idle
+22:44:58.758 mon: t/s=60 ms/tick=6 frame_ms=16 busy=40% save=idle
+22:44:59.754 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:45:00.752 mon: t/s=59 ms/tick=5 frame_ms=16 busy=32% save=idle
+22:45:01.750 mon: t/s=60 ms/tick=7 frame_ms=16 busy=43% save=idle
+22:45:02.750 mon: t/s=60 ms/tick=7 frame_ms=16 busy=46% save=idle
+22:45:03.752 mon: t/s=59 ms/tick=9 frame_ms=16 busy=56% save=idle
+22:45:04.761 mon: t/s=60 ms/tick=12 frame_ms=16 busy=75% save=idle
+22:45:05.751 mon: t/s=59 ms/tick=12 frame_ms=16 busy=73% save=idle
+22:45:06.759 mon: t/s=61 ms/tick=12 frame_ms=16 busy=76% save=idle
+22:45:07.753 mon: t/s=59 ms/tick=11 frame_ms=16 busy=68% save=idle
+22:45:08.754 mon: t/s=59 ms/tick=15 frame_ms=16 busy=92% save=idle
+22:45:09.764 mon: t/s=61 ms/tick=15 frame_ms=16 busy=96% save=idle
+22:45:10.758 mon: t/s=59 ms/tick=16 frame_ms=16 busy=100% save=idle
+22:45:11.751 mon: t/s=53 ms/tick=18 frame_ms=18 busy=98% save=idle
+22:45:12.768 mon: t/s=45 ms/tick=21 frame_ms=22 busy=96% save=idle
+22:45:13.777 mon: t/s=42 ms/tick=23 frame_ms=23 busy=100% save=idle
+22:45:14.776 mon: t/s=41 ms/tick=23 frame_ms=24 busy=96% save=idle
+22:45:15.770 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+22:45:16.776 mon: t/s=34 ms/tick=29 frame_ms=29 busy=101% save=idle
+22:45:17.775 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+22:45:18.777 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+22:45:19.769 mon: t/s=33 ms/tick=29 frame_ms=30 busy=96% save=idle
+22:45:20.774 mon: t/s=33 ms/tick=30 frame_ms=30 busy=100% save=idle
+22:45:21.785 mon: t/s=32 ms/tick=31 frame_ms=30 busy=100% save=idle
+22:45:22.798 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:45:23.819 mon: t/s=28 ms/tick=35 frame_ms=35 busy=100% save=idle
+22:45:24.826 mon: t/s=29 ms/tick=34 frame_ms=34 busy=100% save=idle
+22:45:25.839 mon: t/s=29 ms/tick=33 frame_ms=33 busy=98% save=idle
+22:45:26.857 mon: t/s=29 ms/tick=34 frame_ms=33 busy=99% save=idle
+22:45:27.877 mon: t/s=30 ms/tick=33 frame_ms=33 busy=98% save=idle
+22:45:28.890 mon: t/s=28 ms/tick=35 frame_ms=35 busy=99% save=idle
+22:45:29.893 mon: t/s=29 ms/tick=34 frame_ms=34 busy=100% save=idle
+22:45:30.922 mon: t/s=29 ms/tick=35 frame_ms=34 busy=100% save=idle
+22:45:31.930 mon: t/s=30 ms/tick=33 frame_ms=33 busy=100% save=idle
+22:45:32.927 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:45:33.928 mon: t/s=30 ms/tick=33 frame_ms=33 busy=100% save=idle
+22:45:34.936 mon: t/s=30 ms/tick=33 frame_ms=33 busy=101% save=idle
+22:45:35.933 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:45:36.934 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:45:37.938 mon: t/s=28 ms/tick=34 frame_ms=35 busy=98% save=idle
+22:45:38.959 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:45:39.967 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:45:40.974 mon: t/s=32 ms/tick=31 frame_ms=31 busy=100% save=idle
+22:45:41.992 mon: t/s=31 ms/tick=32 frame_ms=31 busy=101% save=idle
+22:45:42.995 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+22:45:44.002 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:45:45.008 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+22:45:46.000 mon: t/s=31 ms/tick=30 frame_ms=32 busy=95% save=idle
+22:45:47.015 mon: t/s=31 ms/tick=30 frame_ms=31 busy=95% save=idle
+22:45:48.028 mon: t/s=32 ms/tick=31 frame_ms=31 busy=101% save=idle
+22:45:49.035 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:45:50.039 mon: t/s=31 ms/tick=31 frame_ms=32 busy=96% save=idle
+22:45:51.049 mon: t/s=30 ms/tick=33 frame_ms=32 busy=99% save=idle
+22:45:52.059 mon: t/s=31 ms/tick=31 frame_ms=32 busy=96% save=idle
+22:45:53.056 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+22:45:54.076 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:45:55.095 mon: t/s=30 ms/tick=32 frame_ms=33 busy=95% save=idle
+22:45:56.119 mon: t/s=30 ms/tick=33 frame_ms=32 busy=101% save=idle
+22:45:57.116 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:45:58.130 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:45:59.139 mon: t/s=30 ms/tick=32 frame_ms=33 busy=96% save=idle
+22:46:00.163 mon: t/s=29 ms/tick=34 frame_ms=34 busy=98% save=idle
+22:46:01.191 mon: t/s=30 ms/tick=33 frame_ms=33 busy=98% save=idle
+22:46:02.215 mon: t/s=23 ms/tick=43 frame_ms=42 busy=101% save=idle
+22:46:03.217 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+22:46:04.203 mon: t/s=31 ms/tick=29 frame_ms=32 busy=90% save=idle
+22:46:05.214 mon: t/s=32 ms/tick=31 frame_ms=31 busy=100% save=idle
+22:46:06.220 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+22:46:07.226 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+22:46:08.218 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:46:09.222 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:46:10.236 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+22:46:11.259 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:46:12.253 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+22:46:13.271 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:46:14.281 mon: t/s=31 ms/tick=31 frame_ms=31 busy=96% save=idle
+22:46:15.291 mon: t/s=32 ms/tick=31 frame_ms=31 busy=101% save=idle
+22:46:16.285 mon: t/s=32 ms/tick=29 frame_ms=31 busy=95% save=idle
+22:46:17.288 mon: t/s=32 ms/tick=30 frame_ms=31 busy=96% save=idle
+22:46:18.293 mon: t/s=32 ms/tick=30 frame_ms=31 busy=98% save=idle
+22:46:19.315 mon: t/s=31 ms/tick=32 frame_ms=32 busy=98% save=idle
+22:46:20.318 mon: t/s=32 ms/tick=30 frame_ms=31 busy=98% save=idle
+22:46:21.336 mon: t/s=29 ms/tick=34 frame_ms=33 busy=99% save=idle
+22:46:22.354 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:46:23.372 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+22:46:24.400 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:46:25.400 mon: t/s=33 ms/tick=29 frame_ms=30 busy=96% save=idle
+22:46:26.426 mon: t/s=32 ms/tick=31 frame_ms=30 busy=100% save=idle
+22:46:27.422 mon: t/s=33 ms/tick=29 frame_ms=30 busy=96% save=idle
+22:46:28.442 mon: t/s=31 ms/tick=32 frame_ms=31 busy=100% save=idle
+22:46:29.453 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+22:46:30.475 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+22:46:31.490 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+22:46:32.510 mon: t/s=33 ms/tick=30 frame_ms=29 busy=99% save=idle
+22:46:33.505 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+22:46:34.508 mon: t/s=35 ms/tick=27 frame_ms=28 busy=95% save=idle
+22:46:35.501 mon: t/s=32 ms/tick=26 frame_ms=31 busy=85% save=idle
+22:46:36.511 mon: t/s=34 ms/tick=26 frame_ms=29 busy=90% save=idle
+22:46:37.508 mon: t/s=35 ms/tick=26 frame_ms=28 busy=93% save=idle
+22:46:38.515 mon: t/s=30 ms/tick=28 frame_ms=32 busy=86% save=idle
+22:46:39.540 mon: t/s=32 ms/tick=27 frame_ms=30 busy=89% save=idle
+22:46:40.544 mon: t/s=35 ms/tick=26 frame_ms=28 busy=92% save=idle
+22:46:41.545 mon: t/s=37 ms/tick=23 frame_ms=27 busy=85% save=idle
+22:46:42.537 mon: t/s=35 ms/tick=23 frame_ms=28 busy=82% save=idle
+22:46:43.550 mon: t/s=38 ms/tick=21 frame_ms=26 busy=83% save=idle
+22:46:44.561 mon: t/s=43 ms/tick=17 frame_ms=23 busy=75% save=idle
+22:46:45.557 mon: t/s=49 ms/tick=15 frame_ms=20 busy=75% save=idle
+22:46:46.553 mon: t/s=56 ms/tick=13 frame_ms=17 busy=75% save=idle
+22:46:47.556 mon: t/s=54 ms/tick=14 frame_ms=18 busy=79% save=idle
+22:46:48.555 mon: t/s=56 ms/tick=12 frame_ms=17 busy=68% save=idle
+22:46:49.564 mon: t/s=56 ms/tick=9 frame_ms=17 busy=53% save=idle
+22:46:50.565 mon: t/s=55 ms/tick=9 frame_ms=18 busy=53% save=idle
+22:46:51.561 mon: t/s=55 ms/tick=10 frame_ms=18 busy=56% save=idle
+22:46:52.567 mon: t/s=51 ms/tick=11 frame_ms=19 busy=60% save=idle
+22:46:53.563 mon: t/s=58 ms/tick=9 frame_ms=17 busy=56% save=idle
+22:46:54.568 mon: t/s=57 ms/tick=10 frame_ms=17 busy=57% save=idle
+22:46:55.565 mon: t/s=55 ms/tick=4 frame_ms=18 busy=26% save=idle
+22:46:56.570 mon: t/s=56 ms/tick=5 frame_ms=17 busy=28% save=idle
+22:46:57.565 mon: t/s=57 ms/tick=4 frame_ms=17 busy=23% save=idle
+22:46:58.567 mon: t/s=55 ms/tick=5 frame_ms=18 busy=31% save=idle
+22:46:59.602 mon: t/s=52 ms/tick=6 frame_ms=19 busy=33% save=idle
+22:47:00.599 mon: t/s=56 ms/tick=3 frame_ms=17 busy=20% save=idle
+22:47:01.598 mon: t/s=56 ms/tick=5 frame_ms=17 busy=31% save=idle
+22:47:02.605 mon: t/s=56 ms/tick=7 frame_ms=17 busy=43% save=idle
+22:47:03.593 mon: t/s=53 ms/tick=7 frame_ms=18 busy=39% save=idle
+22:47:04.605 mon: t/s=54 ms/tick=4 frame_ms=18 busy=23% save=idle
+22:47:05.595 mon: t/s=54 ms/tick=4 frame_ms=18 busy=25% save=idle
+22:47:18.369 overlapall: bGenerateOverlapEvents возвращён у 24001 компонентов
+22:47:18.817 overlaptrim3: порог=2 правил белой метки=11 отключено=795 сохранено по метке=23321 освобождено записей=97904
+22:47:21.545 overlaptrim3: порог=2 правил белой метки=11 отключено=795 сохранено по метке=23321 освобождено записей=97904
+22:56:58.121 save: начало записи .ark (файлов 23)
+22:57:01.118 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 2
+22:57:03.868 mon: 300 с, раз в секунду t/s / ms/tick / frame / busy / save
+22:57:04.871 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:57:05.864 mon: t/s=59 ms/tick=2 frame_ms=16 busy=12% save=idle
+22:57:06.133 mon: 300 с, раз в секунду t/s / ms/tick / frame / busy / save
+22:57:07.131 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+22:57:08.130 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:09.131 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:57:10.125 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:11.126 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:57:12.128 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:57:13.129 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:14.128 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:15.130 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:16.128 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:17.131 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:18.127 mon: t/s=59 ms/tick=6 frame_ms=16 busy=39% save=idle
+22:57:19.125 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:20.128 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:57:21.125 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:22.128 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:57:23.126 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:24.130 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:25.133 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:57:26.127 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:57:27.127 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:28.125 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:29.127 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:30.129 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:31.127 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:32.127 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:33.125 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:57:34.126 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:35.132 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:36.129 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:37.127 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:38.124 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:39.131 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:57:40.132 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:41.130 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:57:42.131 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:43.134 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:57:44.128 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:57:45.131 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:46.127 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:47.126 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:48.124 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:49.127 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:50.126 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:51.132 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:52.131 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:57:53.139 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:57:54.131 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:57:55.139 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:56.141 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:57.143 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:57:58.141 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:57:59.143 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:00.145 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:01.143 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:58:02.145 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:03.146 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:58:04.158 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:05.161 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:06.161 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:07.158 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:08.158 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:09.156 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:10.155 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:58:11.162 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:12.161 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:13.161 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:14.164 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:15.158 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:58:16.162 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:58:17.155 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:18.162 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:19.167 mon: t/s=59 ms/tick=9 frame_ms=16 busy=56% save=idle
+22:58:20.157 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:21.163 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:22.173 mon: t/s=59 ms/tick=4 frame_ms=16 busy=24% save=idle
+22:58:23.171 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:58:24.178 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:25.188 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:58:26.189 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:27.193 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:28.187 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:29.186 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:30.193 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:58:31.192 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:32.191 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:33.194 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:34.191 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:35.192 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:36.193 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:37.195 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:58:38.208 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:58:39.205 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:40.205 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:41.203 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:42.205 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:58:43.204 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:44.204 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:45.211 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:58:46.206 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:58:47.210 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:58:48.210 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:49.203 mon: t/s=59 ms/tick=2 frame_ms=16 busy=12% save=idle
+22:58:50.211 mon: t/s=61 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:58:51.202 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:52.211 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:53.206 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+22:58:54.207 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:58:55.204 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:56.209 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:57.205 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:58.206 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:58:59.205 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:00.203 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:01.209 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:02.219 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:03.221 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:04.224 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:05.240 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:06.242 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:07.235 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:08.235 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:09.238 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:10.233 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:11.238 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:12.235 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:13.235 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:14.243 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:15.234 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:16.234 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:17.236 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:18.239 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:19.243 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:59:20.238 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:21.239 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:22.234 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:59:23.235 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:59:24.242 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:25.240 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:26.240 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:59:27.254 mon: t/s=59 ms/tick=3 frame_ms=16 busy=19% save=idle
+22:59:28.256 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:29.252 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:59:30.255 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:31.258 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:32.255 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:33.258 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:34.254 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:35.255 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:36.256 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:37.262 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:59:38.264 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:39.268 mon: t/s=59 ms/tick=2 frame_ms=16 busy=16% save=idle
+22:59:40.271 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:41.281 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+22:59:42.281 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:43.280 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:44.286 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+22:59:45.283 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:46.286 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:59:47.284 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:48.283 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:59:49.282 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+22:59:50.287 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:51.280 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:52.289 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+22:59:53.289 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+22:59:54.287 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:59:55.286 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+22:59:56.282 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+22:59:57.286 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+22:59:58.285 mon: t/s=59 ms/tick=4 frame_ms=16 busy=28% save=idle
+22:59:59.285 mon: t/s=60 ms/tick=5 frame_ms=16 busy=31% save=idle
+23:00:00.286 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:00:01.287 mon: t/s=60 ms/tick=6 frame_ms=16 busy=39% save=idle
+23:00:02.283 mon: t/s=59 ms/tick=5 frame_ms=16 busy=29% save=idle
+23:00:03.286 mon: t/s=60 ms/tick=5 frame_ms=16 busy=32% save=idle
+23:00:04.281 mon: t/s=60 ms/tick=5 frame_ms=16 busy=32% save=idle
+23:00:05.281 mon: t/s=60 ms/tick=8 frame_ms=16 busy=48% save=idle
+23:00:06.286 mon: t/s=60 ms/tick=9 frame_ms=16 busy=57% save=idle
+23:00:07.287 mon: t/s=60 ms/tick=9 frame_ms=16 busy=54% save=idle
+23:00:08.284 mon: t/s=59 ms/tick=8 frame_ms=16 busy=51% save=idle
+23:00:09.284 mon: t/s=60 ms/tick=8 frame_ms=16 busy=51% save=idle
+23:00:10.281 mon: t/s=57 ms/tick=10 frame_ms=17 busy=57% save=idle
+23:00:11.283 mon: t/s=60 ms/tick=10 frame_ms=16 busy=60% save=idle
+23:00:12.287 mon: t/s=60 ms/tick=13 frame_ms=16 busy=78% save=idle
+23:00:13.292 mon: t/s=59 ms/tick=16 frame_ms=16 busy=100% save=idle
+23:00:14.299 mon: t/s=56 ms/tick=17 frame_ms=17 busy=96% save=idle
+23:00:15.299 mon: t/s=58 ms/tick=16 frame_ms=17 busy=96% save=idle
+23:00:16.311 mon: t/s=60 ms/tick=16 frame_ms=16 busy=98% save=idle
+23:00:17.325 mon: t/s=50 ms/tick=20 frame_ms=20 busy=100% save=idle
+23:00:18.333 mon: t/s=44 ms/tick=21 frame_ms=22 busy=95% save=idle
+23:00:19.348 mon: t/s=40 ms/tick=24 frame_ms=24 busy=96% save=idle
+23:00:20.365 mon: t/s=41 ms/tick=24 frame_ms=24 busy=98% save=idle
+23:00:21.361 mon: t/s=38 ms/tick=26 frame_ms=26 busy=100% save=idle
+23:00:22.365 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:00:23.372 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:00:24.383 mon: t/s=35 ms/tick=26 frame_ms=28 busy=93% save=idle
+23:00:25.396 mon: t/s=37 ms/tick=25 frame_ms=26 busy=93% save=idle
+23:00:26.413 mon: t/s=39 ms/tick=25 frame_ms=25 busy=98% save=idle
+23:00:27.421 mon: t/s=38 ms/tick=26 frame_ms=26 busy=99% save=idle
+23:00:28.440 mon: t/s=38 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:00:29.453 mon: t/s=37 ms/tick=26 frame_ms=26 busy=96% save=idle
+23:00:30.465 mon: t/s=38 ms/tick=26 frame_ms=26 busy=101% save=idle
+23:00:31.476 mon: t/s=36 ms/tick=26 frame_ms=27 busy=95% save=idle
+23:00:32.485 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+23:00:33.492 mon: t/s=32 ms/tick=30 frame_ms=31 busy=98% save=idle
+23:00:34.490 mon: t/s=32 ms/tick=29 frame_ms=31 busy=95% save=idle
+23:00:35.485 mon: t/s=32 ms/tick=31 frame_ms=31 busy=100% save=idle
+23:00:36.483 mon: t/s=32 ms/tick=30 frame_ms=31 busy=98% save=idle
+23:00:37.501 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+23:00:38.527 mon: t/s=32 ms/tick=31 frame_ms=30 busy=99% save=idle
+23:00:39.543 mon: t/s=32 ms/tick=30 frame_ms=30 busy=96% save=idle
+23:00:40.550 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+23:00:41.577 mon: t/s=31 ms/tick=32 frame_ms=32 busy=98% save=idle
+23:00:42.586 mon: t/s=32 ms/tick=31 frame_ms=31 busy=100% save=idle
+23:00:43.589 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+23:00:44.605 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+23:00:45.621 mon: t/s=31 ms/tick=32 frame_ms=31 busy=100% save=idle
+23:00:46.610 mon: t/s=32 ms/tick=30 frame_ms=31 busy=96% save=idle
+23:00:47.626 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+23:00:48.641 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+23:00:49.655 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+23:00:50.666 mon: t/s=32 ms/tick=31 frame_ms=31 busy=101% save=idle
+23:00:51.683 mon: t/s=31 ms/tick=32 frame_ms=31 busy=99% save=idle
+23:00:52.702 mon: t/s=25 ms/tick=40 frame_ms=39 busy=98% save=idle
+23:00:53.789 mon: t/s=13 ms/tick=76 frame_ms=71 busy=98% save=idle
+23:00:54.795 mon: t/s=28 ms/tick=35 frame_ms=35 busy=98% save=idle
+23:00:55.801 mon: t/s=31 ms/tick=31 frame_ms=31 busy=98% save=idle
+23:00:56.819 mon: t/s=31 ms/tick=32 frame_ms=31 busy=100% save=idle
+23:00:57.815 mon: t/s=31 ms/tick=32 frame_ms=32 busy=100% save=idle
+23:00:58.826 mon: t/s=32 ms/tick=31 frame_ms=31 busy=100% save=idle
+23:00:59.817 mon: t/s=32 ms/tick=30 frame_ms=31 busy=96% save=idle
+23:01:00.836 mon: t/s=32 ms/tick=30 frame_ms=30 busy=96% save=idle
+23:01:01.841 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+23:01:02.854 mon: t/s=32 ms/tick=31 frame_ms=30 busy=99% save=idle
+23:01:03.864 mon: t/s=32 ms/tick=29 frame_ms=30 busy=95% save=idle
+23:01:04.878 mon: t/s=32 ms/tick=29 frame_ms=30 busy=95% save=idle
+23:01:05.885 mon: t/s=34 ms/tick=29 frame_ms=29 busy=100% save=idle
+23:01:06.882 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+23:01:07.890 mon: t/s=33 ms/tick=30 frame_ms=29 busy=99% save=idle
+23:01:08.914 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+23:01:09.907 mon: t/s=33 ms/tick=30 frame_ms=30 busy=100% save=idle
+23:01:10.905 mon: t/s=33 ms/tick=30 frame_ms=30 busy=100% save=idle
+23:01:11.906 mon: t/s=33 ms/tick=29 frame_ms=30 busy=96% save=idle
+23:01:12.921 mon: t/s=33 ms/tick=29 frame_ms=29 busy=96% save=idle
+23:01:13.941 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+23:01:14.962 mon: t/s=33 ms/tick=29 frame_ms=29 busy=96% save=idle
+23:01:15.978 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+23:01:16.986 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+23:01:18.000 mon: t/s=32 ms/tick=30 frame_ms=30 busy=98% save=idle
+23:01:19.002 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+23:01:19.999 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+23:01:21.023 mon: t/s=33 ms/tick=30 frame_ms=29 busy=99% save=idle
+23:01:22.016 mon: t/s=33 ms/tick=29 frame_ms=30 busy=98% save=idle
+23:01:23.037 mon: t/s=30 ms/tick=32 frame_ms=32 busy=98% save=idle
+23:01:24.048 mon: t/s=33 ms/tick=29 frame_ms=29 busy=98% save=idle
+23:01:25.061 mon: t/s=34 ms/tick=28 frame_ms=29 busy=98% save=idle
+23:01:26.046 mon: t/s=34 ms/tick=28 frame_ms=29 busy=98% save=idle
+23:01:27.049 mon: t/s=34 ms/tick=29 frame_ms=29 busy=100% save=idle
+23:01:28.055 mon: t/s=35 ms/tick=28 frame_ms=28 busy=100% save=idle
+23:01:29.067 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:01:30.077 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:01:31.092 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:01:32.120 mon: t/s=36 ms/tick=28 frame_ms=27 busy=101% save=idle
+23:01:33.118 mon: t/s=37 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:01:34.134 mon: t/s=36 ms/tick=27 frame_ms=27 busy=99% save=idle
+23:01:35.131 mon: t/s=36 ms/tick=26 frame_ms=27 busy=95% save=idle
+23:01:36.134 mon: t/s=36 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:01:37.135 mon: t/s=36 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:01:38.142 mon: t/s=38 ms/tick=25 frame_ms=26 busy=95% save=idle
+23:01:39.160 mon: t/s=40 ms/tick=25 frame_ms=24 busy=100% save=idle
+23:01:40.164 mon: t/s=42 ms/tick=23 frame_ms=23 busy=98% save=idle
+23:01:41.173 mon: t/s=43 ms/tick=23 frame_ms=23 busy=99% save=idle
+23:01:42.179 mon: t/s=53 ms/tick=18 frame_ms=18 busy=96% save=idle
+23:01:43.186 mon: t/s=55 ms/tick=17 frame_ms=18 busy=95% save=idle
+23:01:44.186 mon: t/s=60 ms/tick=16 frame_ms=16 busy=98% save=idle
+23:01:45.174 mon: t/s=58 ms/tick=15 frame_ms=17 busy=87% save=idle
+23:01:46.184 mon: t/s=60 ms/tick=13 frame_ms=16 busy=81% save=idle
+23:01:47.182 mon: t/s=59 ms/tick=12 frame_ms=16 busy=76% save=idle
+23:01:48.179 mon: t/s=59 ms/tick=14 frame_ms=16 busy=82% save=idle
+23:01:49.175 mon: t/s=59 ms/tick=10 frame_ms=16 busy=62% save=idle
+23:01:50.186 mon: t/s=59 ms/tick=10 frame_ms=16 busy=60% save=idle
+23:01:51.193 mon: t/s=60 ms/tick=10 frame_ms=16 busy=62% save=idle
+23:01:52.199 mon: t/s=60 ms/tick=9 frame_ms=16 busy=54% save=idle
+23:01:53.200 mon: t/s=60 ms/tick=9 frame_ms=16 busy=54% save=idle
+23:01:54.191 mon: t/s=59 ms/tick=10 frame_ms=16 busy=60% save=idle
+23:01:55.196 mon: t/s=60 ms/tick=11 frame_ms=16 busy=67% save=idle
+23:01:56.198 mon: t/s=59 ms/tick=7 frame_ms=16 busy=45% save=idle
+23:01:57.198 mon: t/s=59 ms/tick=7 frame_ms=16 busy=46% save=idle
+23:01:58.193 mon: t/s=59 ms/tick=8 frame_ms=16 busy=48% save=idle
+23:01:59.192 mon: t/s=60 ms/tick=8 frame_ms=16 busy=50% save=idle
+23:02:00.197 mon: t/s=60 ms/tick=8 frame_ms=16 busy=48% save=idle
+23:02:01.192 mon: t/s=59 ms/tick=8 frame_ms=16 busy=51% save=idle
+23:02:02.199 mon: t/s=60 ms/tick=8 frame_ms=16 busy=48% save=idle
+23:02:03.187 mon: t/s=59 ms/tick=5 frame_ms=16 busy=34% save=idle
+23:02:04.187 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:02:05.188 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:02:06.196 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:02:07.194 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:02:18.007 overlapall: bGenerateOverlapEvents возвращён у 795 компонентов
+23:02:20.260 overlapall: bGenerateOverlapEvents возвращён у 0 компонентов
+23:07:59.380 loaded (Plugin_Init)
+23:07:59.381 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+23:13:43.132 game thread tid=6512
+23:13:46.758 status: sampling=no tid=6512 samples=0 frames=30
+23:13:49.263 status: sampling=no tid=6512 samples=0 frames=65
+23:13:57.133 status: sampling=no tid=6512 samples=0 frames=146
+23:13:59.645 status: sampling=no tid=6512 samples=0 frames=169
+23:14:07.255 status: sampling=no tid=6512 samples=0 frames=291
+23:14:09.940 status: sampling=no tid=6512 samples=0 frames=340
+23:14:17.516 status: sampling=no tid=6512 samples=0 frames=413
+23:14:20.216 status: sampling=no tid=6512 samples=0 frames=439
+23:14:27.607 status: sampling=no tid=6512 samples=0 frames=537
+23:14:30.471 status: sampling=no tid=6512 samples=0 frames=581
+23:14:37.831 status: sampling=no tid=6512 samples=0 frames=650
+23:14:40.778 status: sampling=no tid=6512 samples=0 frames=676
+23:14:47.946 status: sampling=no tid=6512 samples=0 frames=777
+23:14:50.855 status: sampling=no tid=6512 samples=0 frames=853
+23:14:58.058 status: sampling=no tid=6512 samples=0 frames=1034
+23:15:00.930 status: sampling=no tid=6512 samples=0 frames=1116
+23:15:08.179 status: sampling=no tid=6512 samples=0 frames=1281
+23:15:11.010 status: sampling=no tid=6512 samples=0 frames=1352
+23:15:18.265 status: sampling=no tid=6512 samples=0 frames=1547
+23:15:21.105 status: sampling=no tid=6512 samples=0 frames=1631
+23:15:28.337 status: sampling=no tid=6512 samples=0 frames=1840
+23:15:31.200 status: sampling=no tid=6512 samples=0 frames=1925
+23:15:38.437 status: sampling=no tid=6512 samples=0 frames=2123
+23:15:41.276 status: sampling=no tid=6512 samples=0 frames=2206
+23:15:48.530 status: sampling=no tid=6512 samples=0 frames=2422
+23:15:51.365 status: sampling=no tid=6512 samples=0 frames=2506
+23:15:58.600 status: sampling=no tid=6512 samples=0 frames=2723
+23:16:01.471 status: sampling=no tid=6512 samples=0 frames=2808
+23:16:08.681 status: sampling=no tid=6512 samples=0 frames=3024
+23:16:11.561 status: sampling=no tid=6512 samples=0 frames=3110
+23:16:18.756 status: sampling=no tid=6512 samples=0 frames=3325
+23:16:21.634 status: sampling=no tid=6512 samples=0 frames=3411
+23:16:28.846 status: sampling=no tid=6512 samples=0 frames=3627
+23:16:31.728 status: sampling=no tid=6512 samples=0 frames=3713
+23:16:38.939 status: sampling=no tid=6512 samples=0 frames=3929
+23:16:41.821 status: sampling=no tid=6512 samples=0 frames=4015
+23:16:49.017 status: sampling=no tid=6512 samples=0 frames=4230
+23:16:51.895 status: sampling=no tid=6512 samples=0 frames=4316
+23:17:01.992 status: sampling=no tid=6512 samples=0 frames=4618
+23:17:12.073 status: sampling=no tid=6512 samples=0 frames=4919
+23:17:22.172 status: sampling=no tid=6512 samples=0 frames=5221
+23:17:28.926 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+23:17:30.482 tickclamp: уже штатные 120
+23:17:32.036 fncache: хук UClass.FindFunctionByName установлен
+23:17:32.037 fncache: кэш включён
+23:17:32.037 fncache: счётчики попаданий/промахов обнулены
+23:17:32.221 status: sampling=no tid=6512 samples=0 frames=5618
+23:17:33.597 iscache: хук UStruct.IsChildOf установлен
+23:17:33.599 iscache: кэш включён
+23:17:35.155 canvas: хук DoGetCanvasByName установлен
+23:17:35.156 canvas: кэш включён
+23:17:36.708 nochart: хук UEngine.TickFPSChart установлен
+23:17:36.709 nochart: статистика FPS отключена
+23:17:42.265 status: sampling=no tid=6512 samples=0 frames=6215
+23:17:52.301 status: sampling=no tid=6512 samples=0 frames=6811
+23:18:02.355 status: sampling=no tid=6512 samples=0 frames=7408
+23:18:12.404 status: sampling=no tid=6512 samples=0 frames=8004
+23:18:22.455 status: sampling=no tid=6512 samples=0 frames=8602
+23:18:32.504 status: sampling=no tid=6512 samples=0 frames=9201
+23:18:42.559 status: sampling=no tid=6512 samples=0 frames=9799
+23:18:52.609 status: sampling=no tid=6512 samples=0 frames=10399
+23:19:02.656 status: sampling=no tid=6512 samples=0 frames=10998
+23:19:12.716 status: sampling=no tid=6512 samples=0 frames=11596
+23:19:22.755 status: sampling=no tid=6512 samples=0 frames=12193
+23:19:32.803 status: sampling=no tid=6512 samples=0 frames=12789
+23:19:42.856 status: sampling=no tid=6512 samples=0 frames=13386
+23:19:52.906 status: sampling=no tid=6512 samples=0 frames=13984
+23:20:02.956 status: sampling=no tid=6512 samples=0 frames=14582
+23:20:13.008 status: sampling=no tid=6512 samples=0 frames=15181
+23:20:23.060 status: sampling=no tid=6512 samples=0 frames=15779
+23:20:33.101 status: sampling=no tid=6512 samples=0 frames=16376
+23:20:43.141 status: sampling=no tid=6512 samples=0 frames=16974
+23:20:53.184 status: sampling=no tid=6512 samples=0 frames=17572
+23:21:03.229 status: sampling=no tid=6512 samples=0 frames=18172
+23:21:13.288 status: sampling=no tid=6512 samples=0 frames=18771
+23:21:23.346 status: sampling=no tid=6512 samples=0 frames=19237
+23:21:33.420 status: sampling=no tid=6512 samples=0 frames=19607
+23:21:43.494 status: sampling=no tid=6512 samples=0 frames=19967
+23:21:53.571 status: sampling=no tid=6512 samples=0 frames=20317
+23:22:03.630 status: sampling=no tid=6512 samples=0 frames=20663
+23:22:13.719 status: sampling=no tid=6512 samples=0 frames=21005
+23:22:23.804 status: sampling=no tid=6512 samples=0 frames=21350
+23:22:33.864 status: sampling=no tid=6512 samples=0 frames=21694
+23:22:43.932 status: sampling=no tid=6512 samples=0 frames=22129
+23:22:53.983 status: sampling=no tid=6512 samples=0 frames=22698
+23:23:04.027 status: sampling=no tid=6512 samples=0 frames=23297
+23:23:14.079 status: sampling=no tid=6512 samples=0 frames=23898
+23:23:24.116 status: sampling=no tid=6512 samples=0 frames=24495
+23:23:34.163 status: sampling=no tid=6512 samples=0 frames=25094
+23:23:44.200 status: sampling=no tid=6512 samples=0 frames=25693
+23:23:54.248 status: sampling=no tid=6512 samples=0 frames=26290
+23:24:04.292 status: sampling=no tid=6512 samples=0 frames=26888
+23:24:14.329 status: sampling=no tid=6512 samples=0 frames=27485
+23:24:24.380 status: sampling=no tid=6512 samples=0 frames=28084
+23:24:34.416 status: sampling=no tid=6512 samples=0 frames=28680
+23:24:44.455 status: sampling=no tid=6512 samples=0 frames=29277
+23:24:54.514 status: sampling=no tid=6512 samples=0 frames=29876
+23:25:04.551 status: sampling=no tid=6512 samples=0 frames=30475
+23:25:14.605 status: sampling=no tid=6512 samples=0 frames=31075
+23:25:24.649 status: sampling=no tid=6512 samples=0 frames=31671
+23:25:34.690 status: sampling=no tid=6512 samples=0 frames=32269
+23:25:44.735 status: sampling=no tid=6512 samples=0 frames=32867
+23:25:54.771 status: sampling=no tid=6512 samples=0 frames=33092
+23:25:55.587 save: начало записи .ark (файлов 23)
+23:25:58.600 save: запись .ark завершилась, длительность 3016 мс, всего сохранений 1
+23:25:58.697 mon: 300 с, раз в секунду t/s / ms/tick / frame / busy / save
+23:25:59.691 mon: t/s=58 ms/tick=3 frame_ms=17 busy=21% save=idle
+23:26:00.688 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:01.687 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:26:02.697 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:03.686 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:04.698 mon: t/s=61 ms/tick=1 frame_ms=16 busy=9% save=idle
+23:26:04.849 status: sampling=no tid=6512 samples=0 frames=33692
+23:26:05.686 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:06.691 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:07.691 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:08.693 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:09.694 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:26:10.693 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:11.700 mon: t/s=61 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:26:12.689 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:13.698 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:14.698 mon: t/s=60 ms/tick=1 frame_ms=16 busy=10% save=idle
+23:26:14.895 status: sampling=no tid=6512 samples=0 frames=34293
+23:26:15.694 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:16.691 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:17.693 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:18.694 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:26:19.701 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:20.692 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:21.686 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:22.699 mon: t/s=61 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:26:23.701 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:24.690 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:25.686 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:26.692 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:27.701 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:28.697 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:29.700 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:30.689 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:31.690 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:32.694 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:26:33.702 mon: t/s=59 ms/tick=3 frame_ms=16 busy=19% save=idle
+23:26:34.711 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:35.708 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:26:36.710 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:37.707 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:38.709 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:39.714 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:40.714 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:41.705 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:42.718 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:43.725 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:44.732 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:45.732 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:26:46.731 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:26:47.726 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:48.734 mon: t/s=59 ms/tick=2 frame_ms=16 busy=16% save=idle
+23:26:49.746 mon: t/s=61 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:26:50.739 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:51.745 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:52.741 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:26:53.739 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:26:54.748 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:26:55.734 mon: t/s=59 ms/tick=1 frame_ms=16 busy=10% save=idle
+23:26:56.748 mon: t/s=61 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:26:57.737 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:26:58.749 mon: t/s=59 ms/tick=2 frame_ms=16 busy=16% save=idle
+23:26:59.751 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:00.750 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:01.762 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:02.761 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:03.757 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:04.761 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:05.764 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:06.762 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:27:07.759 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:08.765 mon: t/s=59 ms/tick=2 frame_ms=16 busy=16% save=idle
+23:27:09.765 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:10.775 mon: t/s=61 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:11.773 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:12.765 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:13.775 mon: t/s=61 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:27:14.768 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:15.770 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:16.768 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:17.781 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:18.794 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:27:19.781 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:20.783 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:21.794 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:22.784 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:23.796 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:24.797 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:25.804 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:26.796 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:27.810 mon: t/s=61 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:28.804 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:29.800 mon: t/s=59 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:27:30.801 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:31.811 mon: t/s=59 ms/tick=4 frame_ms=16 busy=27% save=idle
+23:27:32.825 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:33.826 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:34.812 mon: t/s=59 ms/tick=1 frame_ms=16 busy=10% save=idle
+23:27:35.813 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:36.820 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:37.821 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:38.824 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:39.822 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:27:40.818 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:41.820 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:42.816 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:43.821 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:27:44.825 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:45.817 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:46.827 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:27:47.842 mon: t/s=60 ms/tick=2 frame_ms=16 busy=16% save=idle
+23:27:48.842 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:27:49.852 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:50.843 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:27:51.844 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:27:52.843 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:27:53.843 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:54.842 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:55.846 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:27:56.858 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:27:57.845 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:27:58.845 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:27:59.847 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:28:00.854 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:28:01.855 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:28:02.847 mon: t/s=59 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:28:03.842 mon: t/s=59 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:28:04.845 mon: t/s=60 ms/tick=1 frame_ms=16 busy=10% save=idle
+23:28:05.847 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:28:06.846 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:07.853 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:28:08.850 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:28:09.857 mon: t/s=60 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:28:10.852 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:11.856 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:12.859 mon: t/s=59 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:28:13.873 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:28:14.863 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:28:15.868 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:28:16.873 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:28:17.865 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:28:18.867 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:28:19.869 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:20.866 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:28:21.873 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:28:22.872 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:28:23.871 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:24.862 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:28:25.861 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:28:26.861 mon: t/s=60 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:28:27.862 mon: t/s=59 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:28:28.862 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:28:29.867 mon: t/s=60 ms/tick=5 frame_ms=16 busy=34% save=idle
+23:28:30.872 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:28:31.864 mon: t/s=59 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:28:32.874 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:28:33.880 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:28:34.886 mon: t/s=60 ms/tick=3 frame_ms=16 busy=21% save=idle
+23:28:35.888 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:28:36.889 mon: t/s=59 ms/tick=2 frame_ms=16 busy=12% save=idle
+23:28:37.900 mon: t/s=60 ms/tick=7 frame_ms=16 busy=45% save=idle
+23:28:38.890 mon: t/s=59 ms/tick=6 frame_ms=16 busy=39% save=idle
+23:28:39.904 mon: t/s=61 ms/tick=6 frame_ms=16 busy=42% save=idle
+23:28:40.896 mon: t/s=59 ms/tick=8 frame_ms=16 busy=51% save=idle
+23:28:41.895 mon: t/s=59 ms/tick=8 frame_ms=16 busy=48% save=idle
+23:28:42.891 mon: t/s=59 ms/tick=8 frame_ms=16 busy=50% save=idle
+23:28:43.901 mon: t/s=60 ms/tick=9 frame_ms=16 busy=54% save=idle
+23:28:44.903 mon: t/s=60 ms/tick=9 frame_ms=16 busy=56% save=idle
+23:28:45.896 mon: t/s=59 ms/tick=9 frame_ms=16 busy=57% save=idle
+23:28:46.894 mon: t/s=59 ms/tick=9 frame_ms=16 busy=53% save=idle
+23:28:47.890 mon: t/s=59 ms/tick=11 frame_ms=16 busy=65% save=idle
+23:28:48.905 mon: t/s=59 ms/tick=11 frame_ms=16 busy=69% save=idle
+23:28:49.906 mon: t/s=59 ms/tick=14 frame_ms=16 busy=85% save=idle
+23:28:50.921 mon: t/s=60 ms/tick=16 frame_ms=16 busy=98% save=idle
+23:28:51.928 mon: t/s=57 ms/tick=16 frame_ms=17 busy=96% save=idle
+23:28:52.924 mon: t/s=56 ms/tick=17 frame_ms=17 busy=96% save=idle
+23:28:53.933 mon: t/s=59 ms/tick=16 frame_ms=16 busy=95% save=idle
+23:28:54.925 mon: t/s=53 ms/tick=18 frame_ms=18 busy=98% save=idle
+23:28:55.934 mon: t/s=47 ms/tick=21 frame_ms=21 busy=101% save=idle
+23:28:56.932 mon: t/s=43 ms/tick=22 frame_ms=23 busy=98% save=idle
+23:28:57.931 mon: t/s=44 ms/tick=22 frame_ms=22 busy=100% save=idle
+23:28:58.926 mon: t/s=43 ms/tick=22 frame_ms=23 busy=98% save=idle
+23:28:59.936 mon: t/s=42 ms/tick=23 frame_ms=23 busy=100% save=idle
+23:29:00.924 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:29:01.941 mon: t/s=37 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:29:02.942 mon: t/s=38 ms/tick=25 frame_ms=26 busy=98% save=idle
+23:29:03.954 mon: t/s=37 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:29:04.960 mon: t/s=38 ms/tick=25 frame_ms=26 busy=98% save=idle
+23:29:05.953 mon: t/s=37 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:06.953 mon: t/s=38 ms/tick=25 frame_ms=26 busy=98% save=idle
+23:29:07.959 mon: t/s=38 ms/tick=24 frame_ms=26 busy=92% save=idle
+23:29:08.969 mon: t/s=38 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:29:09.987 mon: t/s=37 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:29:11.002 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:29:12.009 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:13.011 mon: t/s=36 ms/tick=27 frame_ms=27 busy=98% save=idle
+23:29:14.025 mon: t/s=36 ms/tick=27 frame_ms=27 busy=96% save=idle
+23:29:15.023 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:16.024 mon: t/s=36 ms/tick=28 frame_ms=27 busy=101% save=idle
+23:29:17.033 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:29:18.044 mon: t/s=36 ms/tick=28 frame_ms=27 busy=101% save=idle
+23:29:19.033 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:29:20.038 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:21.032 mon: t/s=35 ms/tick=27 frame_ms=28 busy=95% save=idle
+23:29:22.050 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:29:23.068 mon: t/s=35 ms/tick=28 frame_ms=28 busy=100% save=idle
+23:29:24.079 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:29:25.081 mon: t/s=36 ms/tick=26 frame_ms=27 busy=95% save=idle
+23:29:26.086 mon: t/s=37 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:27.085 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:29:28.088 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:29:29.091 mon: t/s=36 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:29:30.104 mon: t/s=36 ms/tick=26 frame_ms=27 busy=93% save=idle
+23:29:31.097 mon: t/s=30 ms/tick=32 frame_ms=33 busy=98% save=idle
+23:29:32.093 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:29:33.101 mon: t/s=37 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:34.113 mon: t/s=36 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:29:35.131 mon: t/s=36 ms/tick=27 frame_ms=27 busy=96% save=idle
+23:29:36.141 mon: t/s=35 ms/tick=26 frame_ms=28 busy=93% save=idle
+23:29:37.141 mon: t/s=37 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:29:38.156 mon: t/s=36 ms/tick=27 frame_ms=27 busy=98% save=idle
+23:29:39.169 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:29:40.158 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:41.177 mon: t/s=36 ms/tick=27 frame_ms=27 busy=96% save=idle
+23:29:42.185 mon: t/s=37 ms/tick=27 frame_ms=27 busy=101% save=idle
+23:29:43.184 mon: t/s=37 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:44.192 mon: t/s=36 ms/tick=27 frame_ms=27 busy=96% save=idle
+23:29:45.213 mon: t/s=36 ms/tick=28 frame_ms=27 busy=101% save=idle
+23:29:46.206 mon: t/s=36 ms/tick=25 frame_ms=27 busy=92% save=idle
+23:29:47.209 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:29:48.220 mon: t/s=36 ms/tick=27 frame_ms=27 busy=98% save=idle
+23:29:49.234 mon: t/s=35 ms/tick=28 frame_ms=28 busy=100% save=idle
+23:29:50.238 mon: t/s=36 ms/tick=27 frame_ms=27 busy=98% save=idle
+23:29:51.260 mon: t/s=35 ms/tick=29 frame_ms=28 busy=101% save=idle
+23:29:52.261 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:53.255 mon: t/s=36 ms/tick=26 frame_ms=27 busy=96% save=idle
+23:29:54.256 mon: t/s=36 ms/tick=27 frame_ms=27 busy=98% save=idle
+23:29:55.251 mon: t/s=36 ms/tick=27 frame_ms=27 busy=100% save=idle
+23:29:56.257 mon: t/s=36 ms/tick=26 frame_ms=27 busy=95% save=idle
+23:29:57.275 mon: t/s=35 ms/tick=27 frame_ms=28 busy=95% save=idle
+23:29:58.273 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:29:59.269 mon: t/s=35 ms/tick=28 frame_ms=28 busy=100% save=idle
+23:30:00.286 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:30:01.305 mon: t/s=35 ms/tick=29 frame_ms=28 busy=101% save=idle
+23:30:02.308 mon: t/s=35 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:30:03.313 mon: t/s=34 ms/tick=28 frame_ms=28 busy=98% save=idle
+23:30:04.338 mon: t/s=35 ms/tick=29 frame_ms=28 busy=101% save=idle
+23:30:05.341 mon: t/s=35 ms/tick=27 frame_ms=28 busy=96% save=idle
+23:30:06.341 mon: t/s=37 ms/tick=26 frame_ms=27 busy=98% save=idle
+23:30:07.349 mon: t/s=38 ms/tick=25 frame_ms=26 busy=95% save=idle
+23:30:08.366 mon: t/s=38 ms/tick=26 frame_ms=26 busy=98% save=idle
+23:30:09.373 mon: t/s=39 ms/tick=24 frame_ms=25 busy=96% save=idle
+23:30:10.360 mon: t/s=39 ms/tick=25 frame_ms=25 busy=98% save=idle
+23:30:11.379 mon: t/s=41 ms/tick=24 frame_ms=24 busy=99% save=idle
+23:30:12.382 mon: t/s=41 ms/tick=23 frame_ms=24 busy=96% save=idle
+23:30:13.385 mon: t/s=42 ms/tick=23 frame_ms=23 busy=100% save=idle
+23:30:14.386 mon: t/s=44 ms/tick=22 frame_ms=22 busy=98% save=idle
+23:30:15.387 mon: t/s=45 ms/tick=22 frame_ms=22 busy=100% save=idle
+23:30:16.395 mon: t/s=44 ms/tick=22 frame_ms=22 busy=98% save=idle
+23:30:17.396 mon: t/s=47 ms/tick=20 frame_ms=21 busy=95% save=idle
+23:30:18.393 mon: t/s=50 ms/tick=19 frame_ms=20 busy=96% save=idle
+23:30:19.407 mon: t/s=51 ms/tick=18 frame_ms=19 busy=95% save=idle
+23:30:20.415 mon: t/s=56 ms/tick=17 frame_ms=17 busy=96% save=idle
+23:30:21.414 mon: t/s=55 ms/tick=18 frame_ms=18 busy=100% save=idle
+23:30:22.416 mon: t/s=54 ms/tick=18 frame_ms=18 busy=100% save=idle
+23:30:23.414 mon: t/s=58 ms/tick=16 frame_ms=17 busy=98% save=idle
+23:30:24.407 mon: t/s=59 ms/tick=16 frame_ms=16 busy=96% save=idle
+23:30:25.411 mon: t/s=60 ms/tick=14 frame_ms=16 busy=84% save=idle
+23:30:26.405 mon: t/s=59 ms/tick=13 frame_ms=16 busy=81% save=idle
+23:30:27.414 mon: t/s=60 ms/tick=10 frame_ms=16 busy=62% save=idle
+23:30:28.407 mon: t/s=59 ms/tick=6 frame_ms=16 busy=35% save=idle
+23:30:29.415 mon: t/s=60 ms/tick=7 frame_ms=16 busy=46% save=idle
+23:30:30.411 mon: t/s=59 ms/tick=6 frame_ms=16 busy=40% save=idle
+23:30:31.414 mon: t/s=60 ms/tick=7 frame_ms=16 busy=45% save=idle
+23:30:32.414 mon: t/s=58 ms/tick=12 frame_ms=17 busy=73% save=idle
+23:30:33.421 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:30:34.436 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+23:30:35.429 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:30:36.422 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:30:37.434 mon: t/s=60 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:30:38.425 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:30:39.433 mon: t/s=60 ms/tick=4 frame_ms=16 busy=29% save=idle
+23:30:40.427 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:30:41.429 mon: t/s=60 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:30:42.427 mon: t/s=59 ms/tick=4 frame_ms=16 busy=25% save=idle
+23:30:43.430 mon: t/s=60 ms/tick=4 frame_ms=16 busy=29% save=idle
+23:30:44.424 mon: t/s=59 ms/tick=4 frame_ms=16 busy=26% save=idle
+23:30:45.423 mon: t/s=60 ms/tick=4 frame_ms=16 busy=28% save=idle
+23:30:46.431 mon: t/s=60 ms/tick=5 frame_ms=16 busy=31% save=idle
+23:30:47.421 mon: t/s=59 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:30:48.430 mon: t/s=60 ms/tick=4 frame_ms=16 busy=29% save=idle
+23:30:49.425 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:30:50.429 mon: t/s=60 ms/tick=5 frame_ms=16 busy=34% save=idle
+23:30:51.430 mon: t/s=60 ms/tick=2 frame_ms=16 busy=14% save=idle
+23:30:52.422 mon: t/s=59 ms/tick=3 frame_ms=16 busy=20% save=idle
+23:30:53.425 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:30:54.428 mon: t/s=60 ms/tick=2 frame_ms=16 busy=17% save=idle
+23:30:55.430 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:30:56.426 mon: t/s=59 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:30:57.430 mon: t/s=60 ms/tick=3 frame_ms=16 busy=23% save=idle
+23:30:58.430 mon: t/s=60 ms/tick=2 frame_ms=16 busy=15% save=idle
+23:30:59.427 mon: t/s=60 ms/tick=3 frame_ms=16 busy=18% save=idle
+23:44:26.551 loaded (Plugin_Init)
+23:44:26.552 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+23:50:37.572 game thread tid=20208
+23:50:39.183 bptrace: выключен (вызовов 0)
+23:50:54.430 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+23:53:25.293 loaded (Plugin_Init)
+23:53:25.294 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+23:59:40.021 game thread tid=17004
+00:05:30.516 loaded (Plugin_Init)
+00:05:30.518 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+00:11:30.822 game thread tid=19220
+00:11:31.905 overlaptrim: порог=2 отключено компонентов=74 освобождено записей=342
+00:11:33.721 status: sampling=no tid=19220 samples=0 frames=21
+00:11:36.210 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:17:09.169 loaded (Plugin_Init)
+00:17:09.170 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+00:23:25.952 game thread tid=8908
+00:23:27.001 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:31:05.336 loaded (Plugin_Init)
+00:31:05.337 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+00:36:51.915 game thread tid=18572
+00:36:52.864 bptrace: включён (CET-трамплин 12 байт), счётчики обнулены
+00:40:40.869 loaded (Plugin_Init)
+00:40:40.871 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+00:47:05.563 game thread tid=2864
+00:47:06.541 bptrace: установка хука ОТКЛЮЧЕНА (безопасный способ не найден: 3 попытки привели к падению сервера); байты патча не установлены
+00:47:06.541 bptrace: имя UFunction доступно (FFrame::Node = UFunction*), счётчик готов, но данных пока нет
+00:47:58.897 mon: 10 с, раз в секунду t/s / ms/tick / frame / busy / save
+00:47:59.928 mon: t/s=10 ms/tick=103 frame_ms=93 busy=107% save=idle
+00:48:01.027 mon: t/s=9 ms/tick=121 frame_ms=109 busy=101% save=idle
+00:48:02.044 mon: t/s=7 ms/tick=126 frame_ms=126 busy=98% save=idle
+00:48:03.059 mon: t/s=9 ms/tick=92 frame_ms=101 busy=89% save=idle
+00:48:04.150 mon: t/s=10 ms/tick=107 frame_ms=99 busy=98% save=idle
+00:48:05.194 mon: t/s=9 ms/tick=96 frame_ms=104 busy=88% save=idle
+00:48:06.335 mon: t/s=8 ms/tick=121 frame_ms=114 busy=93% save=idle
+00:48:07.368 mon: t/s=8 ms/tick=118 frame_ms=114 busy=100% save=idle
+00:48:08.364 mon: t/s=8 ms/tick=121 frame_ms=125 busy=96% save=idle
+00:48:09.479 mon: t/s=7 ms/tick=140 frame_ms=138 busy=91% save=idle
+01:43:45.892 save: начало записи .ark (файлов 23)
+01:43:48.899 save: запись .ark завершилась, длительность 3016 мс, всего сохранений 1
+01:58:45.891 save: начало записи .ark (файлов 23)
+01:58:47.904 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 2
+02:13:45.758 save: начало записи .ark (файлов 23)
+02:13:48.769 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 3
+02:43:45.964 save: начало записи .ark (файлов 23)
+02:43:48.965 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 4
+02:53:46.851 save: начало записи .ark (файлов 23)
+02:53:49.857 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 5
+04:13:46.191 save: начало записи .ark (файлов 23)
+04:13:47.990 save: запись .ark завершилась, длительность 2031 мс, всего сохранений 6
+04:43:46.254 save: начало записи .ark (файлов 23)
+04:43:48.256 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 7
+04:58:45.970 save: начало записи .ark (файлов 23)
+04:58:48.977 save: запись .ark завершилась, длительность 3016 мс, всего сохранений 8
+05:03:42.335 save: начало записи .ark (файлов 23)
+05:03:45.341 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 9
+05:13:46.075 save: начало записи .ark (файлов 23)
+05:13:48.099 save: запись .ark завершилась, длительность 2032 мс, всего сохранений 10
+05:28:46.067 save: начало записи .ark (файлов 23)
+05:28:49.078 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 11
+05:43:45.992 save: начало записи .ark (файлов 23)
+05:43:49.008 save: запись .ark завершилась, длительность 3016 мс, всего сохранений 12
+06:43:50.175 save: начало записи .ark (файлов 23)
+06:43:50.262 save: запись .ark завершилась, длительность 5047 мс, всего сохранений 13
+06:44:48.922 window: 60 с, валидность проверяется автоматически
+06:45:48.940 window окно: t/s=29 cpu=7s ms/tick=4 frame_ms=33 busy=12% save=idle VALID
+06:46:47.230 window: 1800 с, валидность проверяется автоматически
+06:58:49.612 save: начало записи .ark (файлов 23)
+06:58:49.625 save: запись .ark завершилась, длительность 4265 мс, всего сохранений 14
+07:16:47.234 window окно: t/s=28 cpu=546s ms/tick=10 frame_ms=34 busy=30% save=idle CONTAMINATED
+07:16:47.235 window окно: контаминировано сохранением мира, 1 из 51559 кадров
+07:28:10.271 status: sampling=no tid=2864 samples=0 frames=706491
+07:28:50.415 save: начало записи .ark (файлов 23)
+07:28:52.431 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 15
+07:32:42.468 loaded (Plugin_Init)
+07:32:42.470 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+07:39:13.172 game thread tid=7564
+07:46:06.565 window: 1800 с, валидность проверяется автоматически
+07:50:49.346 save: начало записи .ark (файлов 23)
+07:50:51.348 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 1
+08:05:48.793 save: начало записи .ark (файлов 23)
+08:05:50.818 save: запись .ark завершилась, длительность 2031 мс, всего сохранений 2
+08:16:06.563 window окно: t/s=29 cpu=514s ms/tick=9 frame_ms=33 busy=28% save=idle CONTAMINATED
+08:16:06.564 window окно: контаминировано сохранением мира, 117 из 52944 кадров
+08:17:19.046 save: начало записи .ark (файлов 23)
+08:17:21.088 save: запись .ark завершилась, длительность 2047 мс, всего сохранений 3
+08:21:11.299 loaded (Plugin_Init)
+08:21:11.301 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+08:27:18.021 game thread tid=6368
+08:37:36.866 window: 1800 с, валидность проверяется автоматически
+08:39:10.331 save: начало записи .ark (файлов 23)
+08:39:12.337 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 1
+08:54:09.196 save: начало записи .ark (файлов 23)
+08:54:12.219 save: запись .ark завершилась, длительность 3016 мс, всего сохранений 2
+09:07:36.888 window окно: t/s=29 cpu=473s ms/tick=8 frame_ms=33 busy=26% save=idle CONTAMINATED
+09:07:36.889 window окно: контаминировано сохранением мира, 145 из 53140 кадров
+09:08:50.946 save: начало записи .ark (файлов 23)
+09:08:51.964 save: запись .ark завершилась, длительность 2359 мс, всего сохранений 3
+09:09:09.008 save: начало записи .ark (файлов 23)
+09:09:12.015 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 4
+09:12:42.064 loaded (Plugin_Init)
+09:12:42.066 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+09:18:58.786 game thread tid=5788
+09:29:08.044 window: 1800 с, валидность проверяется автоматически
+09:30:45.566 save: начало записи .ark (файлов 23)
+09:30:47.572 save: запись .ark завершилась, длительность 2015 мс, всего сохранений 1
+09:54:12.048 loaded (Plugin_Init)
+09:54:12.050 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+10:00:14.743 game thread tid=18640
+10:03:29.540 loaded (Plugin_Init)
+10:03:29.541 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+10:11:43.388 loaded (Plugin_Init)
+10:11:43.390 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+10:18:02.960 game thread tid=19236
+11:31:42.444 loaded (Plugin_Init)
+11:31:42.445 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+11:38:01.822 game thread tid=20348
+11:38:02.779 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+11:48:25.054 loaded (Plugin_Init)
+11:48:25.055 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+11:54:35.610 game thread tid=15348
+11:56:58.054 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+11:57:42.047 bptrace: подмена Func у 40638 скриптовых UFunction (всего UFunction=40639)
+11:57:42.049 bptrace: включён (патч ДАННЫХ UFunction::Func, код процесса не тронут)
+11:59:34.582 bptrace: вызовов всего 631903
+11:59:34.584 bptrace: различных функций 166
+11:59:34.584 bptrace: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables = 255816
+11:59:34.585 bptrace: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer = 148104
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick = 104346
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick = 23562
+11:59:34.585 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick = 10098
+11:59:34.586 bptrace: Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick = 9015
+11:59:34.586 bptrace: Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick = 7351
+11:59:34.587 bptrace: Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer = 4932
+11:59:34.587 bptrace: Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage = 3808
+11:59:34.587 bptrace: Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick = 3366
+11:59:34.587 bptrace: Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick = 3366
+11:59:34.587 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick = 3366
+11:59:34.588 bptrace: Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick = 3366
+11:59:34.589 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature = 3366
+11:59:34.589 bptrace: Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated = 3366
+11:59:34.589 bptrace: Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick = 3366
+11:59:34.589 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick = 3366
+11:59:34.590 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer = 2649
+11:59:34.590 bptrace: Function /Game/PrimalEarth/Dinos/Para/Para_Character_BP.Para_Character_BP_C:ReceiveTick = 2566
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:ThrottledTick = 2186
+11:59:34.591 bptrace: Function /Game/PrimalEarth/Dinos/Stego/Stego_Character_BP.Stego_Character_BP_C:ReceiveTick = 1713
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation = 1683
+11:59:34.591 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:EvaluateGraphExposedInputs_ExecuteUbergraph_VRMainBossSkMeshActor_AnimBlueprint_AnimGraphNode_BlendListByInt_125 = 1683
+11:59:34.592 bptrace: Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick = 1108
+11:59:34.592 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer = 889
+12:01:33.112 bptrace: выключен (вызовов 0), подмен снят с 40638 UFunction
+12:01:39.978 bptrace: перечисление: UFunction всего=40639 скриптовых(Func==&ProcessInternal)=40638
+12:01:59.312 perf: окно 120 с
+12:03:59.324 window окно: t/s=25 cpu=635s ms/tick=205 frame_ms=38 busy=529% save=idle VALID
+12:04:25.719 bptrace: подмена Func у 40638 скриптовых UFunction (всего UFunction=40639)
+12:04:25.720 bptrace: включён (патч ДАННЫХ UFunction::Func, код процесса не тронут)
+12:04:30.622 perf: окно 120 с
+12:06:31.548 window окно: t/s=28 cpu=653s ms/tick=191 frame_ms=35 busy=540% save=idle VALID
+12:06:32.553 save: начало записи .ark (файлов 23)
+12:06:35.559 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
+12:06:37.456 bptrace: вызовов всего 695851
+12:06:37.456 bptrace: различных функций 76
+12:06:37.457 bptrace: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables = 283556
+12:06:37.457 bptrace: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer = 164164
+12:06:37.457 bptrace: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick = 115661
+12:06:37.457 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick = 26117
+12:06:37.458 bptrace: Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick = 16451
+12:06:37.458 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick = 11193
+12:06:37.458 bptrace: Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer = 5491
+12:06:37.458 bptrace: Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick = 5267
+12:06:37.459 bptrace: Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage = 4216
+12:06:37.459 bptrace: Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick = 3731
+12:06:37.459 bptrace: Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick = 3731
+12:06:37.460 bptrace: Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature = 3731
+12:06:37.461 bptrace: Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated = 3731
+12:06:37.461 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick = 3731
+12:06:37.462 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer = 2947
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:ThrottledTick = 2347
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation = 1866
+12:06:37.462 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:EvaluateGraphExposedInputs_ExecuteUbergraph_VRMainBossSkMeshActor_AnimBlueprint_AnimGraphNode_BlendListByInt_125 = 1866
+12:06:37.463 bptrace: Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick = 1300
+12:06:37.463 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:Damage Victims In Radius = 1076
+12:06:37.463 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer = 999
+12:06:37.463 bptrace: Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers = 857
+12:07:29.286 bptrace: выключен (вызовов 0), подмен снят с 40638 UFunction
+12:07:35.291 start: сэмплирование 150 с
+12:07:35.304 sampler: модулей в процессе 116
+12:07:35.304 sampler started, tid=15348
+12:07:36.301 ticklist: уровней=142 акторов=106703 (зарегистрировано тик 953) компонентов=454992 (тикующих 1975)
+12:10:05.287 sampler stopped, 76747 samples
+12:10:05.289 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_682363640.bin (76747 samples)
+12:10:05.304 ожидание в syscall: 60205/76747 сэмплов (78%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_682363640.wait
+12:28:09.456 loaded (Plugin_Init)
+12:28:09.457 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+12:36:28.359 loaded (Plugin_Init)
+12:36:28.360 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+12:43:04.686 game thread tid=3832
+12:43:05.655 status: sampling=no tid=3832 samples=0 frames=4
+12:43:26.569 start: сэмплирование 20 с
+12:43:26.582 sampler: модулей в процессе 117
+12:43:26.582 sampler started, tid=3832
+12:43:46.578 sampler stopped, 10158 samples
+12:43:46.581 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_684384937.bin (10158 samples)
+12:43:46.594 ожидание в syscall: 526/10158 сэмплов (5%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_684384937.wait
+12:48:24.876 loaded (Plugin_Init)
+12:48:24.877 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+12:54:28.895 game thread tid=7800
+12:54:29.926 overlaptrim: порог=2 отключено компонентов=72 освобождено записей=331
+12:54:31.757 status: sampling=no tid=7800 samples=0 frames=22
+12:54:34.333 start: сэмплирование 300 с
+12:54:34.344 sampler: модулей в процессе 117
+12:54:34.344 sampler started, tid=7800
+12:54:45.426 sampler stopped, 5564 samples
+12:54:45.428 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_685043781.bin (5564 samples)
+12:54:45.443 ожидание в syscall: 300/5564 сэмплов (5%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_685043781.wait
+12:59:04.547 loaded (Plugin_Init)
+12:59:04.548 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+13:05:08.791 game thread tid=15644
+13:05:10.591 status: sampling=no tid=15644 samples=0 frames=12
+13:05:13.189 start: сэмплирование 20 с
+13:05:13.199 sampler: модулей в процессе 117
+13:05:13.199 sampler started, tid=15644
+13:05:33.223 sampler stopped, 10221 samples
+13:05:33.224 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_685691578.bin (10221 samples)
+13:05:33.238 ожидание в syscall: 469/10221 сэмплов (4%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_685691578.wait
+13:12:10.120 loaded (Plugin_Init)
+13:12:10.121 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+13:22:40.487 loaded (Plugin_Init)
+13:22:40.489 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+13:29:02.196 game thread tid=18608
+13:29:23.636 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+13:29:25.342 tickclamp: уже штатные 120
+13:29:26.998 fncache: хук UClass.FindFunctionByName установлен
+13:29:26.999 fncache: кэш включён
+13:29:26.999 fncache: счётчики попаданий/промахов обнулены
+13:29:28.614 iscache: хук UStruct.IsChildOf установлен
+13:29:28.615 iscache: кэш включён
+13:29:30.350 canvas: хук DoGetCanvasByName установлен
+13:29:30.352 canvas: кэш включён
+13:29:32.116 nochart: хук UEngine.TickFPSChart установлен
+13:29:32.117 nochart: статистика FPS отключена
+13:29:33.975 overlaptrim: порог=2 отключено компонентов=11728 освобождено записей=95028
+13:29:35.778 status: sampling=no tid=18608 samples=0 frames=385
+13:29:38.421 start: сэмплирование 20 с
+13:29:38.431 sampler: модулей в процессе 117
+13:29:38.432 sampler started, tid=18608
+13:29:58.493 sampler stopped, 10166 samples
+13:29:58.495 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_687156843.bin (10166 samples)
+13:29:58.509 ожидание в syscall: 495/10166 сэмплов (4%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_687156843.wait
+13:29:58.513 crashfilter: exc=0xC0000005 rip=0x7FF8ED6F6166 tid=6816
+crashfilter: модуль: exe=0x7FF687C20000 1FD003A001D000D 015D2C6C7250 000000000000 00000000005A 8806000097F54842 7FF8ED70D964 000000000000 000000000000 000000000061 015D2C6C6550 000000000000 7FF93B4EDDAB 015D7D530000 0000000001EF 000000000061 015D2C6C6550 
+13:29:58.513 crashfilter: конец стека
+13:30:08.580 crashfilter: exc=0xC0000005 rip=0x7FF8ED6F6166 tid=6816
+crashfilter: модуль: exe=0x7FF687C20000 3B1400000000 00000001205C 000000011FFC 000000011FEC 000000000000 7FF8ED70D9BF 002A00000003 7FF8ED71CCB8 000000000000 002AF5E9DFB8 000000000000 002AF5E9DB70 002AF5E9CEC0 000000000000 002AF5E9E4D0 00000003D964 
+13:30:08.580 crashfilter: конец стека
+13:34:18.337 loaded (Plugin_Init)
+13:34:18.338 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+13:40:27.085 game thread tid=3732
+13:40:58.036 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+13:40:59.806 tickclamp: уже штатные 120
+13:41:01.570 fncache: хук UClass.FindFunctionByName установлен
+13:41:01.571 fncache: кэш включён
+13:41:01.571 fncache: счётчики попаданий/промахов обнулены
+13:41:03.412 iscache: хук UStruct.IsChildOf установлен
+13:41:03.414 iscache: кэш включён
+13:41:05.189 canvas: хук DoGetCanvasByName установлен
+13:41:05.190 canvas: кэш включён
+13:41:07.023 nochart: хук UEngine.TickFPSChart установлен
+13:41:07.024 nochart: статистика FPS отключена
+13:41:08.926 overlaptrim: порог=2 отключено компонентов=15970 освобождено записей=130988
+13:41:10.580 status: sampling=no tid=3732 samples=0 frames=510
+13:41:13.023 start: сэмплирование 20 с
+13:41:13.034 sampler: модулей в процессе 117
+13:41:13.034 sampler started, tid=3732
+13:41:33.044 sampler stopped, 10151 samples
+13:41:33.046 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_687851390.bin (10151 samples)
+13:41:33.058 ожидание в syscall: 520/10151 сэмплов (5%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_687851390.wait
+13:46:52.796 loaded (Plugin_Init)
+13:46:52.797 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+13:53:12.080 game thread tid=5460
+13:53:26.413 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+13:53:28.144 tickclamp: уже штатные 120
+13:53:29.866 fncache: хук UClass.FindFunctionByName установлен
+13:53:29.868 fncache: кэш включён
+13:53:29.868 fncache: счётчики попаданий/промахов обнулены
+13:53:31.508 iscache: хук UStruct.IsChildOf установлен
+13:53:31.510 iscache: кэш включён
+13:53:33.194 canvas: хук DoGetCanvasByName установлен
+13:53:33.194 canvas: кэш включён
+13:53:34.875 nochart: хук UEngine.TickFPSChart установлен
+13:53:34.875 nochart: статистика FPS отключена
+13:53:36.569 overlaptrim: порог=2 отключено компонентов=9244 освобождено записей=76046
+13:53:38.202 status: sampling=no tid=5460 samples=0 frames=327
+13:53:40.897 start: сэмплирование 20 с
+13:53:40.908 sampler: модулей в процессе 117
+13:53:40.908 sampler started, tid=5460
+13:54:00.900 sampler stopped, 1251 samples
+13:54:00.900 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688599250.bin (1251 samples)
+13:54:00.916 ожидание в syscall: 57/1251 сэмплов (4%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688599250.wait
+13:54:31.895 start: сэмплирование 20 с
+13:54:31.907 sampler: модулей в процессе 117
+13:54:31.907 sampler started, tid=5460
+13:54:51.925 sampler stopped, 1254 samples
+13:54:51.927 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688650281.bin (1254 samples)
+13:54:51.941 ожидание в syscall: 177/1254 сэмплов (14%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688650281.wait
+13:55:22.794 start: сэмплирование 20 с
+13:55:22.804 sampler: модулей в процессе 117
+13:55:22.804 sampler started, tid=5460
+13:55:42.797 sampler stopped, 1253 samples
+13:55:42.799 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688701156.bin (1253 samples)
+13:55:42.814 ожидание в syscall: 1129/1253 сэмплов (90%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_688701156.wait
+13:57:02.910 start: сэмплирование 300 с
+13:57:02.921 sampler: модулей в процессе 117
+13:57:02.921 sampler started, tid=5460
+14:00:14.198 status: sampling=yes tid=5460 samples=12122 frames=6357
+14:00:53.005 sampler stopped, 14586 samples
+14:00:53.007 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_689011359.bin (14586 samples)
+14:00:53.021 ожидание в syscall: 12724/14586 сэмплов (87%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_689011359.wait
+14:03:58.179 loaded (Plugin_Init)
+14:03:58.180 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+14:10:11.518 game thread tid=20312
+14:14:02.184 loaded (Plugin_Init)
+14:14:02.185 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+14:20:24.426 game thread tid=12912
+14:20:40.688 maxfps: NetServerMaxTickRate 30 -> 60 (проверка ок)
+14:20:42.303 tickclamp: уже штатные 120
+14:20:43.962 fncache: хук UClass.FindFunctionByName установлен
+14:20:43.963 fncache: кэш включён
+14:20:43.963 fncache: счётчики попаданий/промахов обнулены
+14:20:45.603 iscache: хук UStruct.IsChildOf установлен
+14:20:45.604 iscache: кэш включён
+14:20:47.236 canvas: хук DoGetCanvasByName установлен
+14:20:47.236 canvas: кэш включён
+14:20:48.985 nochart: хук UEngine.TickFPSChart установлен
+14:20:48.987 nochart: статистика FPS отключена
+14:20:50.797 overlaptrim: порог=2 отключено компонентов=11223 освобождено записей=91655
+14:20:52.604 status: sampling=no tid=12912 samples=0 frames=377
+14:20:55.171 start: сэмплирование 90 с
+14:20:55.181 sampler: модулей в процессе 117
+14:20:55.181 sampler started, tid=12912
+14:22:25.180 sampler stopped, 45929 samples
+14:22:25.181 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_690303531.bin (45929 samples)
+14:22:25.196 ожидание в syscall: 6599/45929 сэмплов (14%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_690303531.wait
+14:22:30.957 arkpoll: опрос .ark выключен
+14:22:34.865 start: сэмплирование 90 с
+14:22:34.876 sampler: модулей в процессе 117
+14:22:34.876 sampler started, tid=12912
+14:24:04.871 sampler stopped, 45858 samples
+14:24:04.874 wrote C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_690403234.bin (45858 samples)
+14:24:04.892 ожидание в syscall: 35390/45858 сэмплов (77%), файл C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\prof_690403234.wait
+14:24:10.677 arkpoll: опрос .ark включён
+14:25:06.648 overlapall: bGenerateOverlapEvents возвращён у 290431 компонентов
+14:25:31.803 overlaptrim: порог=2 отключено компонентов=24025 освобождено записей=194032
+14:25:43.888 window: 300 с, валидность проверяется автоматически
+14:30:43.879 window окно: t/s=50 cpu=140s ms/tick=9 frame_ms=19 busy=46% save=idle VALID
+14:30:44.173 overlapall: bGenerateOverlapEvents возвращён у 24025 компонентов
+14:31:09.336 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23257 освобождено записей=97958
+14:31:21.390 window: 300 с, валидность проверяется автоматически
+14:32:04.826 save: начало записи .ark (файлов 23)
+14:32:07.820 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
+14:36:21.416 window окно: t/s=54 cpu=104s ms/tick=6 frame_ms=18 busy=34% save=idle CONTAMINATED
+14:36:21.417 window окно: контаминировано сохранением мира, 178 из 16459 кадров
+14:36:21.704 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+14:36:46.858 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194464
+14:36:58.914 window: 300 с, валидность проверяется автоматически
+14:41:58.913 window окно: t/s=56 cpu=79s ms/tick=4 frame_ms=17 busy=26% save=idle VALID
+14:41:59.177 overlapall: bGenerateOverlapEvents возвращён у 24058 компонентов
+14:42:24.330 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+14:42:36.388 window: 300 с, валидность проверяется автоматически
+14:47:03.891 save: начало записи .ark (файлов 23)
+14:47:04.897 save: запись .ark завершилась, длительность 2250 мс, всего сохранений 2
+14:47:36.386 window окно: t/s=50 cpu=145s ms/tick=9 frame_ms=19 busy=48% save=idle CONTAMINATED
+14:47:36.387 window окно: контаминировано сохранением мира, 60 из 15002 кадров
+14:47:36.676 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+14:48:01.821 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462
+14:48:13.884 window: 300 с, валидность проверяется автоматически
+14:53:13.878 window окно: t/s=51 cpu=142s ms/tick=9 frame_ms=19 busy=47% save=idle VALID
+14:53:14.176 overlapall: bGenerateOverlapEvents возвращён у 24059 компонентов
+14:53:39.330 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+14:53:51.375 window: 300 с, валидность проверяется автоматически
+14:58:51.408 window окно: t/s=54 cpu=99s ms/tick=6 frame_ms=18 busy=33% save=idle VALID
+15:02:03.028 save: начало записи .ark (файлов 23)
+15:02:05.539 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 3
+15:17:02.876 save: начало записи .ark (файлов 23)
+15:17:05.466 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 4
+15:17:31.626 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+15:17:56.753 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462
+15:18:08.809 window: 300 с, валидность проверяется автоматически
+15:23:08.803 window окно: t/s=51 cpu=147s ms/tick=9 frame_ms=19 busy=49% save=idle VALID
+15:23:09.052 overlapall: bGenerateOverlapEvents возвращён у 24059 компонентов
+15:23:34.190 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+15:23:46.239 window: 300 с, валидность проверяется автоматически
+15:28:46.253 window окно: t/s=55 cpu=100s ms/tick=6 frame_ms=18 busy=33% save=idle VALID
+15:32:03.732 save: начало записи .ark (файлов 23)
+15:32:04.764 save: запись .ark завершилась, длительность 2266 мс, всего сохранений 5
+15:32:26.570 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+15:32:51.689 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462
+15:33:03.758 window: 300 с, валидность проверяется автоматически
+15:38:03.758 window окно: t/s=50 cpu=155s ms/tick=10 frame_ms=19 busy=51% save=idle VALID
+15:38:04.019 overlapall: bGenerateOverlapEvents возвращён у 24059 компонентов
+15:38:29.183 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+15:38:41.246 window: 300 с, валидность проверяется автоматически
+15:43:41.247 window окно: t/s=56 cpu=96s ms/tick=5 frame_ms=17 busy=32% save=idle VALID
+15:47:03.468 save: начало записи .ark (файлов 23)
+15:47:06.045 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 6
+15:47:31.581 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+15:47:56.691 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462
+15:48:08.743 window: 300 с, валидность проверяется автоматически
+15:53:08.734 window окно: t/s=52 cpu=147s ms/tick=9 frame_ms=19 busy=49% save=idle VALID
+15:53:09.041 overlapall: bGenerateOverlapEvents возвращён у 24059 компонентов
+15:53:34.209 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+15:53:46.262 window: 300 с, валидность проверяется автоматически
+15:58:46.270 window окно: t/s=55 cpu=99s ms/tick=5 frame_ms=17 busy=33% save=idle VALID
+16:02:02.949 save: начало записи .ark (файлов 23)
+16:02:04.505 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 7
+16:02:11.973 bptrace: перечисление: UFunction всего=40478 скриптовых(Func==&ProcessInternal)=40477
+16:02:19.472 bptrace: подмена Func у 40477 скриптовых UFunction (всего UFunction=40478)
+16:02:19.472 bptrace: включён (патч ДАННЫХ UFunction::Func, код процесса не тронут)
+16:02:28.239 bptrace: вызовов всего 96646
+16:02:28.240 bptrace: различных функций 40
+16:02:28.240 bptrace: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables = 42525
+16:02:28.240 bptrace: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer = 23100
+16:02:28.240 bptrace: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick = 16275
+16:02:28.241 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick = 3675
+16:02:28.241 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick = 1575
+16:02:28.241 bptrace: Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick = 525
+16:02:28.241 bptrace: Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick = 525
+16:02:28.241 bptrace: Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick = 525
+16:02:28.242 bptrace: Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick = 525
+16:02:28.242 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick = 525
+16:02:28.243 bptrace: Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick = 525
+16:02:28.243 bptrace: Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick = 525
+16:02:28.243 bptrace: Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick = 525
+16:02:28.243 bptrace: Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick = 525
+16:02:28.243 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature = 525
+16:02:28.243 bptrace: Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated = 525
+16:02:28.244 bptrace: Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick = 525
+16:02:28.244 bptrace: Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick = 525
+16:02:28.244 bptrace: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Volcanic/Eruption/Proj_Volcano.Proj_Volcano_C:ReceiveTick = 424
+16:02:28.244 bptrace: Function /Game/Genesis/Dinos/Swarms/BaseSwarmChar_BP.BaseSwarmChar_BP_C:ThrottledTick = 406
+16:02:28.244 bptrace: Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer = 400
+16:02:28.244 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:EvaluateGraphExposedInputs_ExecuteUbergraph_VRMainBossSkMeshActor_AnimBlueprint_AnimGraphNode_BlendListByInt_125 = 263
+16:02:28.245 bptrace: Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation = 263
+16:02:28.245 bptrace: Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage = 234
+16:02:28.245 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer = 211
+16:02:28.246 bptrace: Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick = 107
+16:02:28.246 bptrace: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer = 73
+16:02:28.246 bptrace: Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers = 63
+16:02:28.246 bptrace: Function /Game/Genesis2/Structures/EggIncubator/PrimalInventoryBP_EggIncubator.PrimalInventoryBP_EggIncubator_C:BPNotifyItemAdded = 60
+16:02:28.246 bptrace: Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg = 60
+16:02:35.009 bptrace: выключен (вызовов 0), подмен снят с 40477 UFunction
+16:03:19.788 maxfps: NetServerMaxTickRate 60 -> 60 (проверка ок)
+16:03:21.340 tickclamp: уже штатные 120
+16:03:22.892 fncache: кэш включён
+16:03:22.894 fncache: счётчики попаданий/промахов обнулены
+16:03:24.458 iscache: кэш включён
+16:03:26.024 canvas: кэш включён
+16:03:27.603 nochart: статистика FPS отключена
+16:03:29.309 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+16:03:30.867 status: sampling=no tid=12912 samples=45858 frames=322293
+16:04:04.861 overlapall: bGenerateOverlapEvents возвращён у 796 компонентов
+16:04:25.728 overlaptrim: порог=2 отключено компонентов=24059 освобождено записей=194462
+16:04:38.634 overlapsizes: компонентов=270567 с bGenerateOverlapEvents=246508 всего пересечений=199756
+16:04:38.636    1 Class /Script/Engine.BrushComponent x5090
+16:04:38.636    2 Class /Script/Engine.BrushComponent x4986
+16:04:38.636    3 Class /Script/Engine.BrushComponent x4968
+16:04:38.637    4 Class /Script/Engine.BrushComponent x3867
+16:04:38.637    5 Class /Script/Engine.BrushComponent x3006
+16:04:38.637    6 Class /Script/Engine.BrushComponent x2267
+16:04:38.637    7 Class /Script/Engine.BrushComponent x2242
+16:04:38.638    8 Class /Script/Engine.BrushComponent x2242
+16:04:38.638    9 Class /Script/Engine.BrushComponent x2146
+16:04:38.638    10 Class /Script/Engine.BrushComponent x2146
+16:04:38.639    11 Class /Script/Engine.BrushComponent x2144
+16:04:38.639    12 Class /Script/Engine.BrushComponent x2144
+16:04:38.639    13 Class /Script/Engine.BrushComponent x2032
+16:04:38.639    14 Class /Script/Engine.BrushComponent x2032
+16:04:38.640    15 Class /Script/Engine.BrushComponent x1520
+16:04:38.640    16 Class /Script/Engine.BrushComponent x1502
+16:04:38.640    17 Class /Script/Engine.BrushComponent x1491
+16:04:38.640    18 Class /Script/Engine.BrushComponent x1384
+16:04:38.641    19 Class /Script/Engine.BrushComponent x1330
+16:04:38.641    20 Class /Script/Engine.BrushComponent x1317
+16:04:59.546 overlapall: bGenerateOverlapEvents возвращён у 24059 компонентов
+16:05:20.450 overlaptrim3: порог=2 правил белой метки=11 отключено=796 сохранено по метке=23263 освобождено записей=97990
+16:05:33.370 overlapsizes: компонентов=270616 с bGenerateOverlapEvents=269820 всего пересечений=199756
+16:05:33.372    1 Class /Script/Engine.BrushComponent x5090
+16:05:33.372    2 Class /Script/Engine.BrushComponent x4986
+16:05:33.373    3 Class /Script/Engine.BrushComponent x4968
+16:05:33.373    4 Class /Script/Engine.BrushComponent x3867
+16:05:33.373    5 Class /Script/Engine.BrushComponent x3006
+16:05:33.373    6 Class /Script/Engine.BrushComponent x2267
+16:05:33.373    7 Class /Script/Engine.BrushComponent x2242
+16:05:33.373    8 Class /Script/Engine.BrushComponent x2242
+16:05:33.374    9 Class /Script/Engine.BrushComponent x2146
+16:05:33.374    10 Class /Script/Engine.BrushComponent x2146
+16:05:33.374    11 Class /Script/Engine.BrushComponent x2144
+16:05:33.374    12 Class /Script/Engine.BrushComponent x2144
+16:05:33.375    13 Class /Script/Engine.BrushComponent x2032
+16:05:33.375    14 Class /Script/Engine.BrushComponent x2032
+16:05:33.375    15 Class /Script/Engine.BrushComponent x1520
+16:05:33.375    16 Class /Script/Engine.BrushComponent x1502
+16:05:33.376    17 Class /Script/Engine.BrushComponent x1491
+16:05:33.376    18 Class /Script/Engine.BrushComponent x1384
+16:05:33.376    19 Class /Script/Engine.BrushComponent x1330
+16:05:33.376    20 Class /Script/Engine.BrushComponent x1317
+18:10:43.352 loaded (Plugin_Init)
+18:10:43.354 bptrace v2: слотов=8192 глубина=256 QPC=10000000 Гц
+18:10:43.355 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+18:17:30.204 game thread tid=19188
+18:29:15.201 save: начало записи .ark (файлов 23)
+18:29:17.214 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 1
+18:44:14.379 save: начало записи .ark (файлов 23)
+18:44:16.382 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 2
+18:56:59.675 bptrace: перечисление: UFunction всего=40478 скриптовых(Func==&ProcessInternal)=40477
+18:57:01.105 bptrace: подмена Func у 40477 скриптовых UFunction (всего UFunction=40478)
+18:57:01.107 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+18:57:01.924 status: sampling=no tid=19188 samples=0 frames=68155
+18:59:13.920 save: начало записи .ark (файлов 23)
+18:59:15.509 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 3
+19:00:33.454 bptrace: вызовов всего 1110754 (окно 212 с, QPC 10000000 Гц)
+19:00:33.455 bptrace: функций с вызовами 55
+19:00:33.455 bptrace: ТОП-20 ПО ВЫЗОВАМ
+19:00:33.456 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=455550 total=39E
+19:00:33.456 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer вызовов=267256 total=77D
+19:00:33.457 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick вызовов=188294 total=58
+19:00:33.457 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick вызовов=42518 total=2C
+19:00:33.457 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/DamageTypes/DmgType_Explosion_NoWildOrStructureDamage.DmgType_Explosion_NoWildOrStructureDamage_C:BPAdjustDamage вызовов=20874 total=10
+19:00:33.457 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick вызовов=18222 total=3F
+19:00:33.458 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=9172 total=6F
+19:00:33.458 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage вызовов=6386 total=30
+19:00:33.458 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick вызовов=6074 total=1E
+19:00:33.458 bptrace:   Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick вызовов=6074 total=D
+19:00:33.459 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick вызовов=6074 total=8
+19:00:33.459 bptrace:   Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick вызовов=6074 total=9
+19:00:33.459 bptrace:   Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick вызовов=6074 total=7
+19:00:33.459 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick вызовов=6074 total=1A
+19:00:33.459 bptrace:   Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick вызовов=6074 total=7
+19:00:33.460 bptrace:   Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick вызовов=6074 total=7
+19:00:33.460 bptrace:   Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick вызовов=6074 total=6
+19:00:33.460 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature вызовов=6074 total=A
+19:00:33.460 bptrace:   Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated вызовов=6074 total=8
+19:00:33.461 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick вызовов=6074 total=18
+19:00:33.461 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=1016
+19:00:33.461 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer self=77D
+19:00:33.461 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=39E
+19:00:33.462 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ExecuteUbergraph_LunarMeteorController self=DF
+19:00:33.462 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=7D
+19:00:33.462 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=6F
+19:00:33.462 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=59
+19:00:33.463 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=58
+19:00:33.463 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick self=58
+19:00:33.463 bptrace:   Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers self=41
+19:00:33.463 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick self=3F
+19:00:33.463 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage self=30
+19:00:33.463 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick self=2C
+19:00:33.463 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer self=29
+19:00:33.464 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick self=1E
+19:00:33.464 bptrace:   Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation self=1A
+19:00:33.464 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick self=1A
+19:00:33.464 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick self=18
+19:00:33.465 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg self=11
+19:00:33.465 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/DamageTypes/DmgType_Explosion_NoWildOrStructureDamage.DmgType_Explosion_NoWildOrStructureDamage_C:BPAdjustDamage self=10
+19:00:33.465 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer self=E
+19:08:55.641 loaded (Plugin_Init)
+19:08:55.644 bptrace v2: слотов=8192 глубина=256 QPC=10000000 Гц
+19:08:55.645 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+19:14:39.050 game thread tid=17952
+19:18:14.176 bptrace: подмена Func у 40638 скриптовых UFunction (всего UFunction=40639)
+19:18:14.178 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+19:23:43.079 bptrace: вызовов всего 1840453 (окно 328 с, QPC 10000000 Гц)
+19:23:43.080 bptrace: функций с вызовами 220
+19:23:43.081 bptrace: ТОП-20 ПО ВЫЗОВАМ
+19:23:43.082 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=723825 total=1482.5мс self=1482.5мс мкс/вызов=2.05 native
+19:23:43.082 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer вызовов=424644 total=2808.0мс self=2808.0мс мкс/вызов=6.61 native
+19:23:43.082 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick вызовов=299181 total=140.0мс self=140.0мс мкс/вызов=0.47 native
+19:23:43.082 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer вызовов=71845 total=62619.7мс self=62619.7мс мкс/вызов=871.59 native
+19:23:43.083 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick вызовов=67557 total=69.6мс self=69.6мс мкс/вызов=1.03 native
+19:23:43.083 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick вызовов=28953 total=96.3мс self=96.3мс мкс/вызов=3.32 native
+19:23:43.084 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick вызовов=24613 total=186.6мс self=186.6мс мкс/вызов=7.58 native
+19:23:43.084 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=14341 total=177.1мс self=177.1мс мкс/вызов=12.35 native
+19:23:43.084 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage вызовов=9750 total=71.0мс self=71.0мс мкс/вызов=7.29 native
+19:23:43.084 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick вызовов=9651 total=49.3мс self=49.3мс мкс/вызов=5.11 native
+19:23:43.085 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick вызовов=9651 total=195.2мс self=195.2мс мкс/вызов=20.23 native
+19:23:43.085 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick вызовов=9651 total=13.9мс self=13.9мс мкс/вызов=1.44 native
+19:23:43.085 bptrace:   Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick вызовов=9651 total=13.0мс self=13.0мс мкс/вызов=1.35 native
+19:23:43.085 bptrace:   Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick вызовов=9651 total=12.4мс self=12.4мс мкс/вызов=1.28 native
+19:23:43.086 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick вызовов=9651 total=37.5мс self=37.5мс мкс/вызов=3.89 native
+19:23:43.086 bptrace:   Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick вызовов=9651 total=19.9мс self=19.9мс мкс/вызов=2.06 native
+19:23:43.086 bptrace:   Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick вызовов=9651 total=12.5мс self=12.5мс мкс/вызов=1.30 native
+19:23:43.086 bptrace:   Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick вызовов=9651 total=14.8мс self=14.8мс мкс/вызов=1.53 native
+19:23:43.087 bptrace:   Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick вызовов=9651 total=9.9мс self=9.9мс мкс/вызов=1.03 native
+19:23:43.087 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature вызовов=9651 total=15.7мс self=15.7мс мкс/вызов=1.63 native
+19:23:43.087 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=68894.8 мс)
+19:23:43.087 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer self=62619.7мс (90.9%) вызовов=71845 мкс/вызов=871.59 native
+19:23:43.088 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer self=2808.0мс (4.1%) вызовов=424644 мкс/вызов=6.61 native
+19:23:43.088 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=1482.5мс (2.2%) вызовов=723825 мкс/вызов=2.05 native
+19:23:43.088 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=195.2мс (0.3%) вызовов=9651 мкс/вызов=20.23 native
+19:23:43.088 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick self=186.6мс (0.3%) вызовов=24613 мкс/вызов=7.58 native
+19:23:43.089 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=177.1мс (0.3%) вызовов=14341 мкс/вызов=12.35 native
+19:23:43.089 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=145.1мс (0.2%) вызовов=3094 мкс/вызов=46.90 native
+19:23:43.089 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=143.7мс (0.2%) вызовов=187 мкс/вызов=768.68 native
+19:23:43.090 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick self=140.0мс (0.2%) вызовов=299181 мкс/вызов=0.47 native
+19:23:43.090 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick self=96.3мс (0.1%) вызовов=28953 мкс/вызов=3.32 native
+19:23:43.090 bptrace:   Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers self=95.4мс (0.1%) вызовов=2237 мкс/вызов=42.64 native
+19:23:43.090 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage self=71.0мс (0.1%) вызовов=9750 мкс/вызов=7.29 native
+19:23:43.090 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick self=69.6мс (0.1%) вызовов=67557 мкс/вызов=1.03 native
+19:23:43.091 bptrace:   Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick self=67.9мс (0.1%) вызовов=6164 мкс/вызов=11.02 native
+19:23:43.091 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer self=66.4мс (0.1%) вызовов=7741 мкс/вызов=8.58 native
+19:23:43.091 bptrace:   Function /Game/Genesis/Environment/Gameplay/BP_LunarElementPool.BP_LunarElementPool_C:TickVolume self=57.9мс (0.1%) вызовов=179 мкс/вызов=323.58 native
+19:23:43.091 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick self=49.3мс (0.1%) вызовов=9651 мкс/вызов=5.11 native
+19:23:43.092 bptrace:   Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation self=42.6мс (0.1%) вызовов=4826 мкс/вызов=8.82 native
+19:23:43.092 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick self=38.4мс (0.1%) вызовов=9651 мкс/вызов=3.98 native
+19:23:43.092 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick self=37.5мс (0.1%) вызовов=9651 мкс/вызов=3.89 native
+19:23:45.904 bptrace.caller: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer (вызовов=72790, self=63723.3мс)
+19:23:45.905 bptrace.caller:   <native/ProcessEvent-entry> вызовов=72790 (100.0%)
+19:23:46.729 bptrace.caller: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer (вызовов=429308, self=2839.8мс)
+19:23:46.729 bptrace.caller:   <native/ProcessEvent-entry> вызовов=429308 (100.0%)
+19:24:41.852 bptrace: счётчики обнулены (окно переоткрыто)
+19:26:45.194 save: начало записи .ark (файлов 23)
+19:26:48.197 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
+19:29:47.763 bptrace: вызовов всего 1625225 (окно 305 с, QPC 10000000 Гц)
+19:29:47.765 bptrace: функций с вызовами 149
+19:29:47.765 bptrace: ТОП-20 ПО ВЫЗОВАМ
+19:29:47.765 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=671100 total=1292.8мс self=1292.8мс мкс/вызов=1.93 native
+19:29:47.766 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer вызовов=393712 total=2376.8мс self=2376.8мс мкс/вызов=6.04 native
+19:29:47.766 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick вызовов=277388 total=118.5мс self=118.5мс мкс/вызов=0.43 native
+19:29:47.766 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick вызовов=62636 total=58.1мс self=58.1мс мкс/вызов=0.93 native
+19:29:47.766 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick вызовов=26844 total=79.6мс self=79.6мс мкс/вызов=2.97 native
+19:29:47.767 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick вызовов=14648 total=100.8мс self=100.8мс мкс/вызов=6.88 native
+19:29:47.767 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=13193 total=146.7мс self=146.7мс мкс/вызов=11.12 native
+19:29:47.767 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick вызовов=8948 total=32.2мс self=32.2мс мкс/вызов=3.60 native
+19:29:47.767 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick вызовов=8948 total=42.3мс self=42.3мс мкс/вызов=4.73 native
+19:29:47.768 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick вызовов=8948 total=11.4мс self=11.4мс мкс/вызов=1.28 native
+19:29:47.768 bptrace:   Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick вызовов=8948 total=10.1мс self=10.1мс мкс/вызов=1.13 native
+19:29:47.768 bptrace:   Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick вызовов=8948 total=9.2мс self=9.2мс мкс/вызов=1.03 native
+19:29:47.768 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick вызовов=8948 total=29.2мс self=29.2мс мкс/вызов=3.26 native
+19:29:47.769 bptrace:   Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick вызовов=8948 total=15.9мс self=15.9мс мкс/вызов=1.77 native
+19:29:47.769 bptrace:   Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick вызовов=8948 total=9.5мс self=9.5мс мкс/вызов=1.07 native
+19:29:47.769 bptrace:   Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick вызовов=8948 total=11.7мс self=11.7мс мкс/вызов=1.31 native
+19:29:47.769 bptrace:   Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick вызовов=8948 total=7.2мс self=7.2мс мкс/вызов=0.81 native
+19:29:47.770 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature вызовов=8948 total=13.1мс self=13.1мс мкс/вызов=1.47 native
+19:29:47.770 bptrace:   Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated вызовов=8948 total=12.2мс self=12.2мс мкс/вызов=1.36 native
+19:29:47.770 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick вызовов=8948 total=157.8мс self=157.8мс мкс/вызов=17.63 native
+19:29:47.770 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=7285.9 мс)
+19:29:47.771 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer self=2376.8мс (32.6%) вызовов=393712 мкс/вызов=6.04 native
+19:29:47.771 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer self=2117.2мс (29.1%) вызовов=3040 мкс/вызов=696.46 native
+19:29:47.771 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=1292.8мс (17.7%) вызовов=671100 мкс/вызов=1.93 native
+19:29:47.771 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=157.8мс (2.2%) вызовов=8948 мкс/вызов=17.63 native
+19:29:47.772 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=146.7мс (2.0%) вызовов=13193 мкс/вызов=11.12 native
+19:29:47.772 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=127.5мс (1.7%) вызовов=176 мкс/вызов=724.24 native
+19:29:47.772 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick self=118.5мс (1.6%) вызовов=277388 мкс/вызов=0.43 native
+19:29:47.772 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=114.2мс (1.6%) вызовов=2781 мкс/вызов=41.08 native
+19:29:47.773 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick self=100.8мс (1.4%) вызовов=14648 мкс/вызов=6.88 native
+19:29:47.773 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick self=79.6мс (1.1%) вызовов=26844 мкс/вызов=2.97 native
+19:29:47.773 bptrace:   Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers self=78.0мс (1.1%) вызовов=2050 мкс/вызов=38.07 native
+19:29:47.773 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage self=65.4мс (0.9%) вызовов=8940 мкс/вызов=7.32 native
+19:29:47.774 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick self=58.1мс (0.8%) вызовов=62636 мкс/вызов=0.93 native
+19:29:47.774 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer self=52.6мс (0.7%) вызовов=7055 мкс/вызов=7.46 native
+19:29:47.774 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick self=42.3мс (0.6%) вызовов=8948 мкс/вызов=4.73 native
+19:29:47.774 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick self=32.2мс (0.4%) вызовов=8948 мкс/вызов=3.60 native
+19:29:47.775 bptrace:   Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation self=31.1мс (0.4%) вызовов=4474 мкс/вызов=6.96 native
+19:29:47.775 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick self=29.2мс (0.4%) вызовов=8948 мкс/вызов=3.26 native
+19:29:47.775 bptrace:   Function /Game/Genesis/Dinos/Shapeshifter/Shapeshifter_Small/Shapeshifter_Small_Character_BP.Shapeshifter_Small_Character_BP_C:ReceiveTick self=26.3мс (0.4%) вызовов=2247 мкс/вызов=11.71 native
+19:29:47.775 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg self=26.1мс (0.4%) вызовов=960 мкс/вызов=27.23 native
+19:29:48.563 bptrace.caller: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables (вызовов=672900, self=1296.5мс)
+19:29:48.563 bptrace.caller:   <native/ProcessEvent-entry> вызовов=672900 (100.0%)
+19:32:11.372 bptrace: вызовов всего 2468923 (окно 449 с, QPC 10000000 Гц)
+19:32:11.374 bptrace: функций с вызовами 150
+19:32:11.374 bptrace: ТОП-20 ПО ВЫЗОВАМ
+19:32:11.375 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=992775 total=1930.7мс self=1930.7мс мкс/вызов=1.94 native
+19:32:11.375 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer вызовов=582428 total=3710.2мс self=3710.2мс мкс/вызов=6.37 native
+19:32:11.375 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick вызовов=410347 total=175.3мс self=175.3мс мкс/вызов=0.43 native
+19:32:11.375 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick вызовов=92659 total=86.9мс self=86.9мс мкс/вызов=0.94 native
+19:32:11.376 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer вызовов=78296 total=66759.0мс self=66759.0мс мкс/вызов=852.65 native
+19:32:11.376 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick вызовов=39711 total=120.5мс self=120.5мс мкс/вызов=3.03 native
+19:32:11.376 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=19482 total=215.3мс self=215.3мс мкс/вызов=11.05 native
+19:32:11.376 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick вызовов=14662 total=100.9мс self=100.9мс мкс/вызов=6.88 native
+19:32:11.376 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick вызовов=13237 total=62.4мс self=62.4мс мкс/вызов=4.72 native
+19:32:11.376 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_MatineeActor.VRBattle_MatineeActor_C:ReceiveTick вызовов=13237 total=16.8мс self=16.8мс мкс/вызов=1.27 native
+19:32:11.378 bptrace:   Function /Game/Maps/Genesis/Persistent_Arctic.Persistent_Arctic_C:ReceiveTick вызовов=13237 total=15.3мс self=15.3мс мкс/вызов=1.15 native
+19:32:11.378 bptrace:   Function /Game/Maps/Genesis/Persistent_Bog.Persistent_Bog_C:ReceiveTick вызовов=13237 total=14.1мс self=14.1мс мкс/вызов=1.07 native
+19:32:11.378 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick вызовов=13237 total=44.2мс self=44.2мс мкс/вызов=3.34 native
+19:32:11.378 bptrace:   Function /Game/Genesis/Environment/Lunar/Sky/BP_LunarSky.BP_LunarSky_C:ReceiveTick вызовов=13237 total=23.7мс self=23.7мс мкс/вызов=1.79 native
+19:32:11.378 bptrace:   Function /Game/Maps/Genesis/Persistent_Lunar.Persistent_Lunar_C:ReceiveTick вызовов=13237 total=15.8мс self=15.8мс мкс/вызов=1.20 native
+19:32:11.378 bptrace:   Function /Game/Maps/Genesis/Persistent_Ocean.Persistent_Ocean_C:ReceiveTick вызовов=13237 total=17.3мс self=17.3мс мкс/вызов=1.31 native
+19:32:11.378 bptrace:   Function /Game/Maps/Genesis/Persistent_Volcanic.Persistent_Volcanic_C:ReceiveTick вызовов=13237 total=11.1мс self=11.1мс мкс/вызов=0.84 native
+19:32:11.379 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:BndEvt__MatineeValueInterpolationContainer_Gen1_4_K2Node_ActorBoundEvent_475_ActorMatineeUpdated__DelegateSignature вызовов=13237 total=19.6мс self=19.6мс мкс/вызов=1.48 native
+19:32:11.379 bptrace:   Function /Game/PrimalEarth/Test_Dave/Gen1/Gen1_MatineeLink.Gen1_MatineeLink_C:RecieveMatineeUpdated вызовов=13237 total=19.1мс self=19.1мс мкс/вызов=1.44 native
+19:32:11.379 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick вызовов=13237 total=47.7мс self=47.7мс мкс/вызов=3.60 native
+19:32:11.379 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=74551.5 мс)
+19:32:11.381 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer self=66759.0мс (89.5%) вызовов=78296 мкс/вызов=852.65 native
+19:32:11.381 bptrace:   Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer self=3710.2мс (5.0%) вызовов=582428 мкс/вызов=6.37 native
+19:32:11.381 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=1930.7мс (2.6%) вызовов=992775 мкс/вызов=1.94 native
+19:32:11.381 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=236.5мс (0.3%) вызовов=13237 мкс/вызов=17.87 native
+19:32:11.381 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=215.3мс (0.3%) вызовов=19482 мкс/вызов=11.05 native
+19:32:11.381 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=183.7мс (0.2%) вызовов=253 мкс/вызов=725.93 native
+19:32:11.381 bptrace:   Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick self=175.3мс (0.2%) вызовов=410347 мкс/вызов=0.43 native
+19:32:11.381 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=174.7мс (0.2%) вызовов=4149 мкс/вызов=42.10 native
+19:32:11.381 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_StageLandingLocation.VRBattle_StageLandingLocation_C:ReceiveTick self=120.5мс (0.2%) вызовов=39711 мкс/вызов=3.03 native
+19:32:11.382 bptrace:   Function /Game/Genesis/Dinos/SpaceWhale/SpaceWhale_Character_BP.SpaceWhale_Character_BP_C:ScanForPlayers self=113.3мс (0.2%) вызовов=3026 мкс/вызов=37.45 native
+19:32:11.382 bptrace:   Function /Game/Genesis/Dinos/Swarms/InsectSwarmChar_BP.InsectSwarmChar_BP_C:ReceiveTick self=100.9мс (0.1%) вызовов=14662 мкс/вызов=6.88 native
+19:32:11.382 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage self=96.4мс (0.1%) вызовов=13200 мкс/вызов=7.30 native
+19:32:11.382 bptrace:   Function /Game/Genesis/Missions/VRBattle/VRBattle_CodeKeyTumbler.VRBattle_CodeKeyTumbler_C:ReceiveTick self=86.9мс (0.1%) вызовов=92659 мкс/вызов=0.94 native
+19:32:11.384 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_Hazard_BubbleBox.Buff_Hazard_BubbleBox_C:BuffTickServer self=79.1мс (0.1%) вызовов=10451 мкс/вызов=7.56 native
+19:32:11.384 bptrace:   Function /Game/Genesis/CoreBlueprints/GenesisBossArenaKiller.GenesisBossArenaKiller_C:ReceiveTick self=62.4мс (0.1%) вызовов=13237 мкс/вызов=4.72 native
+19:32:11.384 bptrace:   Function /Game/Maps/Genesis/Genesis.Genesis_C:ReceiveTick self=47.7мс (0.1%) вызовов=13237 мкс/вызов=3.60 native
+19:32:11.384 bptrace:   Function /Game/Genesis/Dinos/VRMainBoss/VRMainBossSkMeshActor_AnimBlueprint.VRMainBossSkMeshActor_AnimBlueprint_C:BlueprintUpdateAnimation self=47.3мс (0.1%) вызовов=6618 мкс/вызов=7.15 native
+19:32:11.385 bptrace:   Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ReceiveTick self=44.2мс (0.1%) вызовов=13237 мкс/вызов=3.34 native
+19:32:11.385 bptrace:   Function /Game/Genesis/CoreBlueprints/Buffs/Buff_CycloneBox.Buff_CycloneBox_C:BuffTickServer self=40.8мс (0.1%) вызовов=3563 мкс/вызов=11.46 native
+19:32:11.385 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg self=37.8мс (0.1%) вызовов=1380 мкс/вызов=27.36 native
+19:33:12.234 bptrace: выключен (вызовов 0), подмен снят с 40638 UFunction
+19:35:49.332 bptrace: выключен (вызовов 0), подмен снят с 0 UFunction
+19:37:53.097 bptrace: подмена Func у 40477 скриптовых UFunction (всего UFunction=40478)
+19:37:53.098 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+19:39:55.973 bptrace: выключен (вызовов 0), подмен снят с 40477 UFunction
+19:41:42.990 save: начало записи .ark (файлов 23)
+19:41:44.527 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 2
+19:56:42.961 save: начало записи .ark (файлов 23)
+19:56:44.485 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 3
+19:57:08.896 bptrace: выключен (вызовов 0), подмен снят с 0 UFunction
+19:57:12.976 window: 120 с, валидность проверяется автоматически
+19:59:12.978 window окно: t/s=29 cpu=13s ms/tick=3 frame_ms=33 busy=11% save=idle VALID
+20:00:20.146 bptrace: выключен (вызовов 0), подмен снят с 0 UFunction
+20:00:24.241 window: 120 с, валидность проверяется автоматически
+20:02:24.260 window окно: t/s=29 cpu=58s ms/tick=16 frame_ms=34 busy=48% save=idle VALID
+20:03:32.054 bptrace: подмена Func у 40477 скриптовых UFunction (всего UFunction=40478)
+20:03:32.056 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+20:03:36.163 window: 120 с, валидность проверяется автоматически
+20:05:36.176 window окно: t/s=28 cpu=18s ms/tick=5 frame_ms=34 busy=15% save=idle VALID
+20:06:43.360 bptrace: подмена Func у 0 скриптовых UFunction (всего UFunction=40478)
+20:06:43.361 bptrace: подменять нечего - скриптовых UFunction не найдено
+20:06:47.443 window: 120 с, валидность проверяется автоматически
+20:08:31.408 bptrace: перечисление: UFunction всего=40478 скриптовых(Func==&ProcessInternal)=0
+20:08:34.324 window: 120 с, валидность проверяется автоматически
+20:10:34.319 window окно: t/s=29 cpu=30s ms/tick=8 frame_ms=33 busy=25% save=idle VALID
+20:10:45.172 bptrace.caller: Function /Game/Genesis/CoreBlueprints/Environment/Hazards/Lunar/LunarMeteorController.LunarMeteorController_C:ExecuteUbergraph_LunarMeteorController (вызовов=535, self=217.2мс)
+20:10:45.172 bptrace.caller:   <native/ProcessEvent-entry> вызовов=535 (100.0%)
+20:11:34.228 bptrace: выключен (вызовов 0), подмен снят с 40477 UFunction
+20:11:38.163 fnflags: Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:38.213 fnflags: показано 1
+20:11:43.058 save: начало записи .ark (файлов 23)
+20:11:43.125 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ExecuteUbergraph_Buff_Grappled_BogSpider script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.125 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:Multi_SyncSlingshotRatios script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.125 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:Multi_ForceStopSlingshot script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.125 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:Server_OnSwingTracePredictedHitFound script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.126 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:UserConstructionScript script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.126 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:OnGrappleStateChangedNotify script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.126 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:EndGrapple script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.127 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:OnGrappleTethersChanged script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.127 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ShouldForceOwnerIntoFallingState script=yes parms=4 out=3 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.127 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:CanChangeGrappleState script=yes parms=2 out=1 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.127 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetGrappleVelocityDampingRate script=yes parms=3 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.128 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetGrappleTetherPullAcceleration script=yes parms=3 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.128 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetGrappleTetherPullMaxVelocity script=yes parms=3 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.128 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:Tick_TraceForSwingCollisions script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.128 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickClient script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:CheckForSwingCollision script=yes parms=3 out=2 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BuffTickServer script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ModifyTetherMoveVelocity script=yes parms=2 out=2 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ReceiveBeginPlay script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:IsValidSwingHit script=yes parms=2 out=2 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:OnGrappledPrimalChar script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:OnReleasedPrimalChar script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.129 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ModifyOverriddenCharVelocity script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.130 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:CanRotateCharVelocity script=yes parms=1 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.130 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetCurrentGrappleState script=yes parms=2 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.130 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:CanOwnerGrappleSwing script=yes parms=1 out=1 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.131 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:WhichWebIsOnRightSideOfView script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.131 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:IsTetherLeftWeb script=yes parms=3 out=3 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.131 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:BPGetGravityZScale script=yes parms=2 out=1 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.131 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:SimulateTautTetherForces script=yes parms=3 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.132 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:IsSpiderTryingToSlingshot script=yes parms=3 out=2 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.132 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ShouldTetherBreak script=yes parms=4 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.132 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetTetherBreakLimit_OwnerPastCurrentLengthDelta script=yes parms=2 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.132 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ClampGrappleVelocity script=yes parms=1 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.132 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:IsSlingshotLaunchingPure script=yes parms=1 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.133 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:IsSlingshotLaunching script=yes parms=1 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.133 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ForceStopSlingshot script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.133 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:SyncSlingshotRatios script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:43.134 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:ApplyTetherMoveVelocity script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.134 fnflags: Function /Game/Genesis/Dinos/BogSpider/Buff_Grappled_BogSpider.Buff_Grappled_BogSpider_C:GetCurrentTetherMoveDir script=yes parms=2 out=2 return=1 ЗАПРЕЩЕНО-для-троттлинга
+20:11:43.134 fnflags: показано 40
+20:11:44.049 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ExecuteUbergraph_MissionSpline_Base script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.050 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveTick script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.050 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ReceiveBeginPlay script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.050 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:UserConstructionScript script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.050 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:MakeSpline script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.051 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:UpdateSpline script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.051 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ClearParticles script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.051 fnflags: Function /Game/Genesis/Missions/MissionSpline_Base.MissionSpline_Base_C:ActivateParticlesBetweenLocations script=yes parms=2 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.076 fnflags: показано 8
+20:11:44.587 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 4
+20:11:44.960 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:ExecuteUbergraph_Buff_UnderwaterCyclone script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.961 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:UserConstructionScript script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.961 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:ReceiveBeginPlay script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.961 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickServer script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BuffTickClient script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:Apply Force script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:Get Sea ZAt Location script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:InitializeCyclone script=yes parms=7 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:OnRep_CycloneHeight script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.962 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:OnRep_CycloneForceRadius script=yes parms=0 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.963 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:BPDeactivated script=yes parms=1 out=0 return=0 БЕЗОПАСНО-для-троттлинга
+20:11:44.963 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:GetCycloneCenterLocation script=yes parms=1 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.963 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:Get Affect Radius at Location script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.963 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:GetStateAtLocation script=yes parms=3 out=2 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.964 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:GetPullingSpeedAtLocation script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.964 fnflags: Function /Game/Genesis/CoreBlueprints/Buffs/Buff_UnderwaterCyclone.Buff_UnderwaterCyclone_C:GetPullingRadiusAtLocation script=yes parms=2 out=1 return=0 ЗАПРЕЩЕНО-для-троттлинга
+20:11:44.991 fnflags: показано 16
+20:16:45.650 save: начало записи .ark (файлов 23)
+20:16:47.482 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 5
+20:31:45.033 loaded (Plugin_Init)
+20:31:45.036 bptrace v2: слотов=8192 глубина=256 QPC=10000000 Гц
+20:31:45.037 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+20:36:53.050 game thread tid=13320
+20:37:05.970 status: sampling=no tid=13320 samples=0 frames=185
+20:44:07.288 bptrace: подмена Func у 37085 скриптовых UFunction (всего UFunction=37086)
+20:44:07.290 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+20:44:11.042 window: 240 с, валидность проверяется автоматически
+20:48:11.050 window окно: t/s=29 cpu=25s ms/tick=3 frame_ms=33 busy=10% save=idle VALID
+20:48:11.951 bptrace: вызовов всего 878356 (окно 244 с, QPC 10000000 Гц)
+20:48:11.952 bptrace: функций с вызовами 94
+20:48:11.952 bptrace: ТОП-20 ПО ВЫЗОВАМ
+20:48:11.953 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=665119 total=1263.0мс self=1263.0мс мкс/вызов=1.90 native
+20:48:11.953 bptrace:   Function /Game/PrimalEarth/Dinos/Thylacoleo/Thylacoleo_Character_BP.Thylacoleo_Character_BP_C:CheckUntil_SetAiLatchedToTree вызовов=116944 total=314.9мс self=314.9мс мкс/вызов=2.69 native
+20:48:11.954 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager.BossArenaManager_C:ReceiveTick вызовов=21927 total=40.1мс self=40.1мс мкс/вызов=1.83 native
+20:48:11.954 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=16548 total=177.3мс self=177.3мс мкс/вызов=10.72 native
+20:48:11.954 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager_EndBoss.BossArenaManager_EndBoss_C:ReceiveTick вызовов=7309 total=26.3мс self=26.3мс мкс/вызов=3.60 native
+20:48:11.954 bptrace:   Function /Game/Maps/TheIslandSubMaps/BossArena_FinalBoss.BossArena_FinalBoss_C:ReceiveTick вызовов=7309 total=36.3мс self=36.3мс мкс/вызов=4.97 native
+20:48:11.955 bptrace:   Function /Game/Maps/TheIslandSubMaps/TheIsland.TheIsland_C:BndEvt__MatineeValueInterpolationContainer_4_K2Node_ActorBoundEvent_256_ActorMatineeUpdated__DelegateSignature вызовов=7309 total=17.2мс self=17.2мс мкс/вызов=2.36 native
+20:48:11.955 bptrace:   Function /Game/Maps/TheIslandSubMaps/TheIsland.TheIsland_C:ReceiveTick вызовов=7309 total=11.9мс self=11.9мс мкс/вызов=1.63 native
+20:48:11.956 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/DungeonArenaManager.DungeonArenaManager_C:ReceiveTick вызовов=7309 total=10.3мс self=10.3мс мкс/вызов=1.41 native
+20:48:11.956 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick вызовов=7309 total=126.6мс self=126.6мс мкс/вызов=17.32 native
+20:48:11.956 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick вызовов=7267 total=269.6мс self=269.6мс мкс/вызов=37.09 native
+20:48:11.956 bptrace:   Function /Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP_C:HasSelfBuried вызовов=3743 total=11.5мс self=11.5мс мкс/вызов=3.07 native
+20:48:11.957 bptrace:   Function /Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP_C:BPTimerServer вызовов=892 total=7.3мс self=7.3мс мкс/вызов=8.15 native
+20:48:11.957 bptrace:   Function /Game/PrimalEarth/Dinos/Titanosaur/Titanosaur_Character_BP.Titanosaur_Character_BP_C:ForceTamedTick вызовов=485 total=9.8мс self=9.8мс мкс/вызов=20.25 native
+20:48:11.957 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Dino_Character_BP_Pack.Dino_Character_BP_Pack_C:BPTimerServer вызовов=466 total=6.8мс self=6.8мс мкс/вызов=14.64 native
+20:48:11.957 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Dino_Character_BP_Pack.Dino_Character_BP_Pack_C:UpdatePack вызовов=390 total=30.1мс self=30.1мс мкс/вызов=77.12 native
+20:48:11.958 bptrace:   Function /Game/PrimalEarth/Dinos/Bigfoot/DinoCharacter_BP_Zipline.DinoCharacter_BP_Zipline_C:BPTimerServer вызовов=102 total=1.6мс self=1.6мс мкс/вызов=16.04 native
+20:48:11.958 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick вызовов=42 total=4.0мс self=4.0мс мкс/вызов=95.69 native
+20:48:11.958 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BaseAnimBlueprints/DinoBlueprintBase_RootBoneName.DinoBlueprintBase_RootBoneName_C:EvaluateGraphExposedInputs_ExecuteUbergraph_DinoBlueprintBase_RootBoneName_AnimGraphNode_BlendListByBool_2671 вызовов=34 total=0.0мс self=0.0мс мкс/вызов=0.97 native
+20:48:11.958 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BaseAnimBlueprints/DinoBlueprintBase_RootBoneName.DinoBlueprintBase_RootBoneName_C:BlueprintUpdateAnimation вызовов=26 total=0.4мс self=0.4мс мкс/вызов=14.33 native
+20:48:11.959 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=2370.8 мс)
+20:48:11.959 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=1263.0мс (53.3%) вызовов=665119 мкс/вызов=1.90 native
+20:48:11.959 bptrace:   Function /Game/PrimalEarth/Dinos/Thylacoleo/Thylacoleo_Character_BP.Thylacoleo_Character_BP_C:CheckUntil_SetAiLatchedToTree self=314.9мс (13.3%) вызовов=116944 мкс/вызов=2.69 native
+20:48:11.959 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=269.6мс (11.4%) вызовов=7267 мкс/вызов=37.09 native
+20:48:11.960 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=177.3мс (7.5%) вызовов=16548 мкс/вызов=10.72 native
+20:48:11.960 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=126.6мс (5.3%) вызовов=7309 мкс/вызов=17.32 native
+20:48:11.960 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager.BossArenaManager_C:ReceiveTick self=40.1мс (1.7%) вызовов=21927 мкс/вызов=1.83 native
+20:48:11.960 bptrace:   Function /Game/Maps/TheIslandSubMaps/BossArena_FinalBoss.BossArena_FinalBoss_C:ReceiveTick self=36.3мс (1.5%) вызовов=7309 мкс/вызов=4.97 native
+20:48:11.960 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Dino_Character_BP_Pack.Dino_Character_BP_Pack_C:UpdatePack self=30.1мс (1.3%) вызовов=390 мкс/вызов=77.12 native
+20:48:11.961 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager_EndBoss.BossArenaManager_EndBoss_C:ReceiveTick self=26.3мс (1.1%) вызовов=7309 мкс/вызов=3.60 native
+20:48:11.961 bptrace:   Function /Game/Maps/TheIslandSubMaps/TheIsland.TheIsland_C:BndEvt__MatineeValueInterpolationContainer_4_K2Node_ActorBoundEvent_256_ActorMatineeUpdated__DelegateSignature self=17.2мс (0.7%) вызовов=7309 мкс/вызов=2.36 native
+20:48:11.962 bptrace:   Function /Game/Maps/TheIslandSubMaps/TheIsland.TheIsland_C:ReceiveTick self=11.9мс (0.5%) вызовов=7309 мкс/вызов=1.63 native
+20:48:11.962 bptrace:   Function /Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP_C:HasSelfBuried self=11.5мс (0.5%) вызовов=3743 мкс/вызов=3.07 native
+20:48:11.962 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/DungeonArenaManager.DungeonArenaManager_C:ReceiveTick self=10.3мс (0.4%) вызовов=7309 мкс/вызов=1.41 native
+20:48:11.962 bptrace:   Function /Game/PrimalEarth/Dinos/Titanosaur/Titanosaur_Character_BP.Titanosaur_Character_BP_C:ForceTamedTick self=9.8мс (0.4%) вызовов=485 мкс/вызов=20.25 native
+20:48:11.963 bptrace:   Function /Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP_C:BPTimerServer self=7.3мс (0.3%) вызовов=892 мкс/вызов=8.15 native
+20:48:11.963 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Dino_Character_BP_Pack.Dino_Character_BP_Pack_C:BPTimerServer self=6.8мс (0.3%) вызовов=466 мкс/вызов=14.64 native
+20:48:11.963 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=4.0мс (0.2%) вызовов=42 мкс/вызов=95.69 native
+20:48:11.963 bptrace:   Function /Game/PrimalEarth/Dinos/Purlovia/Purlovia_Character_BP.Purlovia_Character_BP_C:ReceiveBeginPlay self=2.1мс (0.1%) вызовов=5 мкс/вызов=418.56 native
+20:48:11.964 bptrace:   Function /Game/PrimalEarth/Dinos/Bigfoot/DinoCharacter_BP_Zipline.DinoCharacter_BP_Zipline_C:BPTimerServer self=1.6мс (0.1%) вызовов=102 мкс/вызов=16.04 native
+20:48:11.964 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:BPPreSpawnedDino self=1.4мс (0.1%) вызовов=21 мкс/вызов=67.61 native
+20:48:15.739 overlaps: хук BeginComponentOverlap установлен
+20:48:15.740 overlaps: окно 20 с
+20:49:01.515 bptrace: выключен (вызовов 0), подмен снят с 37085 UFunction
+20:49:07.272 status: sampling=no tid=13320 samples=0 frames=20294
+20:49:52.609 save: начало записи .ark (файлов 23)
+20:49:55.632 save: запись .ark завершилась, длительность 2016 мс, всего сохранений 1
+20:52:18.322 loaded (Plugin_Init)
+20:52:18.325 bptrace v2: слотов=8192 глубина=256 QPC=10000000 Гц
+20:52:18.325 tickclamp: есть tickprof_noclamp.txt, авто-патч выключен
+20:58:00.454 game thread tid=9004
+20:58:09.165 status: sampling=no tid=9004 samples=0 frames=158
+21:05:10.527 bptrace: подмена Func у 39150 скриптовых UFunction (всего UFunction=39151)
+21:05:10.529 bptrace: включён v2 (патч ДАННЫХ UFunction::Func; учёт времени total/self, атрибуция вызывающего через FFrame::PreviousFrame)
+21:05:14.284 window: 240 с, валидность проверяется автоматически
+21:09:14.312 window окно: t/s=29 cpu=32s ms/tick=4 frame_ms=33 busy=13% save=idle VALID
+21:09:15.189 bptrace: вызовов всего 1053757 (окно 244 с, QPC 10000000 Гц)
+21:09:15.191 bptrace: функций с вызовами 150
+21:09:15.191 bptrace: ТОП-20 ПО ВЫЗОВАМ
+21:09:15.192 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables вызовов=780565 total=1555.2мс self=1555.2мс мкс/вызов=1.99 native
+21:09:15.192 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Traps/ArrowTrap_Dwarven_Cave.ArrowTrap_Dwarven_Cave_C:ReceiveTick вызовов=138605 total=90.8мс self=90.8мс мкс/вызов=0.66 native
+21:09:15.192 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager.BossArenaManager_C:ReceiveTick вызовов=29180 total=48.1мс self=48.1мс мкс/вызов=1.65 native
+21:09:15.193 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer вызовов=12843 total=158.0мс self=158.0мс мкс/вызов=12.31 native
+21:09:15.193 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Helheim/BossArenaManager_Jotunheim_Back.BossArenaManager_Jotunheim_Back_C:ReceiveTick вызовов=7295 total=5.5мс self=5.5мс мкс/вызов=0.75 native
+21:09:15.193 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Fjordur_DayCycle.Fjordur_DayCycle_C:ReceiveTick вызовов=7295 total=21.1мс self=21.1мс мкс/вызов=2.90 native
+21:09:15.194 bptrace:   Function /Game/Mods/FjordurOfficial/Fjordur.Fjordur_C:BndEvt__MatineeValueInterpolationContainer_4_K2Node_ActorBoundEvent_140_ActorMatineeUpdated__DelegateSignature вызовов=7295 total=12.0мс self=12.0мс мкс/вызов=1.64 native
+21:09:15.194 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Vanaheim/BossArenaManager_Vanaheim_Back.BossArenaManager_Vanaheim_Back_C:ReceiveTick вызовов=7295 total=4.9мс self=4.9мс мкс/вызов=0.68 native
+21:09:15.194 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Vanaheim/BossArenaManager_Vanaheim.BossArenaManager_Vanaheim_C:ReceiveTick вызовов=7295 total=5.9мс self=5.9мс мкс/вызов=0.81 native
+21:09:15.194 bptrace:   Function /Game/Mods/FjordurOfficial/Fjordur.Fjordur_C:ReceiveTick вызовов=7295 total=18.5мс self=18.5мс мкс/вызов=2.54 native
+21:09:15.195 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Asgard/BossArenaManager_Asgard.BossArenaManager_Asgard_C:ReceiveTick вызовов=7295 total=19.7мс self=19.7мс мкс/вызов=2.69 native
+21:09:15.195 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Asgard/BossArenaManager_AsgardBack.BossArenaManager_AsgardBack_C:ReceiveTick вызовов=7295 total=5.8мс self=5.8мс мкс/вызов=0.79 native
+21:09:15.195 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick вызовов=7295 total=135.1мс self=135.1мс мкс/вызов=18.53 native
+21:09:15.195 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Helheim/BossArenaManager_Jotunheim.BossArenaManager_Jotunheim_C:ReceiveTick вызовов=7295 total=5.8мс self=5.8мс мкс/вызов=0.80 native
+21:09:15.195 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick вызовов=6393 total=597.9мс self=597.9мс мкс/вызов=93.52 native
+21:09:15.196 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Buffs/Buff_DinoPackLeader.Buff_DinoPackLeader_C:ReceiveTick вызовов=4305 total=10.9мс self=10.9мс мкс/вызов=2.53 native
+21:09:15.196 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage вызовов=1952 total=11.4мс self=11.4мс мкс/вызов=5.84 native
+21:09:15.196 bptrace:   Function /Game/Genesis2/Dinos/TekStrider/AttachmentBuffs/InstantMachineguns_Head/Buff_TekStrider_Machinegun.Buff_TekStrider_Machinegun_C:BuffTickServer вызовов=1175 total=11.6мс self=11.6мс мкс/вызов=9.89 native
+21:09:15.196 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/PrimalInventoryBP_EggIncubator.PrimalInventoryBP_EggIncubator_C:BPNotifyItemAdded вызовов=1144 total=37.4мс self=7.4мс мкс/вызов=6.43 native
+21:09:15.197 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg вызовов=1144 total=30.1мс self=30.1мс мкс/вызов=26.29 native
+21:09:15.197 bptrace: ТОП-20 ПО SELF-ВРЕМЕНИ (сумма self=2966.8 мс)
+21:09:15.197 bptrace:   Function /Game/PrimalEarth/Dinos/Ichthyornis/Ichthyornis_Character_BP.Ichthyornis_Character_BP_C:InitializeLandingVariables self=1555.2мс (52.4%) вызовов=780565 мкс/вызов=1.99 native
+21:09:15.197 bptrace:   Function /Game/PrimalEarth/Dinos/Mammoth/Mammoth_Character_BP.Mammoth_Character_BP_C:ThrottledTick self=597.9мс (20.2%) вызовов=6393 мкс/вызов=93.52 native
+21:09:15.197 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ThrottledTick self=161.7мс (5.4%) вызовов=352 мкс/вызов=459.27 native
+21:09:15.199 bptrace:   Function /Game/PrimalEarth/Dinos/Bee/Bee_Queen_Character_BP.Bee_Queen_Character_BP_C:BPTimerServer self=158.0мс (5.3%) вызовов=12843 мкс/вызов=12.31 native
+21:09:15.199 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C:ReceiveTick self=135.1мс (4.6%) вызовов=7295 мкс/вызов=18.53 native
+21:09:15.199 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Traps/ArrowTrap_Dwarven_Cave.ArrowTrap_Dwarven_Cave_C:ReceiveTick self=90.8мс (3.1%) вызовов=138605 мкс/вызов=0.66 native
+21:09:15.199 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/BossTribute/BossArenaManager.BossArenaManager_C:ReceiveTick self=48.1мс (1.6%) вызовов=29180 мкс/вызов=1.65 native
+21:09:15.199 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/EggIncubator.EggIncubator_C:ServerAddFertilizedEgg self=30.1мс (1.0%) вызовов=1144 мкс/вызов=26.29 native
+21:09:15.199 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Dino_Character_BP_Pack.Dino_Character_BP_Pack_C:UpdatePack self=26.9мс (0.9%) вызовов=390 мкс/вызов=68.94 native
+21:09:15.199 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Fjordur_DayCycle.Fjordur_DayCycle_C:ReceiveTick self=21.1мс (0.7%) вызовов=7295 мкс/вызов=2.90 native
+21:09:15.200 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Asgard/BossArenaManager_Asgard.BossArenaManager_Asgard_C:ReceiveTick self=19.7мс (0.7%) вызовов=7295 мкс/вызов=2.69 native
+21:09:15.200 bptrace:   Function /Game/Mods/FjordurOfficial/Fjordur.Fjordur_C:ReceiveTick self=18.5мс (0.6%) вызовов=7295 мкс/вызов=2.54 native
+21:09:15.200 bptrace:   Function /Game/Mods/FjordurOfficial/Fjordur.Fjordur_C:BndEvt__MatineeValueInterpolationContainer_4_K2Node_ActorBoundEvent_140_ActorMatineeUpdated__DelegateSignature self=12.0мс (0.4%) вызовов=7295 мкс/вызов=1.64 native
+21:09:15.200 bptrace:   Function /Game/Genesis2/Dinos/TekStrider/AttachmentBuffs/InstantMachineguns_Head/Buff_TekStrider_Machinegun.Buff_TekStrider_Machinegun_C:BuffTickServer self=11.6мс (0.4%) вызовов=1175 мкс/вызов=9.89 native
+21:09:15.201 bptrace:   Function /Game/Genesis/Dinos/Cherufe/Cherufe_Character_BP.Cherufe_Character_BP_C:BPAdjustDamage self=11.4мс (0.4%) вызовов=1952 мкс/вызов=5.84 native
+21:09:15.201 bptrace:   Function /Game/PrimalEarth/CoreBlueprints/Buffs/Buff_DinoPackLeader.Buff_DinoPackLeader_C:ReceiveTick self=10.9мс (0.4%) вызовов=4305 мкс/вызов=2.53 native
+21:09:15.201 bptrace:   Function /Game/Genesis2/Structures/EggIncubator/PrimalInventoryBP_EggIncubator.PrimalInventoryBP_EggIncubator_C:BPNotifyItemAdded self=7.4мс (0.2%) вызовов=1144 мкс/вызов=6.43 native
+21:09:15.201 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Vanaheim/BossArenaManager_Vanaheim.BossArenaManager_Vanaheim_C:ReceiveTick self=5.9мс (0.2%) вызовов=7295 мкс/вызов=0.81 native
+21:09:15.201 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Helheim/BossArenaManager_Jotunheim.BossArenaManager_Jotunheim_C:ReceiveTick self=5.8мс (0.2%) вызовов=7295 мкс/вызов=0.80 native
+21:09:15.203 bptrace:   Function /Game/Mods/FjordurOfficial/Assets/Teleports/Asgard/BossArenaManager_AsgardBack.BossArenaManager_AsgardBack_C:ReceiveTick self=5.8мс (0.2%) вызовов=7295 мкс/вызов=0.79 native
+21:09:18.962 overlaps: хук BeginComponentOverlap установлен
+21:09:18.963 overlaps: окно 20 с
+21:10:04.733 bptrace: выключен (с 0 включения вызовов 1265793), подмен снят с 39150 UFunction
+21:10:10.490 status: sampling=no tid=9004 samples=0 frames=21063
+21:10:16.245 save: начало записи .ark (файлов 23)
+21:10:19.248 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
+21:10:50.026 save: начало записи .ark (файлов 23)
+21:10:53.029 save: запись .ark завершилась, длительность 3000 мс, всего сохранений 2

@@ -2405,3 +2405,45 @@ frame 16 мс, ms/tick 8-12 (внешний на чистом под-режим�
   отчёт с именами, откат - сервер жив, crashfilter молчит.
 - Отчёт: C:/Dev/_research/REPORT-SLOT-D-BPTRACE.md (секция 2.7 - таблица пар).
 - Стенд: оставляю в паркованном состоянии (конфиг trim3 применён, сервер остановлен).
+
+## 22.10.2026, 18:10-21:20 — слот E (по doit8.txt в дополненной версии doit8_amended.txt)
+
+- П1 bptrace v2 реализован: патч данных UFunction::Func (как в слоте D) + учёт ВРЕМЕНИ
+  (QPC 10 МГц; thread-local стек (слот, старт, дети); self = total - дети; глубина <=256).
+  Ghidra-подтверждение: FFrame::Node=+0x10, FFrame::PreviousFrame=+0x70
+  (CallFunction @0x141FBFEF0 создаёт кадр с PreviousFrame=кадр вызывающего;
+  ProcessEvent даёт 0); UStruct+0x38 = цепочка свойств, FProperty+0x28=Next, +0x38=флаги
+  (0x80=Parm, 0x100=OutParm, 0x400=ReturnParm).
+  Комментарий к директиве: "время только на глубине 0" уточнено (таймим каждый вызов,
+  дети уходят родителю) - см. doit8_amended.txt.
+- Приёмка П1: два независимых окна в фазе на Genesis - порядок топ-3 по self-времени
+  воспроизводится (90.9/4.1/2.2% -> 89.5/5.0/2.6%). A/B OFF/ON: 4 руки, t/s=29/29/28/29,
+  ms/tick=3/16/5/8, размах внутри OFF больше дельты => накладные В ШУМЕ. Откат проверен
+  ("снят с 40477", перечисление после отката: скриптовых=0). CrashFilter молчит весь слот.
+- НОВОСТЬ П1: Buff_UnderwaterCyclone_C:BuffTickServer - вместо лидера по вызовам - №1
+  по self-времени на Genesis (871 мкс/вызов, 62.6 с за окно 328 c = ~19% времени потока);
+  слот D его не видел (смотрели только счётчики вызовов).
+- П3 (caller): bptrace.caller по всем топам -> 100% "<native/ProcessEvent-entry>":
+  лидеров зовёт нативный ProcessEvent, BP-вызывающих нет. Имя нативного автора - RE (слот F).
+- П2 (матрица): Genesis/TheIsland/Fjordur, все окна VALID; Server2 НЕ снимался (решение
+  владельца). TheIsland: Ichthyornis 53.3% (1263 мс/244 c), Thylacoleo CheckUntil_ 13.3%;
+  Fjordur: Ichthyornis 52.4% (1555 мс), модовая ArrowTrap_Dwarven_Cave 138605 вызовов.
+  Ichthyornis = универсальный лидер (2.0 мкс/вызов, 2.2-3.2 тыс. вызовов/с). Нормировка
+  на 1000 акторов не посчитана (census не снят на вторичных картах) - задача слота F.
+- П4 (подготовка): TickProf.fnflags работает: Buff_UnderwaterCyclone:BuffTickServer
+  parms=1/out=0/return=0 = БЕЗОПАСНО; функции с out (GetStateAtLocation out=2 и др.)
+  - ЗАПРЕЩЕНО. Троттлинг НЕ включён (нет живого сеанса для чеклиста).
+- П5 (правило тишины): cooldown 60 c после сэмплер-окна реализован (блок start/window/
+  perf/overlaps/bptrace; срабатывание и отказ пишутся в лог); A/B окна с паузами 65 c
+  проходят без отказов.
+- Фиксы по ходу: мини-форматтер S() не умеет "{:.Nf}" (трактовал как hex: 926->"39E") -
+  дробные числа теперь через snprintf (BpFmt); печать счётчика при bptrace 0 - ДО сброса;
+  повторное bptrace 1 поверх активного - "уже включён" (idempotent).
+- Инциденты: бут TheIsland падал с UnicodeEncodeError (cp1252) - нужен PYTHONIOENCODING=utf-8
+  при Start-Process; stop_server.py зависает (>180 c) - замена: rcon saveworld/exit + taskkill.
+- Понятые ограничения: вывод CPU-судьи на 60-с руках шумный (0.6-3.3% на 24 ядрах) -
+  не разрешает дельту стаба; упор делался на пары окон VALID.
+- Стенд припаркован: процессов ShooterGameServer=0; DLL 401920 Б (fix отчётов + idempotent);
+  trim3 в прод-конфиге не трогали; Server2 не тронут.
+- Отчёт: REPORT-SLOT-E.md; сырые данные: slotE/ (лог), slotE_ab.py, slotE_measure.py,
+  doit8_amended.txt.
