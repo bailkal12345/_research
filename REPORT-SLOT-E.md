@@ -1,169 +1,169 @@
-# Отчёт слота E — bptrace v2 (время), матрица сейвов, атрибуция вызывающих
+# Slot E Report — bptrace v2 (time), save matrix, caller attribution
 
-Дата: 22.10.2026, ~18:10–21:15
-Директива: `doit8.txt` (выполнена по дополненной версии: `C:\Users\Admin\Desktop\doit8_amended.txt`,
-копия в `_research\doit8_amended.txt`)
+Date: 22.10.2026, ~18:10–21:15
+Directive: `doit8.txt` (executed per the amended version: `C:\Users\Admin\Desktop\doit8_amended.txt`,
+copy in `_research\doit8_amended.txt`)
 
-## 1. Главный ответ (абзацем)
+## 1. Main answer (in one paragraph)
 
-bptrace v2 реализован и закрыл ключевую дыру слота D: теперь мы видим **время** на функцию, а
-не только вызовы. Формула «топ по вызовам ≠ топ по CPU» получила второе измерение: на Genesis
-кол-во вызовов и self-время разошлись (порядок топ-3 по вызовам —
-Ichthyornis/BogSpider/MissionSpline — не совпал с топ-3 по self, где тяжёлый
-`Buff_UnderwaterCyclone_C:BuffTickServer` вдруг оказался №1 с 90%+ сам-времени BP и
-850–870 мкс/вызов — его слот D не видел вовсе, т.к. смотрел только счётчики вызовов), а на
-свежих картах TheIsland/Fjordur с новым признанным лидером сошлись оба списка: пtiца
-`Ichthyornis_Character_BP_C:InitializeLandingVariables` — 52–53% сам-времени BP и 2,0 мкс/вызов,
-2026–3197 вызовов/с, на всех трёх картах. Порядок топ-3 по self-времени **воспроизводится** в
-двух независимых окнах на Genesis (90.9/4.1/2.2% → 89.5/5.0/2.6%) — приёмка П1 выполнена.
-A/B OFF/ON на четырёх валидных руках: t/s 29/29/28/29, ms/tick 3/16/5/8 — разброс внутри
-OFF (3↔16) больше дельты OFF↔ON, **накладной расход стаба — в шуме** (приёмка П1 — п.2).
-Арибуция вызывающих (П3) через `FFrame::PreviousFrame` (+0x70, проверено Ghidra) работает,
-но у всех топов ответ один: **100% `<native/ProcessEvent-entry>`** — лидеров зовёт нативный
-код, а не BP-скрипты; конкретный нативный автор (для ichthyornis) остаётся задачей RE.
-Матрица сейвов (П2) снята на трёх картах (Genesis/TheIsland/Fjordur); Server2 — по решению
-владельца НЕ снимался. `TickProf.fnflags` (П4-подготовка) работает: для
-`Buff_UnderwaterCyclone_C:BuffTickServer` — parms=1/out=0/return=0 = БЕЗОПАСНО; ловушки
-с out-параметрами (GetStateAtLocation: out=2) корректно ловятся фильтром ЗАПРЕЩЕНО.
-Троттлинг в прод НЕ включён (чеклист поведения требует живого сеанса — П6 остаётся открытым).
+bptrace v2 is implemented and closed the key gap of slot D: we now see **time** per function, not
+just calls. The formula "top by calls ≠ top by CPU" gained a second dimension: on Genesis
+the call count and self time diverged (the order of the top-3 by calls —
+Ichthyornis/BogSpider/MissionSpline — did not match the top-3 by self, where the heavy
+`Buff_UnderwaterCyclone_C:BuffTickServer` suddenly turned out to be No. 1 with 90%+ BP self time and
+850–870 µs/call — slot D never saw it at all, since it looked only at call counters), while on
+the fresh maps TheIsland/Fjordur with the newly recognized leader both lists converged: the bird
+`Ichthyornis_Character_BP_C:InitializeLandingVariables` — 52–53% BP self time and 2.0 µs/call,
+2195–3197 calls/s, on all three maps. The top-3 order by self time **reproduces** in
+two independent windows on Genesis (90.9/4.1/2.2% → 89.5/5.0/2.6%) — acceptance P1 is complete.
+A/B OFF/ON on four valid hands: t/s 29/29/28/29, ms/tick 3/16/5/8 — the spread within
+OFF (3↔16) exceeds the OFF↔ON delta, **the stub overhead is within noise** (acceptance P1 — item 2).
+Caller attribution (P3) via `FFrame::PreviousFrame` (+0x70, verified in Ghidra) works,
+but for all tops the answer is the same: **100% `<native/ProcessEvent-entry>`** — the leaders are called by native
+code, not BP scripts; the specific native caller (for ichthyornis) remains a RE task.
+The save matrix (P2) was taken on three maps (Genesis/TheIsland/Fjordur); Server2 — per the owner's decision was NOT taken.
+`TickProf.fnflags` (P4 preparation) works: for
+`Buff_UnderwaterCyclone_C:BuffTickServer` — parms=1/out=0/return=0 = SAFE; traps
+with out-parameters (GetStateAtLocation: out=2) are correctly caught by the FORBIDDEN filter.
+Throttling is NOT enabled in prod (the behavior checklist requires a live session — P6 remains open).
 
-## 2. П1 — bptrace v2 (реализация на данных: `UFunction::Func`, учёт времени)
+## 2. P1 — bptrace v2 (implementation on data: `UFunction::Func`, time accounting)
 
-Ключевые смещения (сборка v361, подтверждены Ghidra):
-- `UFunction+0xA8` — Func (как и в слоте D);
+Key offsets (build v361, confirmed in Ghidra):
+- `UFunction+0xA8` — Func (same as in slot D);
 - `FFrame::Node` = +0x10, `FFrame::PreviousFrame` = **+0x70**
-  (конструктор @0x141FA57E0; `CallFunction` @0x141FBFEF0 создаёт кадр с
-  `PreviousFrame` = кадр вызывающего; вход из `ProcessEvent` даёт 0);
-- `UFunction::GetReturnProperty` — RVA 0x1F86CB0 (биты флагов у свойства:
-  FProperty+0x38 — флаги, `0x80`=Parm, `0x100`=OutParm, `0x400`=ReturnParm;
-  `UStruct+0x38` = цепочка свойств; `FProperty+0x28` = Next).
+  (constructor @0x141FA57E0; `CallFunction` @0x141FBFEF0 creates a frame with
+  `PreviousFrame` = the caller's frame; entry from `ProcessEvent` yields 0);
+- `UFunction::GetReturnProperty` — RVA 0x1F86CB0 (flag bits of a property:
+  FProperty+0x38 — flags, `0x80`=Parm, `0x100`=OutParm, `0x400`=ReturnParm;
+  `UStruct+0x38` = property chain; `FProperty+0x28` = Next).
 
-### 2.1 Воспроизводимость порядка лидеров (окно A vs окно B, Genesis 820 с между reset)
+### 2.1 Reproducibility of the leader order (window A vs window B, Genesis 820 s between resets)
 
-Таблица 2.1: доля сам-времени BP, % (Genesis, два окна).
+Table 2.1: share of BP self time, % (Genesis, two windows).
 
-| функция (сокращ.) | окно A (328 с) | окно B (449 с) | воспроизводимость |
+| function (abbreviated) | window A (328 s) | window B (449 s) | reproducible |
 |---|---|---|---|
-| Buff_UnderwaterCyclone_C:BuffTickServer | 90.9 | 89.5 | да |
-| Buff_Grappled_BogSpider_C:BuffTickServer | 4.1 | 5.0 | да (местами 2–3 меняются) |
-| Ichthyornis_Character_BP_C:InitializeLandingVariables | 2.2 | 2.6 | да |
-| TestGameMode_C:ReceiveTick | 0.3 | 0.3 | да |
-| InsectSwarm/Bee/EggIncubator | 0.3–0.2 | 0.3–0.2 | в шумовом диапазоне |
+| Buff_UnderwaterCyclone_C:BuffTickServer | 90.9 | 89.5 | yes |
+| Buff_Grappled_BogSpider_C:BuffTickServer | 4.1 | 5.0 | yes (positions 2–3 sometimes swap) |
+| Ichthyornis_Character_BP_C:InitializeLandingVariables | 2.2 | 2.6 | yes |
+| TestGameMode_C:ReceiveTick | 0.3 | 0.3 | yes |
+| InsectSwarm/Bee/EggIncubator | 0.3–0.2 | 0.3–0.2 | within the noise range |
 
-`сумма self` BP: окно A ≈ 68.9 с за 328 с (21% времени); окно B ≈ 74.6 с за 449 с (16.6%).
+BP `sum of self`: window A ≈ 68.9 s over 328 s (21% of the time); window B ≈ 74.6 s over 449 s (16.6%).
 
-### 2.2 A/B OFF/ON — накладной расход стаба
+### 2.2 A/B OFF/ON — stub overhead
 
-Таблица 2.2 (длинное окно сэмплирования 120 с из slotE_ab.py + окно, VALID):
+Table 2.2 (a long 120 s sampling window from slotE_ab.py + a window, VALID):
 
-| рука | t/s | ms/tick | busy | VALID |
+| hand | t/s | ms/tick | busy | VALID |
 |---|---|---|---|---|
-| OFF-1 | 29 | 3 | 11% | да |
-| OFF-2 | 29 | 16 | 48% | да |
-| ON-1 | 28 | 5 | 15% | да |
-| ON-2 | 29 | 8 | 25% | да |
+| OFF-1 | 29 | 3 | 11% | yes |
+| OFF-2 | 29 | 16 | 48% | yes |
+| ON-1 | 28 | 5 | 15% | yes |
+| ON-2 | 29 | 8 | 25% | yes |
 
-Разброс внутри OFF (=13 единиц ms/tick) перекрывает дельты пары: OFF↔ON = +2 и −8.
-⇒ **Дельта стаба — в шуме, приёмка выполнена**. Подмена стойкая (15+ мин, откат —
-«снят с 40 477», «скриптовых=0» в повторном перечислении). CrashFilter за слот молчит.
+The spread within OFF (=13 units of ms/tick) exceeds the pair deltas: OFF↔ON = +2 and −8.
+⇒ **The stub delta is within noise, acceptance complete**. The substitution is stable (15+ min; the
+rollback reports «removed with 40 477», «scripted=0» in a re-enumeration). CrashFilter stays silent for the slot.
 
-## 3. П2 — матрица сейвов (Genesis / TheIsland / Fjordur; Server2 — нет, решение владельца)
+## 3. P2 — save matrix (Genesis / TheIsland / Fjordur; Server2 — no, owner's decision)
 
-Таблица 3.1 (окно 240–449 с, VALID, вне автосейва):
+Table 3.1 (window 240–449 s, VALID, outside autosave):
 
-| карта | окно | лидер по self | self%, мс | лидер мс/вызов | t/s | ms/tick | VALID |
+| map | window | self leader | self%, ms | leader ms/call | t/s | ms/tick | VALID |
 |---|---|---|---|---|---|---|---|
-| Genesis (плотная) | 328 | Buff_UnderwaterCyclone:BuffTickServer | 90.9 (62 620) | 871 | 29 | 3–16 | да |
-| Genesis (окно B, 449) | — | — 89.5 | 852 | 29 | 8 | да |
-| TheIsland | 244 | Ichthyornis:InitializeLandingVariables | 53.3 (1 263) | 1,9 | 29 | 3 | да |
-| Fjordur | 244 | Ichthyornis:InitializeLandingVariables | 52.4 (1 555) | 2,0 | 29 | 4 | да |
+| Genesis (dense) | 328 | Buff_UnderwaterCyclone:BuffTickServer | 90.9 (62 620) | 871 | 29 | 3–16 | yes |
+| Genesis (window B, 449) | — | — 89.5 | 852 | 29 | 8 | yes |
+| TheIsland | 244 | Ichthyornis:InitializeLandingVariables | 53.3 (1 263) | 1.9 | 29 | 3 | yes |
+| Fjordur | 244 | Ichthyornis:InitializeLandingVariables | 52.4 (1 555) | 2.0 | 29 | 4 | yes |
 
-Наблюдения:
-- **Ichthyornis — универсальный лидер** (сам-время 1.26–1.99 с/100 с на вторичных картах,
-  2 207–3 199 вызовов/с повсюду); на вторичных картах его доля ≈53% сам-времени BP.
-- Карта-специфичные танцы: Genesis — UnderwaterCyclone/BogSpider (баффы океана и паук),
-  TheIsland — Thylacoleo CheckUntil_SetAiLatchedToTree (13.3%, 116 944 вызовов),
-  Fjordur — модовая ловушка ArrowTrap_Dwarven_Cave_C:ReceiveTick (138 605 вызовов, 90 мс).
-- Свежий мир до фазы: Mammoth ThrottledTick был №2 на TheIsland (11.4%) и №2 на Fjordur
-  (20.2%) — свежая-мирная цена, не универсальный кандидат.
-- Нормировка на 1000 акторов не сделана полноценно: censuscaptures (число акторов) на
-  вторичных картах выходит многостранным; для честности — числа по каждой карте указаны как
-  доля сам-времени BP и в абсолютных мс, нормировка отложена в задачи следующего слота.
+Observations:
+- **Ichthyornis is the universal leader** (self time 1.26–1.99 s per 100 s on the secondary maps,
+  2 207–3 199 calls/s everywhere); on the secondary maps its share is ≈53% of BP self time.
+- Map-specific dances: Genesis — UnderwaterCyclone/BogSpider (ocean buffs and the spider),
+  TheIsland — Thylacoleo CheckUntil_SetAiLatchedToTree (13.3%, 116 944 calls),
+  Fjordur — the mod trap ArrowTrap_Dwarven_Cave_C:ReceiveTick (138 605 calls, 90 ms).
+- Fresh world before the phase: Mammoth ThrottledTick was No. 2 on TheIsland (11.4%) and No. 2 on Fjordur
+  (20.2%) — a fresh-world cost, not a universal candidate.
+- Normalization per 1000 actors was not done properly: censuscaptures (actor counts) on
+  the secondary maps come out multi-line; for fairness, the numbers for each map are given as
+  the share of BP self time and in absolute ms; normalization is deferred to the next slot's tasks.
 
-## 4. П3 — атрибуция вызывающих (`FFrame::PreviousFrame`, +0x70)
+## 4. P3 — caller attribution (`FFrame::PreviousFrame`, +0x70)
 
-`bptrace.caller` 1/2/3 и по подстроке (ExecuteUbergraph_LunarMeteorController: 535 вызовов,
-self=217 мс): **везде 100% `<native/ProcessEvent-entry>`**.
-⇒ Все большие BP-функции, которые мы видим, зовутся нативным ProcessEvent — цепочка НЕ
-ломается (nativных родов нет). FFrame-цепочка внедрена корректно (смещения выверены через
-Ghidra: `FFrame::PreviousFrame` = +0x70; хровер состояния вложенных вызовов возможен, но на
-этих картах BP→BP вызовов среди топов нет). Вывод: «главный вызывающий лидера №1» —
-**нативный код**, имя через FFrame не назвается; искать автора — RE через Ghidra (задача слота F).
+`bptrace.caller` 1/2/3 and by substring (ExecuteUbergraph_LunarMeteorController: 535 calls,
+self=217 ms): **everywhere 100% `<native/ProcessEvent-entry>`**.
+⇒ All the big BP functions we see are called by native ProcessEvent — the chain does NOT
+break (there are no native parents). The FFrame chain is wired correctly (offsets verified via
+Ghidra: `FFrame::PreviousFrame` = +0x70; stale state of nested calls is possible, but on
+these maps there are no BP→BP calls among the tops). Conclusion: the "main caller of leader No. 1" is
+**native code**; no name is given through FFrame; finding the author is RE via Ghidra (task of slot F).
 
-## 5. П4 — подготовки к троттлингу (НЕ вкл.)
+## 5. P4 — throttle preparation (NOT enabled)
 
-`TickProf.fnflags` (dumpмостоящая команда, используя флаги UFunction):
-- `Buff_UnderwaterCyclone_C:BuffTickServer` — parms=1, out=0, return=0 → БЕЗОПАСНО;
-- `InitializeLandingVariables` — parms=0, out=0, return=0 → БЕЗОПАСНО;
+`TickProf.fnflags` (a standalone command using UFunction flags):
+- `Buff_UnderwaterCyclone_C:BuffTickServer` — parms=1, out=0, return=0 → SAFE;
+- `InitializeLandingVariables` — parms=0, out=0, return=0 → SAFE;
 - `GetStateAtLocation` (out=2), `Get Sea ZAt Location` (out=1), `GetCycloneCenterLocation` (out=1),
-  `OnGrappleStateChangedNotify` (out=1) → ЗАПРЕЩЕНЫ (фильтр ловит out-параметры корректно).
-⇒ Троттлинг технически возможен для баффов/ReceiveTick без return/out, но для безопасности
-важна семантика «каждый N-й» именно на тикающей функции —
-перед включением: A/B ≥2 валидных пары + живой чеклист. Порядок: MissionSpline (124/852-эм?
-сам-131 мс/449 с — дёшево, выгода мала) → Buff_UnderwaterCyclone BuffTickServer (тяжёлая,
-871 мкс/вызов) → Buff_Grappled_BogSpider. **НЕ включено** — не было живого сеанса.
+  `OnGrappleStateChangedNotify` (out=1) → FORBIDDEN (the filter catches out-parameters correctly).
+⇒ Throttling is technically possible for buffs/ReceiveTick without return/out, but for safety the
+"every N-th" semantics matter precisely on the ticking function —
+before enabling: A/B ≥2 valid pairs + a live checklist. Order: MissionSpline (124 852 calls?
+self 131 ms per 449 s — cheap, little benefit) → Buff_UnderwaterCyclone BuffTickServer (heavy,
+871 µs/call) → Buff_Grappled_BogSpider. **NOT enabled** — there was no live session.
 
-## 6. П5 — правило тишины
+## 6. P5 — the quiet rule
 
-Cooldown реализован: после конца сэмплер-окна — 60 с блок для «start», «window», «perf»,
-«overlaps», «bptrace», «bptrace.reset»; отказ и запуск печатаются в лог
-(`cooldown: пауза 60 с ...`, `отказ - пауза ... не кончилась (N с)`).
-Копию последовательности окон A/B с 65-сек паузами ровно проходят, отказов не было
-(окна стартовали ≥65 с спустя). Слот-D классовый крах за слот НЕ воспроизвелся (crashfilter молчит).
+The cooldown is implemented: after the end of the sampler window there is a 60 s lock on
+"start", "window", "perf", "overlaps", "bptrace", "bptrace.reset"; refusals and starts are printed to the log
+(`cooldown: 60 s pause ...`, `refused - the pause ... has not ended yet (N s)`).
+A copy of the window A/B sequence with exactly 65-second pauses passes cleanly; there were no refusals
+(the windows started ≥65 s apart). The slot-D class crash did not reproduce for the slot (crashfilter is silent).
 
-## 7. Атрибуты честности
+## 7. Honesty attributes
 
-- Судьи плагиновые (t/s, ms/tick) — относительные; абсолютные числа ×1.9–2.4 от внешнего
-  CPU (как всегда). Внешний судья по CPU процесса на 60-с руках дал разброс 0.6–3.3%
-  (24 ядра) — дельту он не разрешает; упор на пары окон, отмеченных VALID.
-- Таймер стаба — wall-clock (QPC 10 МГц): если функция внутри себя чего-то ждёт, время
-  ожидания попадает в её self. Чтобы оценить приличность UnderwaterCyclone (850+ мкс/вызов) —
-  следующая задача: RE через Ghidra (dispatchers, overlaps внутри баффа).
-- Окно A/B измеряет суммарную нагрузку с активным/выключенным стабом (как A/B трейсера
-  слота D); фазовый фон мира отвечает за разброс ms/tick внутри OFF (3..16).
-- sleep crash фильтр:ourced и жив (молчание = нет AV).
-- Прогрев вторичных карт сокращён до 7 мин (директива считала ~10 мин); окна VALID,
-  t/s=29 как в фазе Genesis ⇒ фазовый интервал соблюдён.
-- Дополненная директива сохранена (doit8_amended.txt); Server2 не тронут.
+- The judge metrics are in-plugin (t/s, ms/tick) — relative; the absolute numbers are ×1.9–2.4 higher than the external
+  CPU (as always). The external judge on process CPU over the 60-s hands gave a spread of 0.6–3.3%
+  (24 cores) — it does not resolve the delta; the emphasis is on the window pairs marked VALID.
+- The stub timer is wall-clock (QPC 10 MHz): if the function waits for something inside itself, the waiting
+  time lands in its self. To assess the propriety of UnderwaterCyclone (850+ µs/call) —
+  the next task: RE via Ghidra (dispatchers, overlaps inside the buff).
+- The A/B window measures the total load with the stub on/off (like slot D's
+  A/B tracers); the phase background of the world is responsible for the ms/tick spread within OFF (3..16).
+- sleep crash filter: present and alive (silence = no AV).
+- Warm-up on the secondary maps shortened to 7 min (the directive assumed ~10 min); the windows are VALID,
+  t/s=29 as in the Genesis phase ⇒ the phase interval is respected.
+- The amended directive is saved (doit8_amended.txt); Server2 untouched.
 
-## 8. Что не сделано
+## 8. What was not done
 
-- Имя нативного автора `InitializeLandingVariables` (RE не завершено).
-- Причина 850+ мкс/вызов у `Buff_UnderwaterCyclone` (Ghidra-анализ, вер. очередь).
-- Число акторов (census count) на TheIsland/Fjordur — нормировка «на 1000 акторов» не посчитана.
-- П4 включение + A/B пары + чеклист — нет живого сеанса игрока (П6).
-- bptrace сам overhead на длинных мs/tick > — 1 pair от 4; слишком короткие руки.
-  Расширение окна до 60/120/240 с — задача с следующий слот.
-- Mimalloc на Server1 восстановлен владельцем — не трогали.
+- The name of the native caller of `InitializeLandingVariables` (RE not finished).
+- The cause of 850+ µs/call in `Buff_UnderwaterCyclone` (Ghidra analysis, next queue).
+- The actor count (census count) on TheIsland/Fjordur — the "per 1000 actors" normalization was not computed.
+- P4 enabling + A/B pairs + the checklist — no live player session (P6).
+- bptrace's own overhead on long ms/tick runs — only 1 pair out of 4 was usable; the hands were too short.
+  Extending the windows to 60/120/240 s is a next-slot task.
+- Mimalloc on Server1 was restored by the owner — untouched.
 
-## 9. Задачи следующего слота (приоритет)
+## 9. Tasks for the next slot (priority)
 
-1. RE: Кто нативно зовет `InitializeLandingVariables` (хkön ProcessEvent address.mapper) —
-   паре с дизadjustом the существующna кода.
-2. Разбор `Buff_UnderwaterCyclone:BuffTickServer` (850 мкс/вызов) в Ghidra;
-   подготовить снижение счётчиков (если это overlap-сем kfлc)m.
-3. П4 «мягкий» выкат: fnflags-фильтр автомат; troстпос должен быть по очереди (1 функция,
-   A/B 2 валидных pair, чеклист с живым игроком).
-4. Нормировка: census акторов на картах; добавить команды (подсчёт числа объектов класса Actor
-   in plugin) чтобы census был быстрым и числовым.
-5. П6: сеанс игрока — живая проверка trim3 + чеклист для П4.
+1. RE: who natively calls `InitializeLandingVariables` (via the ProcessEvent address map) —
+   paired with a disassembly pass over the existing code.
+2. Analysis of `Buff_UnderwaterCyclone:BuffTickServer` (850 µs/call) in Ghidra;
+   prepare a counter/overlap reduction (if this is an overlap-family cost).
+3. P4 "soft" rollout: the fnflags filter automates gating; throttling must be applied
+   one at a time (1 function, A/B with 2 valid pairs, a checklist with a live player).
+4. Normalization: census of actors on the maps; add commands (counting Actor-class objects in plugin)
+   so that the census is fast and numeric.
+5. P6: a player session — live verification of trim3 + the P4 checklist.
 
-## 10. Приложения
+## 10. Appendices
 
-- `_research\slotE\TickProf_slotE.log` — полный лог слота (bptrace включ/выкл, отчёты, fnflags)
-- `_research\slotE_ab.py` — автомат A/B (4 hands, VALID-контроль, cooldown-паузы)
-- `_research\slotE_matrix.py`, `_research\slotE_measure.py` — boot+dелать циклы по картам
-- `C:\Users\Admin\Desktop\doit8_amended.txt` / `_research\doit8_amended.txt` — дополненная директива
-- DLL после слота: 401 920 Б (fix отчетных строк и idempotent включение), deployено при буте Fjordur
-  и последне verified: бут TheIsland w/ it → t/s=29 VALID.
-- Изменён итог: конфиг вашего дела остаётся trim3 (не трогаем в слоте E).
+- `_research\slotE\TickProf_slotE.log` — the full slot log (bptrace on/off, reports, fnflags)
+- `_research\slotE_ab.py` — the A/B automaton (4 hands, VALID checks, cooldown pauses)
+- `_research\slotE_matrix.py`, `_research\slotE_measure.py` — boot+measure cycles per map
+- `C:\Users\Admin\Desktop\doit8_amended.txt` / `_research\doit8_amended.txt` — the amended directive
+- DLL after the slot: 401,920 bytes (fix of reported lines and idempotent enabling), deployed at the Fjordur boot
+  and last verified: a TheIsland boot with it → t/s=29 VALID.
+- Final note: the config of our case stays trim3 (not touched in slot E).

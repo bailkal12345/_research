@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Разбор .pdata (RUNTIME_FUNCTION) exe + привязка листьев/ret профилей к функциям.
+# Parsing the .pdata (RUNTIME_FUNCTION) of the exe + binding profile leaves/ret to functions.
 import struct, bisect, collections, sys
 import profanalyze as pa
 
@@ -54,9 +54,9 @@ def load_mods_and_wordlists(name):
 def main():
     funcs = get_pdata(EXE)
     starts = [f[0] for f in funcs]
-    print('функций в .pdata: %d; первая start=0x%X, последняя end=0x%X' % (
+    print('functions in .pdata: %d; first start=0x%X, last end=0x%X' % (
         len(funcs), funcs[0][0], funcs[-1][1]))
-    # проверка: покрывают ли функции весь .text
+    # check: do the functions cover the whole .text
     text_end = 0
     for va, ve, nm in pa.parse_sections(EXE) or []:
         if nm == '.text':
@@ -65,7 +65,7 @@ def main():
     covered = 0
     for s, e in funcs:
         covered += e - s
-    print('.text = [0x%X..0x%X] (0x%X байт), покрыто функциями 0x%X байт' % (
+    print('.text = [0x%X..0x%X] (0x%X bytes), covered by functions 0x%X bytes' % (
         text_start, text_end, text_end - text_start, covered))
 
     names = sys.argv[1:] or ['512222984', '383773968', '343238843', '209283656', '301269000']
@@ -74,7 +74,7 @@ def main():
         try:
             mods, bases, rips, rets, base_exe, cnt = load_mods_and_wordlists(name)
         except Exception as ex:
-            print('проф %s: ошибка %s' % (name, ex))
+            print('prof %s: error %s' % (name, ex))
             continue
         lf = collections.Counter()
         rf = collections.Counter()
@@ -89,14 +89,14 @@ def main():
                 i = bisect.bisect_right(starts, off) - 1
                 if 0 <= i and off < funcs[i][1]:
                     rf[funcs[i][0]] += 1
-        out.append('\n=== prof_%s (сэмплов %d; exe-листьев %d, exe-ret %d) ===' % (
+        out.append('\n=== prof_%s (%d samples; %d exe leaves, %d exe-ret) ===' % (
             name, cnt, sum(lf.values()), sum(rf.values())))
-        out.append(' топ-25 функций (по листу RIP):')
+        out.append(' top-25 functions (by leaf RIP):')
         for s, v in lf.most_common(25):
             i = bisect.bisect_right(starts, s) - 1
             e = funcs[i][1]
             out.append('   %5.1f%% %5d  func 0x%X..0x%X  (size %d)' % (100.0 * v / cnt, v, s, e, e - s))
-        out.append(' топ-25 функций (по ret [RSP]):')
+        out.append(' top-25 functions (by ret [RSP]):')
         for s, v in rf.most_common(25):
             i = bisect.bisect_right(starts, s) - 1
             e = funcs[i][1]

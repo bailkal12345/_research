@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Слот B (v3): кто вызывает ServerOctreeOverlapActors в ПРОФИЛЕ ФАЗЫ.
-# Метод: для сэмплов внутри ServerOctreeOverlapActors смотрим [RSP] (ret) -
-# это адрес возврата, т.е. вызывающая функция exe.
+# Slot B (v3): who calls ServerOctreeOverlapActors in the PHASE PROFILE.
+# Method: for samples inside ServerOctreeOverlapActors look at [RSP] (ret) -
+# that is the return address, i.e. the calling exe function.
 import struct, collections, sys, os
 sys.path.insert(0, r'C:\Dev\_research')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -47,7 +47,7 @@ def run(prof, tag):
         if i < nret:
             callers[exefn(rets[i]) or '<non-exe>'] += 1
     print('\n##### %s (prof %s) #####' % (tag, prof))
-    print('  сэмплов внутри ServerOctreeOverlapActors: %d' % tot)
+    print('  samples inside ServerOctreeOverlapActors: %d' % tot)
     for k, c in callers.most_common(12):
         print('     %5d (%4.1f%%)  %s' % (c, 100.0 * c / max(1, tot), k))
     return dict(prof=prof, in_oct=tot, callers=dict(callers.most_common(15)))
@@ -55,8 +55,8 @@ def run(prof, tag):
 
 if __name__ == '__main__':
     out = []
-    out.append(run('631247234', 'СЛОТ B: ФАЗА 21.10 21:57'))
-    out.append(run('512222984', 'СЛОТ A: плотная база 20.10'))
+    out.append(run('631247234', 'SLOT B: PHASE 21.10 21:57'))
+    out.append(run('512222984', 'SLOT A: dense baseline 20.10'))
     import json
     with open(r'C:\Dev\_research\slotB\octree_callers.json', 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)

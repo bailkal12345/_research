@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Слот B (v4): сырые слова стека для ZwQueryDirectoryFileEx в профиле фазы -
-# ищем exe-кадр (IterateDirectory/FindFiles) в 4 доступных словах.
+# Slot B (v4): raw stack words for ZwQueryDirectoryFileEx in the phase profile -
+# looking for an exe frame (IterateDirectory/FindFiles) in the 4 available words.
 import struct, collections, sys, os
 sys.path.insert(0, r'C:\Dev\_research')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -33,7 +33,7 @@ def loc(a):
     return 'raw_%x' % a
 
 
-print('=== 12 примеров wait-записей с ZwQueryDirectoryFileEx ===')
+print('=== 12 examples of wait records with ZwQueryDirectoryFileEx ===')
 shown = 0
 for i in range(wcnt):
     rip = ww[i * 5]
@@ -47,7 +47,7 @@ for i in range(wcnt):
     if shown >= 12:
         break
 
-print('\n=== какие DLL-кадры встречаются в словах стека этих ожиданий ===')
+print('\n=== which DLL frames appear in the stack words of these waits ===')
 cnt = collections.Counter()
 for i in range(wcnt):
     rip = ww[i * 5]

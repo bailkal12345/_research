@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Атрибуция файлового IO фазы (приоритет 2 doit6 22.10), v2:
-#  * резолвим имена системных листьев через таблицу экспортов DLL;
-#  * для каждой записи ожидания восстанавливаем цепочку вызывающих по словам
-#    стека (12 слов), ищем ПЕРВЫЙ кадр exe - это владелец ожидания;
-#  * отдельно: дамп сырых записей для листа файлового IO (ZwQueryDirectoryFileEx).
+# Attribution of the file IO phase (priority 2 doit6 22.10), v2:
+#  * resolve system leaf names via the DLL export tables;
+#  * for each wait record, recover the call chain from words of the stack
+#    (12 words), looking for the FIRST exe frame - the wait owner;
+#  * separately: dump raw records for the file IO leaf (ZwQueryDirectoryFileEx).
 import bisect
 import collections
 import os
@@ -88,7 +88,7 @@ def main():
     data = open(os.path.join(TICKPROF, 'prof_%s.wait' % prof), 'rb').read()
     cnt, words = struct.unpack_from('<QQ', data, 0)
     raw = struct.unpack_from('<%dQ' % (cnt * words), data, 16)
-    print('=== профиль %s: записей ожидания %d, слов %d ===' % (prof, cnt, words))
+    print('=== profile %s: %d wait records, %d words ===' % (prof, cnt, words))
 
     leaf_counter = collections.Counter()
     owner_counter = collections.defaultdict(collections.Counter)
@@ -121,25 +121,25 @@ def main():
         if dump_leaf and leaf.lower().find(dump_leaf.lower()) >= 0 and len(dumps) < 4:
             dumps.append(rec)
 
-    print('\n--- топ-20 листьев ожидания ---')
+    print('\n--- top-20 wait leaves ---')
     for k, v in leaf_counter.most_common(20):
         print('%8d  %s' % (v, k))
 
-    print('\n--- владелец (первый exe-кадр) ---')
+    print('\n--- owner (first exe frame) ---')
     for leaf, _ in leaf_counter.most_common(14):
         if leaf not in owner_counter:
-            print('\nлист %s (%d): exe-кадра нет' % (leaf, leaf_counter[leaf]))
+            print('\nleaf %s (%d): no exe frame' % (leaf, leaf_counter[leaf]))
             continue
-        print('\nлист %s (%d записей):' % (leaf, leaf_counter[leaf]))
+        print('\nleaf %s (%d records):' % (leaf, leaf_counter[leaf]))
         for own, c2 in owner_counter[leaf].most_common(8):
             print('    %6d  %s' % (c2, own))
 
-    print('\n--- топ-25 цепочек ---')
+    print('\n--- top-25 chains ---')
     for k, v in chain_counter.most_common(25):
         print('%8d  %s' % (v, k))
 
     if dumps:
-        print('\n--- сырые записи для %s ---' % dump_leaf)
+        print('\n--- raw records for %s ---' % dump_leaf)
         for rec in dumps:
             print('  ' + ' '.join('%012X' % w for w in rec))
 

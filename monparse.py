@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-# Фазы по ряду t/s (плагиновый счётчик тиков): фаза = 3+ подряд строк t/s<45.
-# Классификация: busy% высокий (CPU) или низкий (блокировка). Связь с save-маркерами.
+# Phases over the t/s series (plugin tick counter): a phase = 3+ consecutive lines with t/s<45.
+# Classification: high busy% (CPU) or low (blocking). Correlation with save markers.
 import re
 
 LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
 
 re_mon = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ mon: t/s=(\d+)(?: +ms/tick=(\d+) +frame_ms=(\d+) +busy=(\d+)% +save=(\w+))?')
 re_boot = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ loaded \(Plugin_Init\)')
-re_save_start = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: начало записи \.ark')
-re_save_end = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: запись \.ark завершилась, длительность (\d+) мс')
+re_save_start = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: .ark write started')
+re_save_end = re.compile(r'^(\d\d:\d\d:\d\d)\.\d+ save: \.ark write finished, duration (\d+) ms')
 
 
 def hms(t):
@@ -55,7 +55,7 @@ def main():
                             ev.append((t, 'save_end', int(m.group(2))))
 
     idx = [i for i, e in enumerate(ev) if e[1] == 'boot']
-    print('бутов: %d' % len(idx))
+    print('boots: %d' % len(idx))
     out = []
     total_ph = 0
     for si, s in enumerate(idx):
@@ -82,7 +82,7 @@ def main():
         if cur is not None and len(cur['rows']) >= 3:
             phases.append(cur)
         total_ph += len(phases)
-        out.append('бут#%d @%s (%.0f мин, mon=%d): save_start=%d save_end=%d фаз=%d' % (
+        out.append('boot#%d @%s (%.0f min, mon=%d): save_start=%d save_end=%d phases=%d' % (
             si, s_hms(t0), span_min, len(mons), len(ss), len(se), len(phases)))
         for ph in phases:
             rows = ph['rows']
@@ -99,21 +99,21 @@ def main():
             sav_win = any(ph['start'] <= t <= ((recov or ph['start']) + 1) for t in ss)
             mark = []
             if lse is not None and 0 <= ph['start'] - lse <= 90:
-                mark.append('save_end за %dс' % (ph['start'] - lse))
+                mark.append('save_end within %ds' % (ph['start'] - lse))
             if lss is not None and 0 <= ph['start'] - lss <= 90:
-                mark.append('save_start за %dс' % (ph['start'] - lss))
+                mark.append('save_start within %ds' % (ph['start'] - lss))
             if sav_win:
-                mark.append('save ВНУТРИ фазы')
+                mark.append('save INSIDE the phase')
             if n_sav:
-                mark.append('save-поле!=idle: %d стр' % n_sav)
-            typ = 'CPU(high busy)' if busy_avg >= 80 else ('BLOCKED(low busy)' if busy_avg < 60 else 'смешанная')
-            out.append('   ФАЗА %s..%s dur=%3.1fмин ts_min=%d busy%.0f%% frame_max=%d ср=%dмс | %s' % (
+                mark.append('save field != idle: %d rows' % n_sav)
+            typ = 'CPU(high busy)' if busy_avg >= 80 else ('BLOCKED(low busy)' if busy_avg < 60 else 'mixed')
+            out.append('   PHASE %s..%s dur=%3.1fmin ts_min=%d busy%.0f%% frame_max=%d avg=%dms | %s' % (
                 s_hms(ph['start']), s_hms(recov) if recov else '?',
                 dur / 60.0, ts_min, busy_avg, fr_max, fr_avg,
-                ('; '.join(mark) if mark else 'без save-связи')))
-            out.append('        тип=%s' % typ)
+                ('; '.join(mark) if mark else 'no save link')))
+            out.append('        type=%s' % typ)
     print('\n'.join(out))
-    print('總 фаз:', total_ph)
+    print('total phases:', total_ph)
 
 
 if __name__ == '__main__':

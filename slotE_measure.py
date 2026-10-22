@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Слот E: измерительный цикл на уже поднятом сервере (карта аргументом).
-# Ждёт RCON, прогрев, bptrace 1, окно 240 c, отчёт (top-5 self), census, bptrace 0.
+# Slot E: measuring cycle on an already booted server (map as an argument).
+# Waits for RCON, warmup, bptrace 1, 240 s window, report (top-5 self), census, bptrace 0.
 import os
 import re
 import subprocess
@@ -31,7 +31,7 @@ def log_lines(n=60):
         return []
 
 
-print('=== [%s] ждём RCON ===' % MAP, flush=True)
+print('=== [%s] waiting for RCON ===' % MAP, flush=True)
 t0 = time.time()
 while time.time() - t0 < 900:
     out = rcon('TickProf.status')
@@ -39,9 +39,9 @@ while time.time() - t0 < 900:
         break
     time.sleep(15)
 else:
-    print('RCON НЕ поднялся за 15 мин', flush=True)
+    print('RCON did not come up within 15 min', flush=True)
     sys.exit(1)
-print('   RCON занял %d с' % int(time.time() - t0), flush=True)
+print('   RCON took %d s' % int(time.time() - t0), flush=True)
 
 
 def wait_in_log(needle, max_s=120):
@@ -55,34 +55,34 @@ def wait_in_log(needle, max_s=120):
 
 
 loaded = wait_in_log('loaded (Plugin_Init)')
-print('   плагин: %s' % (loaded or 'не видно'), flush=True)
+print('   plugin: %s' % (loaded or 'not seen'), flush=True)
 
-print('=== прогрев %d с ===' % WARMUP_S, flush=True)
+print('=== warmup %d s ===' % WARMUP_S, flush=True)
 time.sleep(WARMUP_S)
 
 before = log_lines(50)
 rcon('TickProf.bptrace 1')
 time.sleep(3)
-inc = wait_in_log('bptrace: включён', 90)
-print('   включение: %s' % (inc or 'НЕ подтверждено'), flush=True)
+inc = wait_in_log('bptrace: v2 enabled', 90)
+print('   enable: %s' % (inc or 'NOT confirmed'), flush=True)
 
 rcon('TickProf.window %d' % WIN_S)
 t0 = time.time()
 wl = None
 while time.time() - t0 < WIN_S + 120:
     for l in log_lines(12):
-        if 'window окно:' in l and l not in before:
+        if 'window result:' in l and l not in before:
             wl = l
             break
     if wl:
         break
     time.sleep(8)
-print('   ОКНО: %s' % (wl or 'нет строки окна'), flush=True)
+print('   WINDOW: %s' % (wl or 'no window line'), flush=True)
 
 rcon('TickProf.bptrace.report')
 time.sleep(3)
 rep = log_lines(60)
-print('=== top-5 по self ===', flush=True)
+print('=== top-5 by self ===', flush=True)
 k = 0
 for l in rep:
     if 'self=' in l and 'bptrace.caller' not in l:
@@ -90,18 +90,18 @@ for l in rep:
         if k <= 5:
             print('   ' + l[:175], flush=True)
 for l in rep:
-    if 'сумма self' in l or 'вызовов всего' in l:
+    if 'self sum' in l or 'total calls' in l:
         print('   ' + l[:120], flush=True)
 
 rcon('TickProf.overlaps 20')
 time.sleep(45)
 for l in log_lines(90):
-    if re.search(r'актор|актор(ов)?=|компонент|actors?|components?', l, re.I):
+    if re.search(r'owners=|actors?=|components=', l, re.I):
         print('   census: ' + l[:175], flush=True)
 
 rcon('TickProf.bptrace 0')
 time.sleep(5)
-off = wait_in_log('bptrace: выключен', 30)
-print('   откат: %s' % (off or 'не отмечен'), flush=True)
+off = wait_in_log('bptrace: disabled', 30)
+print('   rollback: %s' % (off or 'not seen'), flush=True)
 alive = rcon('TickProf.status')
-print('[%s] сервер %s' % (MAP, '~жив' if ('received' in alive or 'sampling' in alive) else 'МОЛЧИТ!'), flush=True)
+print('[%s] server %s' % (MAP, '~alive' if ('received' in alive or 'sampling' in alive) else 'SILENT!'), flush=True)

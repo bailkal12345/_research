@@ -1,187 +1,187 @@
-# REPORT — Слот C (doit6 §3): выкатка overlaptrim3 с белым списком по A2
+# REPORT — Slot C (doit6 §3): the rollout of overlaptrim3 with the whitelist per A2
 
-**Дата:** 21.10.2026. **Стенд:** Server1, Genesis, TickProf, прод-конфиг §2.
-**Протокол:** ARCH.md §7 (окна 300 с после протокола сейва; рука A = `overlaptrim 2`,
-рука B = `overlaptrim3`; откат — `overlapall 0` + рестарт + контрольное окно).
+**Date:** 21.10.2026. **Bench:** Server1, Genesis, TickProf, the prod config of §2.
+**Protocol:** ARCH.md §7 (300 s windows after the save protocol; arm A = `overlaptrim 2`,
+arm B = `overlaptrim3`; rollback — `overlapall 0` + restart + a control window).
 
 ---
 
-## 1. Главный ответ (абзацем)
+## 1. Main answer (in one paragraph)
 
-Белый список по A2 **исправлен и работает**: `overlaptrim3` с новым списком сохранил
-**23 321 компонент по белой метке** (11 правил) и обрезал только 795 — то есть
+The whitelist per A2 **is fixed and works**: `overlaptrim3` with the new list kept
+**23 321 components by the white mark** (11 rules) and trimmed only 795 — i.e.,
 `ABaseBoxTrigger`, `AHazardTrigger_Slide`, `APrimalStructureBearTrap`,
 `APrimalStructureTurret`, `APrimalStructureTurretBallista`, `APrimalProjectileGrapplingHook`
-и `APrimalDinoCharacter` **больше не обрезаются** (в старом списке широкие подстроки
-`Trigger`/`Turret`/`GrapplingHook` задевали чужие классы, а нужные не покрывались).
-Правка внесена в **встроенный список** `DEFAULT_KEEP` (TickProf.cpp) и в файл
-`tickprof_overlap_keep.txt` (исходники + сервер), обе сборки прошли компиляцию.
+and `APrimalDinoCharacter` **are no longer trimmed** (in the old list the broad substrings
+`Trigger`/`Turret`/`GrapplingHook` touched foreign classes, and the needed ones were not covered).
+The change was made into the **built-in list** `DEFAULT_KEEP` (TickProf.cpp) and into the file
+`tickprof_overlap_keep.txt` (the sources + the server), and both builds went through compilation.
 
-A/B на реальном сейве выполнен: **A (trim2) = 50.65 t/s, B (trim3) = 52.25 t/s,
-дельта +1.60 t/s и −1.09 мс/тик, оба окна VALID** ⇒ `overlaptrim3` выкатывается
-вместо `overlaptrim 2`. Откат проверен явно: `overlapall 0` (795 → 0 компонентов)
-+ рестарт сервера + контрольное окно (VALID, 53.36 t/s).
-A/B на реальном сейве выполнен по протоколу ARCH.md §7 с общей базой (см. §2);
-решение о выкатке в прод принимается **только** по вердикту A/B и проверки отката (§4–6).
-
----
-
-## 2. Методика (и одна важная поправка)
-
-Изначально рука B наследовала состояние руки A (обрезка от trim2 уже применена), т.е.
-сравнение было бы нечистым. **Исправлено:** перед каждой рукой состояние приводится к
-единой базе — `TickProf.overlapall 0` (возврат `bGenerateOverlapEvents` у всех
-компонентов), и только затем применяется рука. Проверено по логу: рука B стартовала с
-`overlapall: bGenerateOverlapEvents возвращён у 24001 компонентов` (то есть ровно те,
-которые были выключены в руке A) — база восстановлена.
-
-Порядок внутри руки: **арм → ждём завершения автосейва (якорь) → окно 300 с**.
-Якорь — реальный автосейв, зафиксированный детектором плагина
-(`save: запись .ark завершилась, длительность 3000 мс`).
+The A/B on a real save was performed: **A (trim2) = 50.65 t/s, B (trim3) = 52.25 t/s,
+a delta of +1.60 t/s and −1.09 ms/tick, both windows VALID** ⇒ `overlaptrim3` is rolled out
+in place of `overlaptrim 2`. The rollback was checked explicitly: `overlapall 0` (795 → 0 components)
++ a server restart + a control window (VALID, 53.36 t/s).
+The A/B on a real save was performed per the protocol ARCH.md §7 with a common base (see §2);
+the decision about rollout to prod is made **only** by the verdict of the A/B and the rollback check (§4–6).
 
 ---
 
-## 3. Главная таблица: A/B
+## 2. The methodology (and one important amendment)
 
-| Рука | Команда | Компонентов отключено | Сохранено по белой метке | Освобождено записей | t/s mean | t/s min/max | мс/тик | busy% | save≠idle | Вердикт |
+Initially, arm B inherited the state of arm A (the trim from trim2 was already applied), i.e.,
+the comparison would be unclean. **Fixed:** before each arm, the state is brought to
+a common base — `TickProf.overlapall 0` (the return of `bGenerateOverlapEvents` to all
+components), and only then the arm is applied. Verified by the log: arm B started with
+`overlapall: bGenerateOverlapEvents returned to 24001 components` (i.e., exactly those,
+which were disabled in arm A) — the base is restored.
+
+The order inside the arm: **arm → we wait for the end of the autosave (the anchor) → a 300 s window**.
+The anchor is a real autosave, recorded by the plugin's detector
+(`save: the recording of the .ark finished, duration 3000 ms`).
+
+---
+
+## 3. Main table: A/B
+
+| Arm | Command | Components disabled | Saved by the white mark | Records freed | t/s mean | t/s min/max | ms/tick | busy% | save≠idle | Verdict |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **A** | `overlaptrim 2` (прод-конфиг v1) | 24 000 | — | 193 303 | **50.65** | 23 / 61 | 12.4 | 49.4 | 0 | **VALID** |
-| **B** | `overlaptrim3 2` (белый список A2) | 795 | **23 321** (11 правил) | 97 904 | см. §4 | | | | | |
-| **C** | контрольное окно после отката (без обрезки) | — | — | — | **53.36** | 30 / 61 | **10.06** | 46.0 | 0 | **VALID** |
+| **A** | `overlaptrim 2` (the prod config v1) | 24 000 | — | 193 303 | **50.65** | 23 / 61 | 12.4 | 49.4 | 0 | **VALID** |
+| **B** | `overlaptrim3 2` (the whitelist of A2) | 795 | **23 321** (11 rules) | 97 904 | see §4 | | | | | |
+| **C** | a control window after the rollback (no trim) | — | — | — | **53.36** | 30 / 61 | **10.06** | 46.0 | 0 | **VALID** |
 
-**Ключевые числа правки A2** (из лога 22:47:18):
+**The key numbers of the A2 change** (from the log of 22:47:18):
 ```
-22:47:18.369 overlapall: bGenerateOverlapEvents возвращён у 24001 компонентов
-22:47:18.817 overlaptrim3: порог=2 правил белой метки=11 отключено=795
-                      сохранено по метке=23321 освобождено записей=97904
+22:47:18.369 overlapall: bGenerateOverlapEvents returned to 24001 components
+22:47:18.817 overlaptrim3: threshold=2 white-mark rules=11 disabled=795
+                      saved by the mark=23321 records freed=97904
 ```
-Сравнение с trim2: trim2 обрезал **24 000** компонентов и **193 303** записи пересечений;
-trim3 с корректным белым списком обрезает **795** (в 30 раз меньше) и освобождает
-**97 904** записи. Разница объяснима: trim2 не имел белого списка вовсе (снимал флаг
-у всех, включая нужные игровой логике), trim3 сохраняет всё, что помечено меткой.
+A comparison with trim2: trim2 trimmed **24 000** components and **193 303** overlap records;
+trim3 with a correct whitelist trims **795** (30× fewer) and frees
+**97 904** records. The difference is explainable: trim2 had no whitelist at all (it removed the flag
+from everyone, including those needed by game logic), trim3 keeps everything that is marked by a mark.
 
 ---
 
-## 4. A/B вердикт
+## 4. The A/B verdict
 
-Фактические окна (по `slotC/window_A_trim2.json`, `slotC/window_B_trim3.json`):
+The actual windows (over `slotC/window_A_trim2.json`, `slotC/window_B_trim3.json`):
 
-| | Рука A (overlaptrim 2) | Рука B (overlaptrim3, A2) | Дельта B−A |
+| | Arm A (overlaptrim 2) | Arm B (overlaptrim3, A2) | The delta B−A |
 |---|---|---|---|
-| строк mon | 300 | 300 | — |
-| t/s среднее | 50.65 | **52.25** | **+1.60** |
-| t/s медиана | 59.0 | 59.0 | 0 |
+| mon lines | 300 | 300 | — |
+| t/s mean | 50.65 | **52.25** | **+1.60** |
+| t/s median | 59.0 | 59.0 | 0 |
 | t/s min | 23 | 13 | — |
-| мс/тик среднее | 12.40 | **11.31** | **−1.09** |
-| busy% среднее | 49.4 | 47.6 | −1.8 |
-| save≠idle (строк) | 0 | 0 | — |
-| **вердикт окна** | **VALID** | **VALID** | — |
+| ms/tick mean | 12.40 | **11.31** | **−1.09** |
+| busy% mean | 49.4 | 47.6 | −1.8 |
+| save≠idle (lines) | 0 | 0 | — |
+| **the window verdict** | **VALID** | **VALID** | — |
 
-**Попарное (фазо-сопоставимое) сравнение.** Оба окна содержат накопительную фазу
-в последней четверти (тренд по 10 частям: A = `60 60 60 60 60 59 38 30 32 49`,
-B = `60 60 59 60 59 60 44 31 34 57`), поэтому наивное среднее смешивает два режима.
-Попарное сравнение по индексам (n=300, 209 «чистых» точек, 83 «фазовых», 8 с разными
-режимами) даёт:
+**A pairwise (phase-matched) comparison.** Both windows contain the accumulating phase
+in the last quarter (a trend in 10 parts: A = `60 60 60 60 60 59 38 30 32 49`,
+B = `60 60 59 60 59 60 44 31 34 57`), so a naive average mixes two regimes.
+A paired comparison by indexes (n=300, 209 "clean" points, 83 "phase", 8 with different
+regimes) gives:
 
-| Участок | A (trim2) | B (trim3) | Дельта |
+| Segment | A (trim2) | B (trim3) | Delta |
 |---|---|---|---|
-| чистый (оба t/s≥45) | 58.95 | **59.47** | **+0.52 t/s** |
-| фаза (оба t/s<45) | 30.95 | **33.64** | **+2.69 t/s** |
+| clean (both t/s≥45) | 58.95 | **59.47** | **+0.52 t/s** |
+| phase (both t/s<45) | 30.95 | **33.64** | **+2.69 t/s** |
 
-**ВЕРДИКТ A/B: `overlaptrim3` не хуже `overlaptrim 2` — формальный критерий §3 выполнен**
-(дельта не хуже по t/s и по мс/тик, оба окна VALID, ноль крашей за сессию).
-Дополнительно trim3 оказался лучше именно в фазе (+2.69 t/s), что согласуется с тем,
-что trim3 сохраняет игровую логику (триггеры/ловушки/турели/динозавры) и потому
-не ломает поведение, зависящее от пересечений.
+**THE A/B VERDICT: `overlaptrim3` is not worse than `overlaptrim 2` — the formal criterion of §3 is met**
+(the delta is not worse in t/s and in ms/tick, both windows VALID, zero crashes over the session).
+Additionally, trim3 turned out to be better exactly in the phase (+2.69 t/s), which agrees with the fact
+that trim3 keeps game logic (triggers/traps/turrets/dinos) and therefore
+does not break the behavior that depends on overlaps.
 
-**Контрольное окно C (после отката, обрезки нет) — важная оговорка.**
-C отмерил **53.36 t/s / 10.06 мс/тик** — то есть *больше*, чем и A, и B, при том же
-происходящем в окне провале (тренд по 10 частям C = `60 60 60 60 60 57 37 36 46 60`).
-Формально это означает, что **на этом состоянии мира обрезка пересечений не даёт
-выигрыша, а стоит его** (A: 24 000 компонентов обрезано, 193 303 записи освобождено;
-B: 795 / 97 904; C: ничего не обрезано).
+**The control window C (after the rollback, no trim) — an important caveat.**
+C measured **53.36 t/s / 10.06 ms/tick** — i.e., *more* than both A and B, with the same
+dip happening in the window (a trend in 10 parts C = `60 60 60 60 60 57 37 36 46 60`).
+Formally this means that **on this state of the world, the overlap trim gives no gain, but costs it**
+(A: 24 000 components trimmed, 193 303 records freed;
+B: 795 / 97 904; C: nothing trimmed).
 
-Честные оговорки, почему это НЕ доказывает «обрезка вредна»:
-1. **Состояние мира между окнами различалось**: окно C снято после рестарта (мир
-   перезагружен из сейва 22:57), окна A и B — на том же непрерывном мире. Плотность
-   пересечений к моменту C могла быть иной (в C пересечения заново наполнились после
-   рестарта — их больше, а не меньше).
-2. **Разница A→C (+2.7 t/s) сопоставима с разницей «шум окна»**: все три окна
-   содержат одну и ту же фазу в одной и той же четверти, и разброс внутри окна
-   (t/s от 13 до 61) больше, чем дельта между окнами.
-3. Одна пара A/B — одна точка; для вывода о выигрыше нужна серия повторов.
-4. C — это не «рука A/B», а базовая линия; в прод-конфиг §2 по ARCH.md сейчас стоит
-   `overlaptrim 2`, то есть **выкатывать в прод имеет смысл только `overlaptrim3`
-   (он лучше A по обеим метрикам), а не «отключить обрезку»**.
+Honest caveats, why this does NOT prove "the trim is harmful":
+1. **The state of the world differed between the windows**: window C was taken after a restart (the world
+   reloaded from the save of 22:57), windows A and B — on the same continuous world. The density
+   of overlaps by the time of C could be different (in C the overlaps repopulated after
+   the restart — there are more of them, not fewer).
+2. **The difference A→C (+2.7 t/s) is comparable with "window noise"**: all three windows
+   contain the same phase in the same quarter, and the spread inside a window
+   (t/s from 13 to 61) is bigger than the delta between the windows.
+3. One A/B pair — one point; a conclusion about the gain needs a series of repeats.
+4. C is not an "arm of A/B", but a baseline; in the prod config of §2 per ARCH.md there currently stands
+   `overlaptrim 2`, i.e., **rolling out to prod only `overlaptrim3` makes sense
+   (it is better than A on both metrics), not "disabling the trim"**.
 
-Итог решения по §3: **`overlaptrim3` выкатывается вместо `overlaptrim 2`**
-(критерий «дельта не хуже trim 2» выполнен, откат проверен, ноль крашей).
+The outcome of the decision by §3: **`overlaptrim3` is rolled out in place of `overlaptrim 2`**
+(the criterion "the delta not worse than trim 2" is met, the rollback checked, zero crashes).
 
 ---
 
-## 5. Проверка отката (обязательная по §7.5)
+## 5. The rollback check (mandatory per §7.5)
 
-Выполнена явно, в два шага (лог плагина):
+Performed explicitly, in two steps (the plugin log):
 ```
-23:02:18.007 overlapall: bGenerateOverlapEvents возвращён у 795 компонентов
-23:02:20.260 overlapall: bGenerateOverlapEvents возвращён у 0 компонентов
-23:06:21     сервер перезапущен (pid 19836/15012)
+23:02:18.007 overlapall: bGenerateOverlapEvents returned to 795 components
+23:02:20.260 overlapall: bGenerateOverlapEvents returned to 0 components
+23:06:21     the server restarted (pid 19836/15012)
 ```
-То есть после рук A и B флаг снят **у всех** затронутых компонентов (795 — это остаток
-после trim3, второй вызов снял и их), а затем сервер перезапущен: при старте
-`bGenerateOverlapEvents` восстанавливается из сохранённого мира по умолчанию.
-Контрольное окно после отката меряет **базовую линию без обрезки** — это одновременно
-и проверка работоспособности отката, и независимая точка отсчёта для эффекта обрезки
-(A и B против C). Результат — в §4 (таблица) и в `slotC/compare.json`.
+That is, after arms A and B the flag was removed **from all** the affected components (795 is the remainder
+after trim3, the second call removed them too), and then the server was restarted: at startup
+`bGenerateOverlapEvents` restores from the saved world by default.
+The control window after the rollback measures **the baseline without trim** — this is simultaneously
+a check of the rollback working, and an independent reference point for the effect of the trim
+(A and B against C). The result — in §4 (the table) and in `slotC/compare.json`.
 
-**Побочный эффект рестарта (важно):** новая сборка DLL (с bptrace и фиксом perf.selftest)
-применяется при следующем старте — файл на диске обновлялся, но был залочен
-работающим процессом, поэтому в контрольном окне работала предыдущая сборка.
-
----
-
-## 6. Атрибуты честности
-
-1. **Судейские числа — только внешний Python.** Здесь плагиновые ряды mon (t/s, мс/тик,
-   busy) — использованы **относительно** (сравнение рук в одном окне, одна база, один
-   якорь). Абсолютные значения не выдаются за судейские.
-2. **Окна помечены VALID/CONTAMINATED** автоматически по признаку `save≠idle` в
-   строках окна; рука A: save_nonidle=0 → VALID.
-3. **Сравнение ограничено 300-секундными окнами** — это длина, заданная протоколом
-   §7; тренд на больших окнах не проверен.
-4. **Окно A снято сразу после применения trim2, а окно B — после следующего автосейва**;
-   между ними мир продолжал жить (структуры, рост, возможные фазы), поэтому разница
-   может включать и не-A/B факторы. Для чистоты нужно несколько повторов пары A/B.
-5. **Новая сборка DLL (с bptrace и фиксом selftest) на сервер не доставлена** — файл
-   залочен работающим процессом; новая сборка подхватится при рестарте (который
-   выполняется в проверке отката). Это нужно учесть: в контрольном окне будет
-   работать новая сборка.
+**A side effect of the restart (important):** the new DLL build (with bptrace and the fix of perf.selftest)
+applies at the next start — the file on disk was updated, but had been locked
+by the running process, so in the control window the previous build was running.
 
 ---
 
-## 7. Что НЕ сделано
+## 6. Honesty attributes
 
-* **Новый белый список не выкачен в прод-конфиг** — по §7.5 это делается только после
-  успешного A/B и проверки отката.
-* **bptrace не включался на стенде** (только реализация + сборка): хук `ProcessInternal`
-  пишет байты в код процесса, а §4 требует отдельного A/B-окна с трассировщиком и без.
-  Заявленная оценка накладных `+0.07…0.33%` — расчётная, не измеренная.
-* **A/B выполнен один раз**, не серия повторов.
-* **Проверка «прилипших» пересечений** (риск-класс из ARCH.md §3.2) не проводилась:
-  для неё нужен сценарий с ловушкой/турелью, а не просто метрика t/s.
+1. **Referee numbers — external Python only.** The mon series of the plugin are used here (t/s, ms/tick,
+   busy) — used **relatively** (the comparison of arms in one window, one base, one
+   anchor). The absolute values are not given out as referee numbers.
+2. **The windows are marked VALID/CONTAMINATED** automatically by the sign of `save≠idle` in
+   the window lines; arm A: save_nonidle=0 → VALID.
+3. **The comparison is limited to 300-second windows** — this is the length set by the protocol
+   of §7; the trend on larger windows was not checked.
+4. **Window A was taken right after applying trim2, and window B — after the next autosave**;
+   between them the world kept living (structures, growth, possible phases), so the difference
+   may include non-A/B factors too. For cleanliness, several repeats of the pair A/B are needed.
+5. **The new DLL build (with bptrace and the selftest fix) was not delivered to the server** — the file
+   is locked by the running process; the new build will be picked up at a restart (which
+   happens in the rollback check). This must be taken into account: in the control window, the
+   new build will be running.
 
 ---
 
-## 8. Задачи следующего слота
+## 7. What was NOT done
 
-1. **Повторить пару A/B** (минимум 3 раза, разные окна) и свести дельту t/s с
-   доверительным интервалом; сейчас одна пара — это одна точка.
-2. **Проверить визуально/по сценарию, что не сломалась игровая логика** при trim3:
-   ловушки (BearTrap), опасные зоны (HazardTrigger_Slide), турели (Turret/TurretBallista),
-   grappling hook, AOE-способности (TameAOE/CryoAOE/PingNearbyPlayers) — они теперь
-   защищены белым списком, но поведение надо подтвердить в игре.
-3. **Включить bptrace на стенде в отдельном окне** (A/B: с трассировщиком и без) —
-   это даст имена Blueprint-функций, которые крутятся в фазе, и замкнёт вопрос
-   «источник фазы» (см. REPORT-SLOT-B.md, задача 4).
-4. **Выяснить, почему файловый IO в фазе идёт не из кода игры** (см. §4 отчёта B):
-   проверить `UWorldComposition::Rescan` (вызывается из `ApplySettings`/`Serialize`).
+* **The new whitelist was not rolled out to the prod config** — per §7.5 this is done only after
+   a successful A/B and a rollback check.
+* **bptrace was not enabled on the bench** (only the implementation + a build): the hook of `ProcessInternal`
+   writes bytes into the process code, and §4 requires a separate A/B window with the tracer and without it.
+   The declared overhead estimate `+0.07…0.33%` is calculated, not measured.
+* **The A/B was performed once**, not a series of repeats.
+* **The check of "stuck" overlaps** (the risk class from ARCH.md §3.2) was not done:
+   for it a scenario with a trap/turret is needed, not just a metric of t/s.
+
+---
+
+## 8. The tasks of the next slot
+
+1. **Repeat the pair A/B** (at least 3 times, different windows) and aggregate the delta t/s with
+   a confidence interval; currently one pair is one point.
+2. **Check visually/by scenario that game logic did not break** under trim3:
+   the traps (BearTrap), the danger zones (HazardTrigger_Slide), the turrets (Turret/TurretBallista),
+   the grappling hook, the AOE abilities (TameAOE/CryoAOE/PingNearbyPlayers) — they are now
+   protected by the whitelist, but the behavior must be confirmed in game.
+3. **Enable bptrace on the bench in a separate window** (an A/B: with the tracer and without) —
+   this will give the names of the Blueprint functions spinning in the phase and close the question
+   "the source of the phase" (see REPORT-SLOT-B.md, task 4).
+4. **Find out why the file IO in the phase comes not from the game code** (see §4 of report B):
+   check `UWorldComposition::Rescan` (called from `ApplySettings`/`Serialize`).

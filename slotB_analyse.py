@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Слот B: атрибуция ожиданий в ПРОФИЛЕ ФАЗЫ (prof_631247234) тем же методом,
-# что и в слоте A для плотной базы (prof_512222984) + сопоставление с idle-профилем.
+# Slot B: attribution of waits in the PHASE profile (prof_631247234) by the same method
+# as in slot A for the dense baseline (prof_512222984) + comparison with the idle profile.
 import struct, collections, sys, os, json
 sys.path.insert(0, r'C:\Dev\_research')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -10,7 +10,7 @@ import profnamed as pn
 TXT = 0x391AA6E
 PLUG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins'
 BACK = os.path.join(PLUG, '_backup', 'TickProf')
-# Новый профиль (слот B) лежит в активном каталоге плагина, старые - в _backup.
+# The new profile (slot B) sits in the active plugin directory, older ones are in _backup.
 ACTIVE = os.path.join(PLUG, 'TickProf')
 
 
@@ -69,7 +69,7 @@ def analyse(prof, tag):
     for (i, k) in pairs:
         s, o, _ = mi(ww[k * 5])
         sysc['%s+0x%x' % (s, o) if s else 'raw'] += 1
-    # свидетельство в стеке
+    # evidence in the stack
     stack = collections.Counter()
     for (i, k) in pairs:
         sig = None
@@ -82,8 +82,8 @@ def analyse(prof, tag):
             if d2:
                 sig = d2
                 break
-        stack[sig or '<нет exe-кадра>'] += 1
-    # владелец по ret ПЕРВОГО exe-сэмпла ПОСЛЕ ожидания
+        stack[sig or '<no exe frame>'] += 1
+    # owner by the ret of the FIRST exe sample AFTER the wait
     owner = collections.Counter()
     for (i, k) in pairs:
         own = None
@@ -96,28 +96,28 @@ def analyse(prof, tag):
                     own = f
                 break
         owner[own or '<?>'] += 1
-    print('\n########## %s: профиль %s ##########' % (tag, prof))
-    print('  сэмплов=%d, wait=%d (%.1f%%), выровнено=%d' % (ns, wcnt, 100.0 * wcnt / ns, len(pairs)))
-    print('  syscall-классы (топ-6):')
+    print('\n########## %s: profile %s ##########' % (tag, prof))
+    print('  samples=%d, wait=%d (%.1f%%), aligned=%d' % (ns, wcnt, 100.0 * wcnt / ns, len(pairs)))
+    print('  syscall classes (top-6):')
     for s, c in sysc.most_common(6):
         print('     %5d (%5.1f%%)  %s' % (c, 100.0 * c / wcnt, s))
-    print('  свидетельство в стеке (топ-10):')
+    print('  evidence in the stack (top-10):')
     for s, c in stack.most_common(10):
         print('     %5d (%5.1f%%)  %s' % (c, 100.0 * c / max(1, wcnt), s))
-    print('  владелец по ret после ожидания (топ-10):')
+    print('  owner by ret after the wait (top-10):')
     for s, c in owner.most_common(10):
         print('     %5d (%5.1f%%)  %s' % (c, 100.0 * c / max(1, wcnt), s))
-    named = sum(c for s, c in stack.items() if s and s != '<нет exe-кадра>')
-    print('  НАЗВАНО по стеку: %d из %d (%.1f%%)' % (named, wcnt, 100.0 * named / max(1, wcnt)))
+    named = sum(c for s, c in stack.items() if s and s != '<no exe frame>')
+    print('  NAMED via stack: %d of %d (%.1f%%)' % (named, wcnt, 100.0 * named / max(1, wcnt)))
     return dict(prof=prof, samples=ns, waits=wcnt, sysc=dict(sysc.most_common(8)),
                 stack=dict(stack.most_common(12)), owner=dict(owner.most_common(12)))
 
 
 if __name__ == '__main__':
     res = []
-    res.append(analyse('631247234', 'СЛОТ B: ПРОФИЛЬ ФАЗЫ (21:57, t/s 28-33, busy 92-96%)'))
-    res.append(analyse('512222984', 'СЛОТ A: плотная база 20.10 12:53 (t/s 21)'))
-    res.append(analyse('301269000', 'idle-профиль (Sleep- pacing)'))
+    res.append(analyse('631247234', 'SLOT B: PHASE PROFILE (21:57, t/s 28-33, busy 92-96%)'))
+    res.append(analyse('512222984', 'SLOT A: dense baseline 20.10 12:53 (t/s 21)'))
+    res.append(analyse('301269000', 'idle profile (Sleep pacing)'))
     with open(r'C:\Dev\_research\slotB\compare_profiles.json', 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=1)
-    print('\nсохранено: C:\\Dev\\_research\\slotB\\compare_profiles.json')
+    print('\nsaved: C:\\Dev\\_research\\slotB\\compare_profiles.json')

@@ -1,135 +1,134 @@
-# REPORT-C — разбор зажима т/с и выход на 60 т/с
+# REPORT-C — dissecting the t/s clamp and reaching 60 t/s
 
-Вахта doit2, этап C (исследование и изменения перед тестом с игроком).
-Карта Genesis, деплой из `c:/saves` через `deploy_map.py`, прод-строка запуска.
+Watch doit2, stage C (research and changes before the player test).
+Map Genesis, deploy from `c:/saves` via `deploy_map.py`, prod launch line.
 
-## 1. Главный результат: 60 т/с — это вопрос КОНФИГУРАЦИИ, а не кода
+## 1. Main result: 60 t/s is a question of CONFIGURATION, not code
 
-### Разбор в Ghidra (UGameEngine::GetMaxTickRate, RVA `0x0253B1C0`)
+### Dissection in Ghidra (UGameEngine::GetMaxTickRate, RVA `0x0253B1C0`)
 
 ```asm
 14253b25f  MOV  EDX,dword ptr [RAX+0x48]   ; NetDriver->NetServerMaxTickRate (int32, @+0x48=72)
 14253b262  CMP  EDX,0xa                      ; < 10 ?
 14253b265  JGE  14253b26e
-14253b267  MOV  ECX,0xa                      ; да  -> 10   (ПОЛ)
+14253b267  MOV  ECX,0xa                      ; yes -> 10   (FLOOR)
 14253b26c  JMP  14253b278
-14253b26e  MOV  ECX,0x78                     ; нет -> 120 (ПОТОЛОК)
+14253b26e  MOV  ECX,0x78                     ; no  -> 120 (CEILING)
 14253b273  CMP  EDX,ECX
-14253b275  CMOVL ECX,EDX                      ; min(rate,120)
+14253b275  CMOVL ECX,EDX                     ; min(rate,120)
 14253b278  MOVD XMM6,ECX
 14253b27c  CVTDQ2PS XMM6,XMM6
 14253b2ae  CALL UEngine::GetMaxTickRate
-14253b2c3  UCOMISS XMM0,XMM7                  ; XMM7 = 0
+14253b2c3  UCOMISS XMM0,XMM7                 ; XMM7 = 0
 14253b2d0  JNZ  14253b2d5
-14253b2d2  MOVAPS XMM0,XMM6                  ; UEngine == 0 -> вернуть зажим
+14253b2d2  MOVAPS XMM0,XMM6                  ; UEngine == 0 -> return the clamp
 ```
 
-При `NetServerMaxTickRate = 0` (штатно) срабатывает **пол**: `0 < 10` → результат
-ровно 10 т/с. Измерено 9.99 т/с, кадр 100.1 мс = 1/10. Совпадение до 0.1%.
+With `NetServerMaxTickRate = 0` (stock) the **floor** triggers: `0 < 10` → the result
+is exactly 10 t/s. Measured 9.99 t/s, frame 100.1 ms = 1/10. Agreement to 0.1%.
 
-**Следствие:** `TickProf.fixclamp` (патч `0x78 → 0x186A0` по RVA `0x253B26F`)
-поднимает только **потолок** 120. Он нужен для значений выше 120 т/с и **избыточен
-для цели 60 т/с**.
+**Consequence:** `TickProf.fixclamp` (patch `0x78 → 0x186A0` at RVA `0x253B26F`)
+raises only the **ceiling** of 120. It is needed for values above 120 t/s and is **redundant
+for the 60 t/s target**.
 
-### Эмпирическая проверка (решающий тест)
+### Empirical check (the decisive test)
 
-`TickProf.maxfps 60` при **штатном** клампе (`fixclamp 0`), Genesis, без игрока:
+`TickProf.maxfps 60` with the **stock** clamp (`fixclamp 0`), Genesis, no player:
 
-| Показатель | Значение |
+| Metric | Value |
 |---|---|
-| т/с (мгновенно, установившийся режим) | **59–60** |
-| т/с (среднее за 1000 с) | **54** |
-| кадр | **16–18 мс** |
-| **мс CPU на тик** | **5–9** |
-| занятость ядра | **31–50%** |
-| кодовых патчей | **ноль** |
+| t/s (instantaneous, settled regime) | **59–60** |
+| t/s (average over 1000 s) | **54** |
+| frame | **16–18 ms** |
+| **ms CPU per tick** | **5–9** |
+| core occupancy | **31–50%** |
+| code patches | **zero** |
 
-**Цель 60 т/с достигнута одним изменением конфигурации.** Бюджет по ТЗ — ≤16.6 мс/тик —
-выполняется с запасом: 9 мс против 16.6.
+**The 60 t/s target was achieved with a single configuration change.** The ToR budget — ≤16.6 ms/tick —
+is met with headroom: 9 ms against 16.6.
 
-## 2. Поправка к формулировке прошлой вахты
+## 2. Correction to the previous watch's wording
 
-Обе вахты писали «лимит — пейсинг». Точнее: **кадр задаётся целевым темпом тиков,
-а не объёмом работы**. В устоявшемся режиме GameThread занят на 4–14% ядра, а кадр
-всё равно 100 мс. Это и есть зажим.
+Both watches wrote "the limit is pacing". More precisely: **the frame is set by the target tick rate,
+not by the amount of work**. In the settled regime the GameThread is busy on 4–14% of a core, and the frame
+is still 100 ms. That is the clamp.
 
-Дополнительно уточнено: при незавершённой загрузке мира (первые ~10 минут)
-работа превышает бюджет — GameThread занят на 98–100%, т/с падает до 7–9 независимо
-от целевого темпа. То есть зажим виден только в устоявшемся режиме.
+Additionally clarified: while the world is not fully loaded (the first ~10 minutes)
+the work exceeds the budget — the GameThread is busy on 98–100%, and t/s drops to 7–9 regardless
+of the target rate. I.e. the clamp is visible only in the settled regime.
 
-## 3. Что изменено в плагине
+## 3. What was changed in the plugin
 
-Собрано, развёрнуто и проверено на стенде. Все новые команды — **читающие или
-управляющие состоянием измерителя**, ни одна не меняет поведение сервера:
+Built, deployed and verified on the bench. All new commands **read or control the state
+of the meter**; not one changes server behavior:
 
-| Команда | Назначение | Проверено |
+| Command | Purpose | Verified |
 |---|---|---|
-| `TickProf.mon <сек>` | монитор раз в секунду: т/с, мс/тик, кадр, занятость, состояние сейва | да |
-| `TickProf.window <сек>` | окно измерения **с самопроверкой** валидности | да |
-| `TickProf.arkstate` | состояние `.ark` для протокола откатов (п.1.1) | да |
-| `TickProf.perf.selftest` | автопрогон регламента слота без ручных шагов | собран, детальный прогон не выполнен |
+| `TickProf.mon <sec>` | monitor once per second: t/s, ms/tick, frame, occupancy, save state | yes |
+| `TickProf.window <sec>` | measurement window **with a self-validity check** | yes |
+| `TickProf.arkstate` | `.ark` state for the rollback protocol (item 1.1) | yes |
+| `TickProf.perf.selftest` | automated run of the slot protocol without manual steps | built, detailed run not executed |
 
-### Автопометка искажения — ключевое изменение
+### Auto-flagging of contamination — the key change
 
-Окно само себя помечает:
+The window flags itself:
 
 ```
 16:57:01  window: t/s=54 cpu=506s ms/tick=9 frame_ms=18 busy=50% save=idle CONTAMINATED
-16:57:01  window: контаминировано сохранением мира, 179 из 54822 кадров
+16:57:01  window: contaminated by world save, 179 of 54822 frames
 ```
 
-179 из 54822 кадров (0.33%) попали на сохранение. Теперь испорченное окно
-невозможно принять по недосмотру — раньше это делалось вручную, а в первой вахте
-три окна были испорчены именно так.
+179 of 54 822 frames (0.33%) landed on a save. Now a spoiled window cannot be accepted by oversight —
+earlier this was done manually, and in the first watch three windows were spoiled exactly that way.
 
-### Детектор сохранений
+### Save detector
 
 ```
-16:35:00.491  save: начало записи .ark (файлов 7)
-16:35:03.491  save: запись .ark завершилась, длительность 3000 мс, всего сохранений 1
-16:50:00.448  save: начало записи .ark (файлов 7)
-16:50:03.449  save: запись .ark завершилась, длительность 3000 мс, всего сохранений 2
+16:35:00.491  save: start of .ark write (7 files)
+16:35:03.491  save: .ark write finished, duration 3000 ms, total saves 1
+16:50:00.448  save: start of .ark write (7 files)
+16:50:03.449  save: .ark write finished, duration 3000 ms, total saves 2
 ```
 
-Пойманы оба автосейва. Длительность 3000 мс согласуется с независимым замером
-фриза SaveWorld (3.9–4.3 с по недоступности RCON): файловая запись идёт асинхронно
-на TaskGraph-воркере (см. RE2.md, A4), поэтому `.ark` дописывается в конце.
+Both autosaves were caught. The 3000 ms duration agrees with the independent measurement of the SaveWorld
+freeze (3.9–4.3 s by RCON unavailability): the file write goes asynchronously
+on a TaskGraph worker (see RE2.md, A4), so `.ark` is finalized at the end.
 
-## 4. Найденные и исправленные дефекты измерений
+## 4. Measurement defects found and fixed
 
-| Дефект | Симптом | Исправление |
+| Defect | Symptom | Fix |
 |---|---|---|
-| `GetThreadTimes` без базового отсчёта | `cpu=570s` при `wall=240s`, `busy=237%` — физически невозможно | вычитание базового значения окна |
-| `ms/tick = cpu/tps` вместо `cpu_total/frames` | завышение в `wall_s` раз (в 240 с — в 240 раз) | формула `cpu_total / frames` |
-| `PollArk` всегда возвращал `changed=false` | сохранение никогда не обнаруживалось | сравнение снимков `.ark` |
-| первое срабатывание детектора молчало | потеря первого автосейва | логика «начало → конец» |
-| фильтр `*.ark` цеплял `.arkprofile` и `.arktributetribe` | ложные «сохранения» | исключены по расширению |
-| монитор и детектор стояли после раннего выхода `OnTickPerf` | не работали без активного окна | вынесены в `OnTickFrame` |
-| формат `{:.2f}` не поддержан `S()` | `t/s=A`, обрезанные значения | заменено на `{}` |
+| `GetThreadTimes` without a baseline reading | `cpu=570s` at `wall=240s`, `busy=237%` — physically impossible | subtract the window baseline |
+| `ms/tick = cpu/tps` instead of `cpu_total/frames` | overstatement by `wall_s` times (over 240 s — by 240 times) | formula `cpu_total / frames` |
+| `PollArk` always returned `changed=false` | the save was never detected | comparison of `.ark` snapshots |
+| the detector's first trigger was silent | loss of the first autosave | "start → end" logic |
+| the `*.ark` filter caught `.arkprofile` and `.arktributetribe` | false "saves" | excluded by extension |
+| the monitor and detector were placed after the early exit of `OnTickPerf` | they did not work without an active window | moved to `OnTickFrame` |
+| the `{:.2f}` format was not supported by `S()` | `t/s=A`, clipped values | replaced with `{}` |
 
-**Важно:** числа первой вахты, взятые из строки `perf окно` плагина
-(`busy=237%`, `cpu=570s`), были неверны. Все решения в отчётах первой и второй вахт
-принимались по **внешнему** измерению (Python, `threadcpu.py`), которое считало
-дельту корректно. Поэтому выводы обеих вахт остаются в силе, но ссылаться на
-колонку `busy` в логе плагина нельзя.
+**Important:** the first watch's numbers taken from the plugin's `perf window` line
+(`busy=237%`, `cpu=570s`) were wrong. All decisions in the first- and second-watch reports
+were made on the **external** measurement (Python, `threadcpu.py`), which computed
+the delta correctly. Therefore the conclusions of both watches stand, but the
+`busy` column in the plugin log must not be cited.
 
-## 5. Что осталось за рамками
+## 5. What remains out of scope
 
-| Пункт | Статус |
+| Item | Status |
 |---|---|
-| Выход на 60 т/с | **закрыт**: 9 мс/тик при целевом 60 |
-| `bptrace` — трассировщик Blueprint | **не реализован.** Точка зацепа и проект есть (RE2.md A5, ARCH.md 3.5), кода нет |
-| `perf.selftest` — детальный прогон | команда собрана, сценарий не отработан на стенде |
-| Атрибуция `nochart` и `overlaptrim` | не закрыта (потолок слота B-2) |
-| Тест с игроком | не проводился — клиент не подключался |
+| Reaching 60 t/s | **closed**: 9 ms/tick at the target 60 |
+| `bptrace` — Blueprint tracer | **not implemented.** The hook point and design exist (RE2.md A5, ARCH.md 3.5); no code |
+| `perf.selftest` — detailed run | command built, scenario not exercised on the bench |
+| Attribution of `nochart` and `overlaptrim` | not closed (the ceiling of slot B-2) |
+| Test with a player | not conducted — no client connected |
 
-## 6. Рекомендация для сессии с игроком
+## 6. Recommendation for the session with a player
 
-Конфигурация цели: `NetServerMaxTickRate = 60`, `fixclamp 0` (патч не нужен),
-пять оптимизаций включены. Стартовая база — **9 мс/тик** на пустом сервере при
-целевых 60 т/с, то есть **запас ≈ 7.6 мс/тик** на игрока.
+Target configuration: `NetServerMaxTickRate = 60`, `fixclamp 0` (the patch is not needed),
+the five optimizations on. The starting baseline — **9 ms/tick** on an empty server at
+the target 60 t/s, i.e. **headroom ≈ 7.6 ms/tick** for the player.
 
-Историческая цифра с игроком — 24.4 мс/тик, она **в этот бюджет не укладывается**.
-Значит оптимизации по-прежнему нужны: требуется срезать около 8 мс/тик.
-Кандидаты по убыванию ожидаемой отдачи: интерпретатор Blueprint (22.8%
-на Genesis), настоящий O(n²) в `BeginComponentOverlap`, GC (~16% на Fjordur).
+The historical figure with a player — 24.4 ms/tick — **does not fit this budget**.
+So the optimizations are still needed: about 8 ms/tick must be cut.
+Candidates in descending order of expected payoff: the Blueprint interpreter (22.8%
+on Genesis), the genuine O(n²) in `BeginComponentOverlap`, GC (~16% on Fjordur).

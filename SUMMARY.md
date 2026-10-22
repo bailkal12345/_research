@@ -1,111 +1,115 @@
-# Сводная таблица вахты doit2 (RE-2 + бенч без клиента)
+# Summary table of the doit2 watch (RE-2 + benchmark without a client)
 
-Вахта 2026-10-18. Все слоты начинались с деплоя из `c:/saves` через `deploy_map.py`.
-Прод-конфигурация на всех картах: NetServerMaxTickRate штатное, fixclamp 0,
+Watch date: 2026-10-18. All slots started with a deploy from `c:/saves` via `deploy_map.py`.
+Prod configuration on all maps: NetServerMaxTickRate at default, fixclamp 0,
 fncache 1, iscache 1, cachename 1, nochart 1, overlaptrim 2, bAllowConcurrentTicks 0.
-CPU — поток GameThread. Формула мс/тик = (CPU, с/с) / (т/с).
+CPU is the GameThread thread. The ms/tick formula = (CPU, s/s) / (t/s).
 
-## Слоты
+## Slots
 
-| Слот | Карта | Что сделано | Итог |
+| Slot | Map | What was done | Result |
 |---|---|---|---|
-| B-1 | TheIsland | кривая затухания, 5 окон по 120 с | свежий мир дороже в **5.1 раза**, худшее число **21.97 мс/тик** |
-| B-2 | Genesis | атрибуция пяти оптимизаций, 7 окон по 240 с | 3 из 5 измерены, **дрейф ±1 мс/тик** |
-| B-3 | Fjordur | перепись в состоянии руки A + профиль 60 с | доминирующий кластер — **сборка мусора ~16%** |
+| B-1 | TheIsland | decay curve, 5 windows of 120 s | a fresh world is **5.1×** more expensive, worst number **21.97 ms/tick** |
+| B-2 | Genesis | attribution of the five optimizations, 7 windows of 240 s | 3 of 5 measured, **drift ±1 ms/tick** |
+| B-3 | Fjordur | census in the arm-A state + a 60 s profile | the dominant cluster is **garbage collection ~16%** |
 
-## B-1 — кривая затухания (TheIsland)
+## B-1 — Decay curve (TheIsland)
 
-| Окно | мс/тик | т/с | статус |
+| Window | ms/tick | t/s | status |
 |---|---|---|---|
-| T0+2…4 | **21.97** | 9.07 | чистое |
-| T0+5…7 | **7.76** | 9.07 | чистое |
-| T0+8…10 | **5.35** | 8.76 | чистое |
-| T0+11…13 | (6.21) | 8.81 | **искажено — отброшено** |
-| после автосейва | **4.31** | 9.07 | чистое |
+| T0+2…4 | **21.97** | 9.07 | clean |
+| T0+5…7 | **7.76** | 9.07 | clean |
+| T0+8…10 | **5.35** | 8.76 | clean |
+| T0+11…13 | (6.21) | 8.81 | **distorted — discarded** |
+| after autosave | **4.31** | 9.07 | clean |
 
-Свежезагруженный мир дороже устоявшегося в **5.1 раза**; половина стоимости
-спадает за ~2.5 минуты. **Худшее число для ТЗ: 21.97 мс/тик** — старт сервера
-на реальном сейве. Для цели 60 т/с (≤16.6 мс/тик) свежеподнятый сервер без игроков
-**не укладывается**, укладывается только устоявшийся.
+A freshly loaded world is **5.1×** more expensive than a settled one; half of the cost
+decays within ~2.5 minutes. **The worst number for the ToR: 21.97 ms/tick** — starting
+the server on a real save. For the 60 t/s target (≤16.6 ms/tick) a freshly started server
+without players **does not fit**; only a settled one fits.
 
-**Это переопределяет ответ на вопрос 1 первой вахты.** Там П0/П1 снимался через
-~2 минуты после подъёма — ровно в зоне максимального затухания. Значит П0/П1
-(Genesis 9.77 / TheIsland 10.17 / Fjordur 9.00 мс/тик) — это **переходный режим**.
-Устоявшиеся значения ниже: TheIsland 4.31, Genesis 7.04 мс/тик — **в 1.8–2.4 раза
-дешевле**, чем показывала первая вахта.
+**This redefines the answer to question 1 of the first watch.** There, P0/P1 was taken
+~2 minutes after startup — right in the zone of maximum decay. That means P0/P1
+(Genesis 9.77 / TheIsland 10.17 / Fjordur 9.00 ms/tick) is a **transient regime**.
+The settled values are lower: TheIsland 4.31, Genesis 7.04 ms/tick — **1.8–2.4×
+cheaper** than the first watch showed.
 
-## B-2 — атрибуция пяти оптимизаций (Genesis)
+## B-2 — Attribution of the five optimizations (Genesis)
 
-| Оптимизация | выкл | вкл | вклад | статус |
+| Optimization | off | on | contribution | status |
 |---|---|---|---|---|
-| опорное (все 5) | — | **7.04** | — | — |
-| `fncache` | 10.95 | 7.04 | **−3.91 мс (−35.7%)** | измерено |
-| `iscache` | 14.07 | 8.99 | **−5.08 мс (−36.1%)** | измерено |
-| `cachename` | 11.72 | 7.05 | **−4.67 мс (−39.8%)** | измерено |
-| `nochart` | — | — | — | **не завершено** (потолок слота) |
-| `overlaptrim` | — | — | — | **не завершено** (потолок слота) |
+| reference (all 5) | — | **7.04** | — | — |
+| `fncache` | 10.95 | 7.04 | **−3.91 ms (−35.7%)** | measured |
+| `iscache` | 14.07 | 8.99 | **−5.08 ms (−36.1%)** | measured |
+| `cachename` | 11.72 | 7.05 | **−4.67 ms (−39.8%)** | measured |
+| `nochart` | — | — | — | **not completed** (slot ceiling) |
+| `overlaptrim` | — | — | — | **not completed** (slot ceiling) |
 
-**Дрейф: при неизменной конфигурации измерено 7.04 / 8.99 / 7.05 мс/тик — разброс
-±1.0 мс (до +28%).** Это сопоставимо с размером вкладов, поэтому числа пригодны
-только для оценки порядка, а не для планирования бюджета ТЗ. Возможные причины
-(обе не проверены): неаддитивность кэшей и перекрытие дрейфом.
+**Drift: with an unchanged configuration, 7.04 / 8.99 / 7.05 ms/tick were measured — a
+spread of ±1.0 ms (up to +28%).** This is comparable to the size of the contributions,
+so the numbers are suitable only for estimating order of magnitude, not for planning
+the ToR budget. Possible causes (both unverified): non-additivity of the caches
+and overlap with drift.
 
-Счётчики: `fncache` 45 336 557 / 4 678 (99.990%), `iscache` 957 894 518 / 1 857 (99.9998%).
+Counters: `fncache` 45 336 557 / 4 678 (99.990%), `iscache` 957 894 518 / 1 857 (99.9998%).
 
-**Diff `.ark`:** 107 713 327 → 101 508 597 байт (−5.8%), `sha256` зафиксирован до и
-после. Причина — `overlaptrim 2` отключил 13 783 компонента и освободил 111 745
-записей. Fjordur.ark и TheIsland.ark не изменились: эффект локален для карты.
+**Diff of `.ark`:** 107 713 327 → 101 508 597 bytes (−5.8%), `sha256` recorded before and
+after. The cause — `overlaptrim 2` disabled 13 783 components and freed 111 745
+records. Fjordur.ark and TheIsland.ark did not change: the effect is local to the map.
 
-## B-3 — перепись и профиль (Fjordur)
+## B-3 — Census and profile (Fjordur)
 
-Перепись снята в **восстановленном состоянии** (после `overlapall 0`): флаг
-`bGenerateOverlapEvents` у **206 780 из 206 780** компонентов (100%), пересечений
-325 896. В деплой-состоянии было 4 594 из 206 502 (2.2%) и 326 946 пересечений.
+The census was taken in the **restored state** (after `overlapall 0`): the flag
+`bGenerateOverlapEvents` on **206 780 of 206 780** components (100%), overlaps 325 896.
+In the deploy state there were 4 594 of 206 502 (2.2%) and 326 946 overlaps.
 
-**Суммарное число пересечений почти не изменилось (0.3%)** при снятии флага у
-97.8% компонентов. Это прямое доказательство механизма выигрыша `overlaptrim`:
-он снимает не число пересечений, а стоимость их обработки.
+**The total number of overlaps almost did not change (0.3%)** when the flag was
+removed from 97.8% of the components. This is direct proof of the mechanism of the
+`overlaptrim` gain: it removes not the number of overlaps but the cost of processing them.
 
-## Профили: три карты — три разных профиля
+## Profiles: three maps — three different profiles
 
-| Доминирующий кластер | Genesis | TheIsland | Fjordur |
+| Dominant cluster | Genesis | TheIsland | Fjordur |
 |---|---|---|---|
-| 1-й | BP-интерпретатор **22.8%** | обход октри **15.4%** | **сборка мусора ~16%** |
-| простой | 83.8% wall | 96.4% wall | 95.1% wall |
-| исполняемый код | 4 932 сэмпла | 1 093 | 1 518 |
+| 1st | BP interpreter **22.8%** | octree traversal **15.4%** | **garbage collection ~16%** |
+| idle | 83.8% wall | 96.4% wall | 95.1% wall |
+| executable code | 4 932 samples | 1 093 | 1 518 |
 
-**Единой горячей точки для всех карт нет.** Приоритеты по картам расходятся:
-BP-интерпретатор (Genesis), обход октри (TheIsland), GC (Fjordur).
-Ни один из пяти действующих патчей не затрагивает GC — это незанятая ниша.
+**There is no single hot spot for all maps.** Priorities diverge between maps:
+the BP interpreter (Genesis), the octree traversal (TheIsland), GC (Fjordur).
+None of the five active patches touches GC — this is an unoccupied niche.
 
-## Ответы на три вопроса вахты (обновлённые)
+## Answers to the three watch questions (updated)
 
-| Вопрос | Ответ |
+| Question | Answer |
 |---|---|
-| 1. Стоимость сейва без игроков | Устоявшийся режим: **TheIsland 4.31, Genesis 7.04 мс/тик**; в худшем случае (сразу после старта) **21.97 мс/тик**. Лимит — пейсинг, не CPU: 9.99 т/с при 4–14% ядра |
-| 2. O(n²) overlap | Да, но выигрыш определяется **концентрацией** пересечений, а не их числом: −59.0% / −9.1% / −39.0% при 199 тыс. / 528 тыс. / 327 тыс. пересечений |
-| 3. Фриз SaveWorld | 3.9–4.3 с = **×7.5–8.7** от порога 500 мс. По RE (A4) это **сериализация в память**, а не сброс на диск: запись уже идёт на TaskGraph-воркере (`FWriteFileTask::GetDesiredThread` `0x00D66650`) |
+| 1. Cost of saving without players | Settled regime: **TheIsland 4.31, Genesis 7.04 ms/tick**; in the worst case (right after startup) **21.97 ms/tick**. The limit is pacing, not CPU: 9.99 t/s at 4–14% of a core |
+| 2. O(n²) overlap | Yes, but the gain is determined by the **concentration** of overlaps, not their number: −59.0% / −9.1% / −39.0% at 199k / 528k / 327k overlaps |
+| 3. SaveWorld freeze | 3.9–4.3 s = **×7.5–8.7** of the 500 ms threshold. Per RE (A4) it is **serialization into memory**, not a flush to disk: writing already happens on a TaskGraph worker (`FWriteFileTask::GetDesiredThread` `0x00D66650`) |
 
-## Что нового дал RE-2
+## What RE-2 newly established
 
-| Тезис | Статус |
+| Thesis | Status |
 |---|---|
-| O(n²) в `ServerOctreeOverlapActors` | **ОПРОВЕРГНУТ**. Настоящий O(n²) — `BeginComponentOverlap` `0x02644000`, вызов `AddUniqueImpl` по `0x0264418D` |
-| `iscache` покрывает `IsA` | **НЕТ**. Ноль пересечения: в теле `IsA` ноль инструкций `CALL`. Вклад iscache идёт от `IsChildOf` |
-| Хук `IsA` покрывает все места | **НЕТ**, 73%: 1360 вызовов + **510 инлайн-копий** цикла |
-| Цифра «−13% от iscache» | **не подтверждается**: в старом отчёте был совокупный эффект трёх кэшей «−7%» |
-| Фриз SaveWorld — сброс на диск | **НЕТ**. Диск асинхронный, фриз — сериализация |
-| Инкрементальное сохранение в ARK | **НЕТ**. `SavePackage` отсутствует целиком, `-newsaveformat` меняет версию, а не дельту |
-| Стартовый сейв перед П0/П1 первой вахты | **НЕ БЫЛО** ни на одной карте; посылка ревьюера не подтверждается |
+| O(n²) in `ServerOctreeOverlapActors` | **REFUTED**. The real O(n²) is `BeginComponentOverlap` `0x02644000`, the call to `AddUniqueImpl` at `0x0264418D` |
+| `iscache` covers `IsA` | **NO**. Zero intersection: in the body of `IsA` there are zero `CALL` instructions. The iscache contribution comes from `IsChildOf` |
+| The `IsA` hook covers all sites | **NO**, 73%: 1360 calls + **510 inline copies** of the loop |
+| The figure "−13% from iscache" | **not confirmed**: the old report held the combined effect of three caches at "−7%" |
+| The SaveWorld freeze is a flush to disk | **NO**. The disk is asynchronous, the freeze is serialization |
+| Incremental saving in ARK | **NO**. `SavePackage` is entirely absent, `-newsaveformat` changes the version, not the delta |
+| A starter save before P0/P1 of the first watch | **THERE WAS NONE** on any map; the reviewer's premise is not confirmed |
 
-## Чего эта вахта не дала
+## What this watch failed to deliver
 
-1. **`nochart` и `overlaptrim` не атрибутированы на Genesis** — потолок 60 мин на слот.
-2. **Общий эффект «всё пять выключено» не измерен**, поэтому неаддитивность вкладов не проверена количественно.
-3. **Дрейф ±1 мс/тик не исследован** — причина не установлена.
-4. **Причина затухания не установлена** — стазис / переходные процессы / GC остаются гипотезой.
-5. **Измерений при игроке по-прежнему нет.**
-6. **Окна мс/тик в B-3 не снимались** (слот на перепись и профиль).
-7. Профиль Fjordur снят только в восстановленном состоянии; для оценки вклада `overlaptrim` нужен второй, в деплой-состоянии.
-8. Условные задачи **B-4** (iscache2) и **B-5** (трассировщик BP) не выполнялись: эскизы готовы (RE2.md, ARCH.md), но реализации на плагине нет.
-9. Парковка под игрока (раздел 5) не потребовалась — клиент не подключался.
+1. **`nochart` and `overlaptrim` were not attributed on Genesis** — a ceiling of 60 min per slot.
+2. **The combined effect of "all five off" was not measured**, so the non-additivity
+   of the contributions was not verified quantitatively.
+3. **The ±1 ms/tick drift was not investigated** — the cause not established.
+4. **The cause of the decay was not established** — stasis / transients / GC remain a hypothesis.
+5. **There are still no measurements with a player connected.**
+6. **The ms/tick windows in B-3 were not taken** (the slot went to the census and profile).
+7. The Fjordur profile was taken only in the restored state; to evaluate the contribution
+   of `overlaptrim` a second one, in the deploy state, is needed.
+8. The conditional tasks **B-4** (iscache2) and **B-5** (BP tracer) were not performed:
+   sketches are ready (RE2.md, ARCH.md), but there is no plugin implementation.
+9. Parking for the player (section 5) was not needed — no client connected.

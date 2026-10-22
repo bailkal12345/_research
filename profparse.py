@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Разбор профайл-файлов TickProf (бинарные стеки) по modules.txt.
-# Только чтение существующих артефактов; никакой записи на сервер.
+# Parsing TickProf profile files (binary stacks) with modules.txt.
+# Read-only over existing artifacts; no writes to the server.
 import struct, sys, collections, io
 
 TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf'
@@ -36,21 +36,21 @@ def main():
     buf = []
     for ext in ('bin', 'wait', 'ret'):
         data = open(TICKPROF + r'\prof_512222984.' + ext, 'rb').read()
-        buf.append('%s: %d байт, делится на 8: %s' % (ext, len(data), len(data) % 8 == 0))
+        buf.append('%s: %d bytes, divisible by 8: %s' % (ext, len(data), len(data) % 8 == 0))
         u64s = struct.unpack('<%dQ' % (len(data) // 8), data[:len(data) // 8 * 8])
         zeros = sum(1 for v in u64s if v == 0)
-        buf.append('%s: u64=%d, нулей=%d, первых 12 адресов:' % (ext, len(u64s), zeros))
+        buf.append('%s: u64=%d, zeros=%d, first 12 addresses:' % (ext, len(u64s), zeros))
         for v in u64s[:12]:
             buf.append('   %016X  %s' % (v, classify(v, mods) if v else 'NULL'))
-        # корявые маленькие значения (не адреса) — поиск признака заголовка
+        # crooked small values (not addresses) - searching for a header sign
         small = sum(1 for v in u64s if 0 < v < 0x10000)
-        buf.append('%s: маленьких значений (<0x10000, не адреса)=%d' % (ext, small))
-    # Гипотеза: каждый сэмпл = [счётчик/глубина? затем адреса до нуля?]
+        buf.append('%s: small values (<0x10000, not addresses)=%d' % (ext, small))
+    # Hypothesis: each sample = [counter/depth? then addresses up to a zero?]
     data = open(TICKPROF + r'\prof_512222984.bin', 'rb').read()
     u64s = struct.unpack('<%dQ' % (len(data) // 8), data[:len(data) // 8 * 8])
-    # найти позиции нулей
+    # find zero positions
     zpos = [i for i, v in enumerate(u64s) if v == 0]
-    buf.append('bin: позиций нулей=%d, первые 20: %s' % (len(zpos), zpos[:20]))
+    buf.append('bin: zero positions=%d, first 20: %s' % (len(zpos), zpos[:20]))
     with open(OUT, 'w', encoding='utf-8') as f:
         f.write('\n'.join(buf))
     print('\n'.join(buf))

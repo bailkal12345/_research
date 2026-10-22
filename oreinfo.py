@@ -8,14 +8,14 @@ for a in sys.argv[2:]:
         targets.append(int(a, 16))
     else:
         m = __import__("re").match(r"([0-9a-fA-F]+):([0-9]+)?", a)
-        # form base:delta — относительный адрес в регионе (форвард/назад)
+        # form base:delta - relative address in the region (forward/backward)
         if m:
             targets.append((m.group(1).lower(), int(m.group(2) or 0)))
         else:
             targets.append(int(a, 16))
 
 mdf = MinidumpFile.parse(path)
-# модули
+# modules
 try:
     mods = [(m.baseaddress, m.size, os.path.basename(str(m.name or "?"))) for m in mdf.modules.modules]
 except Exception:
@@ -33,16 +33,16 @@ for s in segs:
     ranges.append((s.start_virtual_address, s.start_virtual_address + s.size, s.start_virtual_address))
 ranges.sort()
 
-# классификация каждого target: соседние committed-диапазоны за/до, длина сплошного коммита
+# classification of each target: neighboring committed ranges beyond/before, length of the contiguous commit
 def scan(target):
-    # найти диапазон-хост
+    # find the host range
     host = None
-    # сформировать абсолютный адрес
+    # form the absolute address
     base = None
     if isinstance(target, tuple):
         base = next((b for b, e, _ in ranges if b <= int(target[0], 16) < e), None)
         if base is None:
-            # base как модуль?
+            # base as a module?
             for b, e, _ in ranges:
                 pass
         if base is None:
@@ -61,11 +61,11 @@ def scan(target):
         if s <= base < e:
             host = (s, e)
             break
-    # сплошной до/после
+    # contiguous before/after
     total = 0
     if host:
         lo, hi = host[0], host[1]
-        # расширение вниз
+        # expansion downwards
         changed = True
         while changed:
             changed = False
@@ -81,7 +81,7 @@ def scan(target):
         total = hi - lo
     print(f"target 0x{base:X} host={(hex(host[0]), hex(host[1])) if host else None} "
           f"contiguous={( total/1024/1024):.1f} MiB mod={resolve(base) or '-'}")
-    # читаем 64 байта
+    # read 64 bytes
     reader = mdf.get_reader()
     try:
         data = reader.read(base, 64)

@@ -1,69 +1,69 @@
-# REPORT-B1 — кривая затухания (TheIsland)
+# REPORT-B1 — decay curve (TheIsland)
 
-Слот B-1 директивы doit2.txt. Карта TheIsland, сейв 134.2 МБ, 250 профилей.
-Деплой из `c:/saves` через `deploy_map.py`, прод-строкой запуска.
-T0 = 12:03:45 (RCON отвечает). GameThread tid 5436, пид 2320.
-Прод-конфигурация до T0: NetServerMaxTickRate штатное, fixclamp 0, fncache 1,
+Slot B-1 of directive doit2.txt. Map TheIsland, save 134.2 MB, 250 profiles.
+Deploy from `c:/saves` via `deploy_map.py`, prod launch line.
+T0 = 12:03:45 (RCON responsive). GameThread tid 5436, pid 2320.
+Prod configuration before T0: NetServerMaxTickRate stock, fixclamp 0, fncache 1,
 iscache 1, cachename 1, nochart 1, overlaptrim 2, bAllowConcurrentTicks 0.
 
-## Результат
+## Result
 
-| Окно | момент | мс CPU/тик | т/с | CPU GameThread, s/s | статус |
+| Window | moment | ms CPU/tick | t/s | CPU GameThread, s/s | status |
 |---|---|---|---|---|---|
-| 1 | T0+2…4 | **21.97** | 9.07 | 0.199 | чистое |
-| 2 | T0+5…7 | **7.76** | 9.07 | 0.070 | чистое |
-| 3 | T0+8…10 | **5.35** | 8.76 | 0.047 | чистое |
-| 4 | T0+11…13 | (6.21) | 8.81 | 0.055 | **искажено — отброшено** |
-| 5 | после автосейва | **4.31** | 9.07 | 0.039 | чистое |
+| 1 | T0+2…4 | **21.97** | 9.07 | 0.199 | clean |
+| 2 | T0+5…7 | **7.76** | 9.07 | 0.070 | clean |
+| 3 | T0+8…10 | **5.35** | 8.76 | 0.047 | clean |
+| 4 | T0+11…13 | (6.21) | 8.81 | 0.055 | **contaminated — discarded** |
+| 5 | after autosave | **4.31** | 9.07 | 0.039 | clean |
 
-Формула: мс CPU/тик = (CPU потока, с/с) / (т/с), т.е. 0.199 / 9.07 × 1000 = 21.97.
+Formula: ms CPU/tick = (thread CPU, s/s) / (t/s), i.e. 0.199 / 9.07 × 1000 = 21.97.
 
-## Ответы на вопросы B-1
+## Answers to the B-1 questions
 
-**Дороже ли свежезагруженный мир.** Да, в **5.1 раза**: 21.97 мс/тик через 2 минуты
-после подъёма против 4.31 мс/тика в устоявшемся состоянии. Это в 4.5 раза больше,
-чем П0/П1 первой вахты на этой же карте (10.17 мс/тик) — значит первое окно той
-вахты тоже попало в неустоявшийся режим.
+**Is the freshly loaded world more expensive.** Yes, by **5.1×**: 21.97 ms/tick two minutes
+after lift-off versus 4.31 ms/tick in the settled state. That is 4.5× more than
+P0/P1 of the first watch on this same map (10.17 ms/tick) — meaning the first window of that
+watch also fell into the not-yet-settled regime.
 
-**Как затухает.** Быстро и по экспонте: 21.97 → 7.76 → 5.35 мс/тик.
-Основное падение — между второй и пятой минутой; к T0+8…10 кривая выходит на плато.
+**How it decays.** Quickly and exponentially: 21.97 → 7.76 → 5.35 ms/tick.
+The main drop is between the second and fifth minute; by T0+8…10 the curve reaches a plateau.
 
-| Интервал | Падение |
+| Interval | Drop |
 |---|---|
 | T0+2…4 → T0+5…7 | −64.7% |
 | T0+5…7 → T0+8…10 | −31.1% |
-| T0+8…10 → установившееся | −19.4% |
+| T0+8…10 → settled | −19.4% |
 
-Половина стоимости спадает примерно за 2.5 минуты после подъёма.
+Half of the cost decays in roughly 2.5 minutes after lift-off.
 
-**Какое число считать худшим для ТЗ.** **21.97 мс/тик** — окно T0+2…4.
-Это наихудший реалистичный сценарий без игроков: старт сервера на реальном сейве.
-Для ТЗ по цели 60 т/с (≤16.6 мс/тик) это означает: **свежеподнятый сервер без игроков
-уже не укладывается в бюджет, укладывается только устоявшийся**.
+**Which number to count as the worst case for the ToR.** **21.97 ms/tick** — the window T0+2…4.
+This is the worst realistic scenario without players: a server start on a real save.
+For the ToR target of 60 t/s (≤16.6 ms/tick) this means: **a freshly lifted server without players
+already exceeds the budget; only the settled state fits within it**.
 
-## Что это закрывает
+## What this closes
 
-Аномалия П0/П1 первой вахты объяснена. В слоте TheIsland прошлой вахты П0/П1 снимался
-в 01:42–01:46, то есть через ~2 минуты после готовности мира — **ровно в зоне
-максимального затухания**. Поэтому П0/П1 = 10.17 мс/тик отражает не «стоимость карты»,
-а переходный режим.
+The P0/P1 anomaly of the first watch is explained. In the TheIsland slot of the previous watch
+P0/P1 was taken at 01:42–01:46, i.e. ~2 minutes after world readiness — **exactly in the zone
+of maximal decay**. Therefore P0/P1 = 10.17 ms/tick reflects not the "cost of the map"
+but a transient regime.
 
-**Следствие для отчётности прошлой вахты:** числа П0/П1 (Genesis 9.77,
-TheIsland 10.17, Fjordur 9.00) — это стоимость карты в переходном режиме.
-Устоявшиеся значения ниже: TheIsland 4.31 мс/тик. Значит карта в устоявшемся режиме
-обходится в **1.8–2.4 раза дешевле**, чем показывали П0/П1, и вопрос «сколько стоит
-реальный сейв без игроков» в устоявшемся режиме имеет ответ **4.31 мс/тик**, а не 10.17.
+**Consequence for the reporting of the previous watch:** the P0/P1 numbers (Genesis 9.77,
+TheIsland 10.17, Fjordur 9.00) are the cost of the map in the transient regime.
+Settled values are lower: TheIsland 4.31 ms/tick. So a map in the settled regime
+is **1.8–2.4× cheaper** than P0/P1 showed, and the question "how much does a real
+save without players cost" in the settled regime has the answer **4.31 ms/tick**, not 10.17.
 
-Проверка по датам файлов (A6, п.6): завершённого стартового сохранения перед П0/П1
-не было ни на одной карте, поэтому затухание объясняется **не** сохранением, а самим
-разгоном мира после загрузки.
+Cross-check by file dates (A6, item 6): a completed starting save before P0/P1
+happened on none of the maps, so the decay is explained **not** by a save but by the
+world's own warm-up after loading.
 
-## Оговорки
+## Caveats
 
-1. Окно T0+11…13 отброшено: попало на автосейв. Кривая построена по трём чистым
-   окнам до первого автосейва и одному чистому после.
-2. Механизм затухания не установлен — кандидаты: стазис актёров, переходные
-   процессы инициализации, накопление и сборка мусора. Это **гипотеза** (см. A6, п.5).
-3. Одна карта, один прогон. Для ТЗ нужны те же окна на Genesis и Fjordur.
-4. т/с в окне 3 просел до 8.76 — вероятно, начало автосейва уже влияло на паддинг,
-   хотя файлы ещё не менялись. Чистоту этого окна стоит считать условной.
+1. The window T0+11…13 was discarded: it landed on the autosave. The curve is built from three clean
+   windows before the first autosave and one clean window after.
+2. The decay mechanism is not established — candidates: actor stasis, transient
+   initialization processes, accumulation and collection of garbage. This is a **hypothesis** (see A6, item 5).
+3. One map, one run. For the ToR we need the same windows on Genesis and Fjordur.
+4. t/s in window 3 sagged to 8.76 — probably the start of the autosave was already affecting the padding,
+   even though the files had not changed yet. The cleanliness of this window should be treated as conditional.

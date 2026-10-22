@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Слот B: мониторинг 1 Гц + автоматический профиль 60 с внутри плато накопительной фазы.
-# Критерий фазы (doit6 §2): t/s<45 в 3+ подряд строк mon.
-# Плюс: тик-лист ДО и ПОСЛЕ фазы.
+# Slot B: 1 Hz monitoring + automatic 60 s profile inside the plateau of the cumulative phase.
+# Phase criterion (doit6 §2): t/s<45 in 3+ consecutive mon lines.
+# Plus: tick list BEFORE and AFTER the phase.
 import os, re, sys, time, subprocess, json
 sys.path.insert(0, r'C:\Dev\_research')
 os.environ.setdefault('RCON_HOST', '192.168.8.218')
@@ -32,7 +32,7 @@ def log_lines():
 
 
 def mon_series():
-    """Читаем mon-строки из лога плагина."""
+    """Read mon lines from the plugin log."""
     out = []
     for l in log_lines():
         m = re_mon.search(l)
@@ -49,16 +49,16 @@ def start_mon(seconds=1200):
     rcon('TickProf.mon %d' % seconds)
     time.sleep(2)
     tail = [l for l in log_lines()[-6:]]
-    print('mon запущен, последние строки лога:')
+    print('mon started, last log lines:')
     for l in tail:
         print('   ', l)
 
 
 if __name__ == '__main__':
-    print('== подготовка слота B ==')
+    print('== slot B preparation ==')
     print('TickProf.mon ->', rcon('TickProf.mon 1800'))
     time.sleep(3)
-    print('== контрольный mon (5 c) ==')
+    print('== control mon (5 s) ==')
     time.sleep(5)
     for r in mon_series()[-6:]:
         print('   ', r)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Ожидание готовности стенда: RCON отвечает + TickProf загружен.
+# Waiting for the stand to be ready: RCON responds + TickProf loaded.
 import sys, time, subprocess
 sys.path.insert(0, r'C:\Dev\_research')
 import rcon3
@@ -20,11 +20,11 @@ if __name__ == '__main__':
         r = rcon3.rcon('status', timeout=3.0, wait=0.8)
         alive = proc_alive()
         ok = bool(r and len(r.strip()) > 3)
-        print('итер %2d: alive=%s rcon=%s %s' % (i, alive, ok, (r or '')[:90].replace('\n', ' ')))
+        print('iter %2d: alive=%s rcon=%s %s' % (i, alive, ok, (r or '')[:90].replace('\n', ' ')))
         if ok:
-            print('ГОТОВО')
+            print('READY')
             break
         if not alive:
-            print('ПРОЦЕСС УПАЛ')
+            print('PROCESS DIED')
             break
         time.sleep(15)

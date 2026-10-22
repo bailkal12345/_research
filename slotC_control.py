@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Слот C (продолжение): контрольное окно C после отката.
+# Slot C (continuation): control window C after the rollback.
 #
-# Откат уже выполнен: overlapall 0 (795 -> 0, т.е. bGenerateOverlapEvents возвращён
-# у всех) + рестарт сервера. После рестарта состояние = "обрезки нет" (базовая линия).
-# Контрольное окно меряет ИМЕННО эту базовую линию: тем самым проверяется и работо-
-# способность отката, и эффект обрезки (A=trim2, B=trim3 против C=без обрезки).
+# The rollback is already done: overlapall 0 (795 -> 0, i.e. bGenerateOverlapEvents re-enabled
+# for all) + server restart. After the restart the state is "no trimming" (baseline).
+# The control window measures EXACTLY this baseline: thereby both the rollback's
+# functionality and the effect of trimming are verified (A=trim2, B=trim3 vs C=no trimming).
 #
-# Прод-конфиг §2 применяется, КРОМЕ overlaptrim (иначе C был бы копией A).
+# The prod config §2 is applied EXCEPT overlaptrim (otherwise C would be a copy of A).
 import os, re, sys, time, json
 sys.path.insert(0, r'C:\Dev\_research')
 os.environ.setdefault('RCON_HOST', '192.168.8.218')
@@ -18,7 +18,7 @@ LOG = os.path.join(PLUG, 'TickProf.log')
 OUT = r'C:\Dev\_research\slotC'
 os.makedirs(OUT, exist_ok=True)
 re_mon = re.compile(r'mon: t/s=(\d+)(?: ms/tick=(\d+) frame_ms=(\d+) busy=(\d+)% save=(\w+))?')
-re_save_end = re.compile(r'save: запись \.ark завершилась, длительность (\d+) мс')
+re_save_end = re.compile(r'save: \.ark write finished, duration (\d+) ms')
 
 
 def say(m):
@@ -43,10 +43,10 @@ def log_lines():
         return []
 
 
-say('== КОНТРОЛЬНОЕ ОКНО C: базовая линия после отката (без обрезки) ==')
-# 1) прод-конфиг §2 БЕЗ overlaptrim
-for cmd, desc in (('TickProf.maxfps 60', 'тикрейт 60'),
-                  ('TickProf.fixclamp 0', 'снять зажим тикрейта'),
+say('== CONTROL WINDOW C: baseline after rollback (no trimming) ==')
+# 1) prod config §2 WITHOUT overlaptrim
+for cmd, desc in (('TickProf.maxfps 60', 'tickrate 60'),
+                  ('TickProf.fixclamp 0', 'remove tickrate clamp'),
                   ('TickProf.fncache 1', 'fncache'),
                   ('TickProf.iscache 1', 'iscache'),
                   ('TickProf.cachename 1', 'cachename'),
@@ -55,9 +55,9 @@ for cmd, desc in (('TickProf.maxfps 60', 'тикрейт 60'),
     say('   %-24s %-28s -> %s' % (cmd, desc, (r or '').strip()[:40]))
     time.sleep(1.5)
 
-# 2) ждём якорь (завершение автосейва) и снимаем окно 300 с
+# 2) wait for the anchor (end of autosave) and take a 300 s window
 base = len(log_lines())
-say('   ждём якорь (завершение автосейва)...')
+say('   waiting for the anchor (end of autosave)...')
 anchor = None
 t0 = time.time()
 while time.time() - t0 < 1500:
@@ -70,10 +70,10 @@ while time.time() - t0 < 1500:
         break
     time.sleep(5)
 if not anchor:
-    say('   якорь не дождались - окно без якоря (чистое по save)')
+    say('   anchor never came - window without an anchor (clean by save)')
     anchor = (None, None, base)
 else:
-    say('   якорь: сейв завершён в %s (%d мс) -> окно 300 с' % (anchor[0], anchor[1]))
+    say('   anchor: save finished at %s (%d ms) -> window 300 s' % (anchor[0], anchor[1]))
 rcon('TickProf.mon 300')
 time.sleep(2)
 time.sleep(312)
@@ -90,7 +90,7 @@ ts = [r['ts'] for r in rows]
 ms = [r['ms'] for r in rows if r['ms']]
 busy = [r['busy'] for r in rows if r['busy'] is not None]
 contam = sum(1 for r in rows if r['save'] and r['save'] != 'idle')
-res = dict(tag='C_after_rollback', arm='без обрезки (после overlapall 0 + рестарт)',
+res = dict(tag='C_after_rollback', arm='no trimming (after overlapall 0 + restart)',
            n_rows=len(rows),
            ts_mean=round(sum(ts) / len(ts), 2) if ts else None,
            ts_min=min(ts) if ts else None, ts_max=max(ts) if ts else None,
@@ -98,7 +98,7 @@ res = dict(tag='C_after_rollback', arm='без обрезки (после overla
            busy_mean=round(sum(busy) / len(busy), 1) if busy else None,
            save_nonidle_rows=contam,
            verdict='CONTAMINATED' if contam else 'VALID')
-say('   РЕЗУЛЬТАТ C: %s' % json.dumps(res, ensure_ascii=False))
+say('   RESULT C: %s' % json.dumps(res, ensure_ascii=False))
 with open(os.path.join(OUT, 'window_C_after_rollback.json'), 'w', encoding='utf-8') as f:
     json.dump(dict(result=res, rows=rows), f, ensure_ascii=False, indent=1)
-say('== слот C: контрольное окно готово ==')
+say('== slot C: control window complete ==')

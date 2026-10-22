@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-# Разбор серии A/B прямо из лога плагина (надёжнее, чем парсинг stdout автомата):
-# восстанавливает последовательность "сброс базы -> trim -> окно -> отчёт",
-# сопоставляет каждой руке её trim-вариант и печатает таблицу + сводку по парам.
+# Parse the A/B series straight from the plugin log (more reliable than parsing the driver's stdout):
+# recovers the "base reset -> trim -> window -> report" sequence,
+# matches each arm with its trim variant and prints a table + a per-pair summary.
 import re
 import sys
 
 LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\TickProf\TickProf.log'
-NUM = re.compile(r'window окно: t/s=([\d.]+) cpu=([\d.]+)s ms/tick=([\d.]+) frame_ms=([\d.]+) '
+NUM = re.compile(r'window result: t/s=([\d.]+) cpu=([\d.]+)s ms/tick=([\d.]+) frame_ms=([\d.]+) '
                   r'busy=([\d.]+)% save=(\w+) (VALID|CONTAMINATED)')
-CONT = re.compile(r'window окно: контаминировано сохранением мира, (\d+) из (\d+) кадров')
+CONT = re.compile(r'window result: contaminated by a world save, (\d+) of (\d+) frames')
 
 
 def main():
     lines = open(LOG, 'r', encoding='utf-8', errors='replace').read().splitlines()
-    # только свежие строки сегодня после 14:20
+    # only fresh lines today after 14:20
     start_idx = 0
     for i, l in enumerate(lines):
         if '14:20:50' in l:
@@ -37,14 +37,14 @@ def main():
         if c and seq:
             seq[-1]['dirty_frames'] = int(c.group(1))
             seq[-1]['frames_total'] = int(c.group(2))
-    print('=== окна серии (из лога) ===')
+    print('=== series windows (from the log) ===')
     for i, s in enumerate(seq):
         print('%2d %-6s t/s=%-6s ms/tick=%-6s busy=%-6s save=%-7s %s %s' %
               (i + 1, s['trim'], s['tps'], s['ms'], s['busy'], s['save'], s['valid'],
-               ('грязных кадров %s из %s' % (s.get('dirty_frames'), s.get('frames_total')))
+               ('dirty frames %s of %s' % (s.get('dirty_frames'), s.get('frames_total')))
                if 'dirty_frames' in s else ''))
 
-    print('\n=== пары (A=trim2, B=trim3) ===')
+    print('\n=== pairs (A=trim2, B=trim3) ===')
     pairs = []
     i = 0
     while i + 1 < len(seq):
@@ -59,9 +59,9 @@ def main():
         ok = a['valid'] == 'VALID' and b['valid'] == 'VALID'
         dt = b['tps'] - a['tps']
         dm = b['ms'] - a['ms']
-        print('пара %d: A t/s=%-6s ms/tick=%-6s %s | B t/s=%-6s ms/tick=%-6s %s | d(t/s)=%+.2f d(ms/tick)=%+.2f %s'
+        print('pair %d: A t/s=%-6s ms/tick=%-6s %s | B t/s=%-6s ms/tick=%-6s %s | d(t/s)=%+.2f d(ms/tick)=%+.2f %s'
               % (n, a['tps'], a['ms'], a['valid'], b['tps'], b['ms'], b['valid'], dt, dm,
-                 'ПРИНЯТО' if ok else 'не принято (окно невалидно)'))
+                 'ACCEPTED' if ok else 'not accepted (window invalid)'))
         if ok:
             deltas.append((dt, dm))
     if deltas:
@@ -69,9 +69,9 @@ def main():
         dms = sorted(d[1] for d in deltas)
         n = len(deltas)
         med = lambda v: v[n // 2] if n % 2 else (v[n // 2 - 1] + v[n // 2]) / 2
-        print('\nпринятых пар: %d' % n)
-        print('d(t/s):      мин %+.2f, медиана %+.2f, макс %+.2f' % (dts[0], med(dts), dts[-1]))
-        print('d(ms/tick):  мин %+.2f, медиана %+.2f, макс %+.2f' % (dms[0], med(dms), dms[-1]))
+        print('\naccepted pairs: %d' % n)
+        print('d(t/s):      min %+.2f, median %+.2f, max %+.2f' % (dts[0], med(dts), dts[-1]))
+        print('d(ms/tick):  min %+.2f, median %+.2f, max %+.2f' % (dms[0], med(dms), dms[-1]))
 
 
 if __name__ == '__main__':

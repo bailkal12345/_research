@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Именованная атрибуция профилей TickProf: .bin/.ret/.wait + границы .pdata + имена из Ghidra (PDB).
+# Named attribution of TickProf profiles: .bin/.ret/.wait + .pdata boundaries + names from Ghidra (PDB).
 import struct, bisect, collections, glob, os, sys
 
 TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\\Plugins\_backup\\TickProf'
@@ -7,17 +7,17 @@ EXE = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.
 TSV = r'C:\Dev\_research\ghidra_funcs_v361.tsv'
 import profanalyze as pa
 
-TEXT_END = 0x391AA6E  # конец .text (из profpdata.py)
+TEXT_END = 0x391AA6E  # .text end (from profpdata.py)
 
 
 def load_pdata():
-    """(функции .pdata из exception-каталога exe)"""
+    """.pdata functions from the exe exception directory"""
     import profpdata
     return profpdata.get_pdata(EXE), None
 
 
 def load_ghidra_names():
-    """[(rva_start, size, name)] из дампа Ghidra функций."""
+    """[(rva_start, size, name)] from the Ghidra function dump."""
     out = []
     with open(TSV, 'r', encoding='utf-8', errors='replace') as f:
         for line in f:
@@ -98,8 +98,8 @@ def main():
             rets = [0] * cnt
 
         mod_cnt = collections.Counter()
-        lf = collections.Counter()   # exe-функц по листу
-        rf = collections.Counter()   # exe-функц по ret
+        lf = collections.Counter()   # exe funcs by leaf
+        rf = collections.Counter()   # exe funcs by ret
         dll_leaf = collections.Counter()
         exe_min_rva = 1 << 60
         wait = None
@@ -108,7 +108,7 @@ def main():
         if os.path.exists(wpath):
             wdata = open(wpath, 'rb').read()
             wcnt = struct.unpack_from('<Q', wdata, 0)[0]
-            # формат v2: hdr = [count, words_per_record]; v1: words=5, записи с 8-го байта
+            # v2 format: hdr = [count, words_per_record]; v1: words=5, records start at byte 8
             wwords = 5
             wbase = 8
             if len(wdata) >= 16:
@@ -122,7 +122,7 @@ def main():
             short, off, is_sys = pa.mod_of(rip, mods, bases)[0], pa.mod_of(rip, mods, bases)[1], None
             cls = pa.mod_of(rip, mods, bases)
             short = cls[0]; off = cls[1]
-            mod_cnt[short if short is not None else '<ядро/вне модулей>'] += 1
+            mod_cnt[short if short is not None else '<kernel/outside modules>'] += 1
             if short is None:
                 continue
             if is_sys:
@@ -148,33 +148,33 @@ def main():
                 rf[ro] += 1
 
         out = []
-        out.append('=== prof_%s: сэмплов %d, wait-записей %d ===' % (name, cnt, len(wait_stacks)))
-        out.append('модули (лист RIP): ' + ', '.join('%s %d (%.1f%%)' % (k, v, 100.0 * v / cnt)
+        out.append('=== prof_%s: %d samples, %d wait records ===' % (name, cnt, len(wait_stacks)))
+        out.append('modules (RIP leaf): ' + ', '.join('%s %d (%.1f%%)' % (k, v, 100.0 * v / cnt)
                                                      for k, v in mod_cnt.most_common(8)))
         out.append('')
-        out.append('системные/GUI-DLL листья (именованные):')
+        out.append('system/GUI-DLL leaves (named):')
         for k, v in dll_leaf.most_common(12):
             out.append('  %5.1f%% %5d  %s' % (100.0 * v / cnt, v, k))
         out.append('')
-        out.append('топ-40 функций exe (по листу RIP):')
+        out.append('top-40 exe functions (by leaf RIP):')
         for s, v in lf.most_common(40):
             nm = namer.name(s) or ('sub_%X' % s)
             out.append('  %5.1f%% %5d  rva 0x%X  %s' % (100.0 * v / cnt, v, s, nm))
         out.append('')
-        out.append('топ-25 функций exe (по ret [RSP], т.е. откуда вызван лист):')
+        out.append('top-25 exe functions (by ret [RSP], i.e. where the leaf was called from):')
         for s, v in rf.most_common(25):
             nm = namer.name(s) or ('sub_%X' % s)
             out.append('  %5.1f%% %5d  rva 0x%X  %s' % (100.0 * v / cnt, v, s, nm))
         out.append('')
         if wait_stacks:
-            # разбор wait-записей: rip (sys-DLL, названо) + слова стека в exe-коде (кандидаты-вызовы)
+            # parsing wait records: rip (sys-DLL, named) + stack words in exe code (call candidates)
             wrip = collections.Counter()
             exe_frame = collections.Counter()
             zero_frames = 0
             for w in wait_stacks:
                 rip = w[0]
                 cls = pa.mod_of(rip, mods, bases)
-                nm = (dll_name(cls[0], cls[1]) if cls[0] else None) or (('%s+0x%X' % (cls[0], cls[1])) if cls[0] else 'ядро+0x%X' % rip)
+                nm = (dll_name(cls[0], cls[1]) if cls[0] else None) or (('%s+0x%X' % (cls[0], cls[1])) if cls[0] else 'kernel+0x%X' % rip)
                 wrip[nm] += 1
                 found = None
                 for sv in w[1:]:
@@ -189,15 +189,15 @@ def main():
                     if 0 <= i4 and found < pdata[i4][1]:
                         found = pdata[i4][0]
                     exe_frame[found] += 1
-            out.append('стопки ожидания (%s записей):' % len(wait_stacks))
-            out.append(' syscall-сайты:')
+            out.append('wait stacks (%d records):' % len(wait_stacks))
+            out.append(' syscall sites:')
             for k, v in wrip.most_common(12):
                 out.append('  %5.1f%% %5d  %s' % (100.0 * v / len(wait_stacks), v, k))
-            out.append(' кандидаты-вызовы в exe (код-слово ниже rip):')
+            out.append(' call candidates in the exe (code word below rip):')
             for k, v in exe_frame.most_common(12):
                 nm = namer.name(k) or ('sub_%X' % k)
                 out.append('  %5.1f%% %5d  rva 0x%X  %s' % (100.0 * v / len(wait_stacks), v, k, nm))
-            out.append(' без exe-слова в 4 верхних словах стека: %d (%.1f%%)' %
+            out.append(' no exe word in the top 4 stack words: %d (%.1f%%)' %
                        (zero_frames, 100.0 * zero_frames / len(wait_stacks)))
         out_all.append('\n'.join(out))
 
@@ -205,9 +205,9 @@ def main():
     fn = r'C:\Dev\_research\prof_named_report.txt'
     with open(fn, 'w', encoding='utf-8') as f:
         f.write(report)
-    print('записано:', fn, 'профилей:', len(out_all))
-    # печать первого профиля целиком (ключевой - Genesis-база)
-    print(out_all[-1][:12000] if out_all else 'пусто')
+    print('wrote:', fn, 'profiles:', len(out_all))
+    # print the first profile in full (the key one - the Genesis base)
+    print(out_all[-1][:12000] if out_all else 'empty')
 
 
 if __name__ == '__main__':

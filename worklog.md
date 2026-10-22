@@ -2447,3 +2447,39 @@ frame 16 мс, ms/tick 8-12 (внешний на чистом под-режим�
   trim3 в прод-конфиге не трогали; Server2 не тронут.
 - Отчёт: REPORT-SLOT-E.md; сырые данные: slotE/ (лог), slotE_ab.py, slotE_measure.py,
   doit8_amended.txt.
+
+## 22.10.2026 — Language pass: code / comments / docs switched to English
+
+Scope (owner-approved):
+- TickProf.cpp: all comments AND all runtime log/RCON strings translated to English
+  (184 string literals + 288 comment lines; zero Cyrillic/CJK left). Rebuilt
+  (DLL 398 848 B, pre-existing warnings only) and redeployed.
+- Machine-readable markers changed accordingly: `window result: t/s=...`,
+  `save: .ark write started/finished`, `bptrace: v2 enabled / disabled /
+  enumeration: UFunctions total=... script (Func==&ProcessInternal)=...`,
+  `sampler stopped, {n} samples`, `TOP-20 BY CALLS` / `TOP-20 BY SELF TIME
+  (self sum=...)`, `calls=` / `us/call=`, `SAFE-/FORBIDDEN-for-throttling`,
+  `cooldown: quiet period {n} s after ...`, `overlaptrim3: threshold=...
+  keep rules=... disabled=... preserved by keep list=... entries freed=...`.
+- Parser scripts in _research updated to match the new English markers
+  (slotB/C/D/E, monparse, slotC_ab regex, etc.); old Russian logs stay raw data,
+  parsers are no longer compatible with them (deliberate: English applies to
+  future runs only).
+- Active scripts (slots A-E drivers + utilities: rcon, rcon3, stand_start,
+  stand_config, stop_server, wait_port, wait_ready, threadcpu, a2s2, monparse,
+  manual, oreinfo, prof*) fully translated to English, all compile.
+- 78 one-off scripts (fix_*, add_*, wait*-RE family, a6_* and others) moved to
+  _research\_archive\ ; _archive itself untouched.
+- Live docs + all reports translated to English: ARCH.md, SUMMARY.md, REPORT.md,
+  REPORT-*.md (slots A-E, B1-B3, C, Genesis, GEN-PHASES-DENSE, Fjordur,
+  TheIsland), REPORT-PLAYER*.md, RE-SESSION.md, RE2.md, A3_inventory.md,
+  A5_RE2_section.md, security\README.md, security\REPORT_ARK_SE_SECURITY.md,
+  security\ARK_SPECIFIC_VECTORS.md. Configs tickprof_overlap_keep.txt translated;
+  PluginInfo.json was already English.
+- Worklog convention: this and future entries are in English; history above
+  stays as-is (append-only).
+- Validation boot (Genesis): English plugin lines confirmed live
+  (enumeration total=40639 script=40638; window result: t/s=29 ... VALID);
+  stand re-parked after (saveworld/exit, 0 processes).
+Known limits: historical Russian .txt logs and the worklog history above remain
+Russian by design (raw data / append-only history, untouched).

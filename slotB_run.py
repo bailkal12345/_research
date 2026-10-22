@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Слот B (doit6 §2): авто-мониторинг 1 Гц + профиль 60 с ВНУТРИ плато накопительной фазы.
+# Slot B (doit6 §2): auto-monitoring at 1 Hz + a 60 s profile INSIDE the plateau of the cumulative phase.
 #
-# Критерий фазы: t/s<45 в 3+ подряд строк mon (как в прошлом слоте).
-# При старте фазы: TickProf.ticklist (до) -> TickProf.start 60 (профиль) ->
-# ожидание конца окна -> TickProf.ticklist (после).
-# Всё пишется в C:/Dev/_research/slotB/.
+# Phase criterion: t/s<45 in 3+ consecutive mon lines (as in the previous slot).
+# At phase start: TickProf.ticklist (before) -> TickProf.start 60 (profile) ->
+# wait for the window to end -> TickProf.ticklist (after).
+# Everything is written to C:/Dev/_research/slotB/.
 import os, re, sys, time, json, subprocess
 sys.path.insert(0, r'C:\Dev\_research')
 os.environ.setdefault('RCON_HOST', '192.168.8.218')
@@ -56,10 +56,10 @@ def mon_since(mark_line_idx):
 
 
 def main():
-    say('== слот B: старт мониторинга ==')
+    say('== slot B: monitoring started ==')
     base = len(log_lines())
     rcon('TickProf.mon 3600')
-    say('TickProf.mon 3600 отправлен')
+    say('TickProf.mon 3600 sent')
     phase = None
     t_start = time.time()
     low_streak = 0
@@ -75,46 +75,46 @@ def main():
             low_streak = 0
         if low_streak >= 3 and phase is None:
             phase = last['t']
-            say('ФАЗА обнаружена: %s (t/s=%d, серия %d)' % (phase, last['ts'], low_streak))
-            # тик-лист ДО профиля
+            say('PHASE detected: %s (t/s=%d, streak %d)' % (phase, last['ts'], low_streak))
+            # tick list BEFORE the profile
             rcon('TickProf.ticklist')
             time.sleep(3)
             lines = log_lines()
             idx = len(lines)
             with open(os.path.join(OUT, 'ticklist_before.txt'), 'w', encoding='utf-8') as f:
                 f.write('\n'.join(lines[-40:]))
-            say('ticklist (до) снят')
-            # профиль 60 с
+            say('ticklist (before) captured')
+            # 60 s profile
             r = rcon('TickProf.start 60')
             say('TickProf.start 60 -> %s' % (r or '').strip()[:60])
-            # ждём завершения окна профиля
+            # wait for the profiling window to finish
             t0 = time.time()
             prof_started = False
             while time.time() - t0 < 180:
                 tail = log_lines()[-6:]
                 if any('sampler started' in l for l in tail):
                     prof_started = True
-                    say('сэмплер пошёл')
-                if any(('wrote' in l and 'prof_' in l) or 'сэмплирование завершено' in l for l in tail):
-                    say('профиль записан')
+                    say('sampler running')
+                if any(('wrote' in l and 'prof_' in l) or 'sampler stopped' in l for l in tail):
+                    say('profile written')
                     break
                 time.sleep(4)
             if not prof_started:
-                say('ВНИМАНИЕ: сэмплер не стартовал')
+                say('WARNING: sampler did not start')
             time.sleep(5)
-            # тик-лист ПОСле
+            # tick list AFTER
             rcon('TickProf.ticklist')
             time.sleep(3)
             lines = log_lines()
             with open(os.path.join(OUT, 'ticklist_after.txt'), 'w', encoding='utf-8') as f:
                 f.write('\n'.join(lines[-40:]))
-            say('ticklist (после) снят')
+            say('ticklist (after) captured')
             with open(os.path.join(OUT, 'mon_series.json'), 'w', encoding='utf-8') as f:
                 json.dump(series, f, ensure_ascii=False)
-            say('== слот B: цикл завершён ==')
+            say('== slot B: cycle complete ==')
             return 0
         time.sleep(4)
-    say('таймаут ожидания фазы')
+    say('timeout waiting for the phase')
     return 1
 
 

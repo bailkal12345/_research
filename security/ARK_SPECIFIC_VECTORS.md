@@ -1,421 +1,421 @@
-# ARK: Survival Evolved v358 — узкоспециализированные (игровые) векторы
+# ARK: Survival Evolved v358 — ARK-specific (game-level) vectors
 
-Анализ выполнен по бинарю `ShooterGameServer.exe` **v358.24** (Ghidra, программа
-`v358_ShooterGameServer.exe`) и по исходникам UE4.5, поставляемым с игрой
-(`C:\Dev\UnrealEngine-4.5`). Все адреса — RVA-виды (образ базы `0x140000000`).
+Analysis performed on the `ShooterGameServer.exe` **v358.24** binary (Ghidra, program
+`v358_ShooterGameServer.exe`) and on the UE4.5 sources shipped with the game
+(`C:\Dev\UnrealEngine-4.5`). All addresses are image-based RVAs (image base `0x140000000`).
 
-> Важное уточнение: стоковый UE4.5 **не содержит** ни `ServerCheat_Validate`,
-> ни поля `APlayerController::bIsAdmin`. Оба появляются только в модифицированном
-> движке ARK — это видно по строковому литералу в бинаре:
+> Important clarification: stock UE4.5 **contains neither** `ServerCheat_Validate`,
+> nor the `APlayerController::bIsAdmin` field. Both appear only in the modified ARK
+> engine — this is visible from the string literal in the binary:
 > `F:\build\LostIsland\Engine\Source\Runtime\Engine\Private\PlayerController.cpp`
 > (`RPC_VALIDATE Failed: !S.IsEmpty() && bIsAdmin ... Line: 1781`).
-> То есть ниже — именно **собственные** механизмы ARK, а не общие для UE4.
+> So what follows covers **ARK's own** mechanisms, not ones shared with UE4.
 
 ---
 
-## N1. `SHOOTERGAME_ServerCheat` — RPC исполнения команд (максимум ущерба на 1 сообщение)
+## N1. `SHOOTERGAME_ServerCheat` — command-execution RPC (maximum damage per 1 message)
 
-| Элемент | Адрес / детали |
+| Element | Address / details |
 |---|---|
-| Отправитель (клиент→сервер) | `ABasePlayerController::ServerCheat` `0x1412C74E0` → ищет UFunction `SHOOTERGAME_ServerCheat` и зовёт `ProcessEvent` |
-| Диспетчер RPC | `execServerCheat` `0x14170FDE0` |
-| Валидация | **виртуальный** вызов `vtable+0x11E0`; в бинаре строка `RPC_VALIDATE Failed: !S.IsEmpty() && bIsAdmin ... LostIsland\...\PlayerController.cpp:1781` |
-| Исполнение | `ServerCheat_Implementation` `0x1401F3090` (4396 байт) |
-| Лог | `AdminCmd: %s (PlayerName: %s, ARKID: %llu, SteamID: %s)` — это канал **админ-команд** |
+| Sender (client→server) | `ABasePlayerController::ServerCheat` `0x1412C74E0` → looks up the UFunction `SHOOTERGAME_ServerCheat` and calls `ProcessEvent` |
+| RPC dispatcher | `execServerCheat` `0x14170FDE0` |
+| Validation | **virtual** call `vtable+0x11E0`; the binary contains the string `RPC_VALIDATE Failed: !S.IsEmpty() && bIsAdmin ... LostIsland\...\PlayerController.cpp:1781` |
+| Execution | `ServerCheat_Implementation` `0x1401F3090` (4396 bytes) |
+| Log | `AdminCmd: %s (PlayerName: %s, ARKID: %llu, SteamID: %s)` — this is the **admin-command** channel |
 
-Логика диспетчера (декомпиляция `execServerCheat`):
+Dispatcher logic (decompilation of `execServerCheat`):
 
 ```c
 cVar6 = vtable_11E0(this, &Cmd);        // -> ServerCheat_Validate(Cmd)
 if (cVar6 == 0)
-    GLastRPCFailedReason = L"ServerCheat_Validate";   // RPC отброшен
+    GLastRPCFailedReason = L"ServerCheat_Validate";   // RPC rejected
 else
     vtable_11E8(this, &Cmd);              // -> ServerCheat_Implementation(Cmd)
 ```
 
-Условие отказа — `!Cmd.IsEmpty() && bIsAdmin` (в билде ARK), т.е. **пустая
-команда проходит всегда**, непустая — только от админа. Флаг `bIsAdmin` —
-поле **ARK-овского** `APlayerController` (в стоковом UE4.5 такого поля нет).
+The rejection condition is `!Cmd.IsEmpty() && bIsAdmin` (in the ARK build), i.e. an **empty
+command always passes**, a non-empty one only from an admin. The `bIsAdmin` flag is a
+field of the **ARK** `APlayerController` (stock UE4.5 has no such field).
 
-Исполняемая команда уходит в ARK-овский `UShooterCheatManager`, где есть:
+The executed command goes into ARK's `UShooterCheatManager`, which contains:
 
-| Команда | Строки в бинаре | Ущерб |
+| Command | Strings in binary | Damage |
 |---|---|---|
-| `ScriptCommand` | `0x1438BBAC0`, `0x14394D450`, `0x143A5A140` | **произвольный Blueprint** на сервере — полный контроль над миром |
-| `DestroyWildDinos` | `0x14394C910`, `0x143A57D60` | тяжёлый проход по всем диносам (CPU) |
-| `SaveWorld` | `0x14394D420`, `0x143A5A0C0` | фриз гейм-треда на время сериализации мира (в проде измерено 3.9-4.3 с) |
-| `DoExit` | `0x1438A65AC`, `0x143A57C28` | остановка сервера |
-| `SetGodMode` | `0x1438DDF20`... | выдача режима бога |
+| `ScriptCommand` | `0x1438BBAC0`, `0x14394D450`, `0x143A5A140` | **arbitrary Blueprint** on the server — full control over the world |
+| `DestroyWildDinos` | `0x14394C910`, `0x143A57D60` | heavy pass over all dinos (CPU) |
+| `SaveWorld` | `0x14394D420`, `0x143A5A0C0` | game-thread freeze for the duration of world serialization (measured 3.9–4.3 s in production) |
+| `DoExit` | `0x1438A65AC`, `0x143A57C28` | server shutdown |
+| `SetGodMode` | `0x1438DDF20`... | grants god mode |
 
-**Почему это узкоспециализированный вектор ARK:** канал команд не в RCON, а
-**в игровом протоколе** — он недоступен из RCON-пароля, но доступен любому
-подключённому клиенту, который проходит игровую авторизацию.
+**Why this is an ARK-specific vector:** the command channel is not in RCON but
+**in the game protocol** — it is unreachable via the RCON password, but available to any
+connected client that passes game authentication.
 
-**Точность вывода о валидации (проверено в Ghidra):**
-* `ABasePlayerController::ServerCheat_Validate` (`0x1401F3080`, 13 байт)
-  декомпилируется как безусловный `return true` - это **базовая** реализация
-  класса;
-* строка `RPC_VALIDATE Failed: !S.IsEmpty() && bIsAdmin ...` **присутствует** в
-  данных бинаря (0x143BFE800), но ссылок на неё в проанализированном коде
-  Ghidra **не находит** (0 xrefs, и поиск по байтовым паттернам тоже пуст) -
-  то есть либо проверка в этом билде инлайнится с другой строкой, либо её
-  реализация не попала в карту анализа;
-* `APlayerController::bIsAdmin` - поле **ARK-овского** `APlayerController`
-  (в стоковом UE4.5 такого поля нет вообще), свойство рефлексии - в
+**Accuracy of the validation conclusion (verified in Ghidra):**
+* `ABasePlayerController::ServerCheat_Validate` (`0x1401F3080`, 13 bytes)
+  decompiles as an unconditional `return true` — this is the **base** class
+  implementation;
+* the string `RPC_VALIDATE Failed: !S.IsEmpty() && bIsAdmin ...` **is present** in
+  the binary data (0x143BFE800), but Ghidra **finds no references** to it in the
+  analyzed code (0 xrefs, and byte-pattern search also comes up empty) — meaning
+  either the check in this build is inlined with a different string, or its
+  implementation did not make it into the analysis map;
+* `APlayerController::bIsAdmin` is a field of the **ARK** `APlayerController`
+  (stock UE4.5 has no such field at all); the reflection property is in
   `Z_Construct_UClass_APlayerController` (0x142A1303E);
-* `bIsServerAdmin` - **реплицируемое** свойство `AShooterCharacter`
-  (`GetLifetimeReplicatedProps`, 0x140AC3527) ⇒ флаг приходит с сервера.
+* `bIsServerAdmin` is a **replicated** property of `AShooterCharacter`
+  (`GetLifetimeReplicatedProps`, 0x140AC3527) ⇒ the flag arrives from the server.
 
-Итог: механизм RPC и исполнение команд подтверждены, но **живая проверка
-админа в этом билде не доказана** - её надо снять эмпирически.
+Bottom line: the RPC mechanism and command execution are confirmed, but **a live admin
+check in this build is not proven** — it must be captured empirically.
 
-**Что нужно проверить (не проверено, требует живого сервера и клиента):**
-кто пишет `APlayerController::bIsAdmin` — сервер (после проверки PIN/пароля) или
-клиент (через опции логина). Проверка: плагин читает поле по PDB-имени
-`APlayerController.bIsAdmin` (у `NetGuard` есть `SafeFieldPtr` для таких
-чтений), клиент входит с разными опциями логина.
+**What needs checking (not checked; requires a live server and client):** who writes
+`APlayerController::bIsAdmin` — the server (after PIN/password verification) or the
+client (via login options). Test: a plugin reads the field by the PDB name
+`APlayerController.bIsAdmin` (`NetGuard` has `SafeFieldPtr` for such reads), and the
+client logs in with different login options.
 
 ---
 
-## N2. `AShooterGameSession::ApproveLogin` — карта ожидающих авторизаций (ARK-овская)
+## N2. `AShooterGameSession::ApproveLogin` — the pending-authentication map (ARK-specific)
 
-`0x140CE1100` (7711 байт). Декомпиляция:
+`0x140CE1100` (7711 bytes). Decompilation:
 
 ```c
-key  = param_3->PlayerId->ToString();            // SteamID64 строкой
+key  = param_3->PlayerId->ToString();            // SteamID64 as a string
 map  = &this->CurrentUsersTryingToAuthAndGetLoginLock;   // TMap<FString,FCurrentLoginAuthCheck>
-FScopeLock lock(map);                            // ГЛОБАЛЬНЫЙ ЛОК
+FScopeLock lock(map);                            // GLOBAL LOCK
 if (map->Find(key) == -1)
-    entry = map->Emplace(key);                   // новая запись на каждый новый SteamID
+    entry = map->Emplace(key);                   // a new entry for every new SteamID
 entry->Connection  = param_3;                   // FWeakObjectPtr
-entry->TimeStarted = GameState->TimeSeconds;    // => есть TTL?
-session->vtable_248(this, delegate);            // регистрация делегата в IOnlineSession
-if (!session->vtable_238(this, &token))          // ПРОВЕРКА ТОКЕНА (исходящий вызов в Steam)
+entry->TimeStarted = GameState->TimeSeconds;    // => a TTL exists?
+session->vtable_248(this, delegate);            // delegate registration in IOnlineSession
+if (!session->vtable_238(this, &token))          // TOKEN CHECK (outbound call to Steam)
     return "Invalid authentication token.";      // xref: AShooterGameMode::StartNewShooterPlayer 0x140C5A40A
 ```
 
-Свойства вектора:
-* **на каждую попытку входа** сервер делает исходящий вызов в Steam/EOS и берёт
-  **глобальный лок** → сериализация всех логинов на гейм-треде;
-* карта растёт на каждый новый SteamID; `TimeStarted` намекает на TTL, но
-  чистку в коде не видно;
-* ключ — SteamID ⇒ рост карты требует множества **реальных** аккаунтов.
+Vector properties:
+* **on every login attempt** the server makes an outbound call to Steam/EOS and takes a
+  **global lock** → serialization of all logins on the game thread;
+* the map grows by every new SteamID; `TimeStarted` hints at a TTL, but no cleanup
+  is visible in the code;
+* the key is the SteamID ⇒ map growth requires many **real** accounts.
 
-**Что нужно проверить:** существует ли TTL/очистка `FCurrentLoginAuthCheck`,
-и сколько стоит делегат (сетевой вызов в Steam = 100+ мс на гейм-треде при
-синхронном ожидании?).
+**What needs checking:** whether a TTL/cleanup for `FCurrentLoginAuthCheck` exists,
+and what the delegate costs (an outbound Steam call = 100+ ms on the game thread if
+waited on synchronously?).
 
 ---
 
-## N3. Per-packet tiny token — ARK-овское расширение протокола
+## N3. Per-packet tiny token — an ARK-specific protocol extension
 
 `UNetConnection::ReceivedRawPacket` `0x1424C6070`:
 
 ```c
 if (this->bIsUsingPerPacketTinyToken) {
     if (param_2 < 5) return;
-    if (*(uint32*)param_1 & 0x80000000) {          // СТАРШИЙ БИТ - просто маркер
-        if (param_2 != 0x48) return;               // ровно 72 байта
-        if (*(int32*)((char*)param_1 + 0x44) != 0x166) return;   // версия 358
-        if (++this->RecentFullTinyTokenACKs > 9) return;         // не больше 9
-        FNetControlMessage<23>::Send(this, ...);   // ответ сервера
+    if (*(uint32*)param_1 & 0x80000000) {          // HIGH BIT - just a marker
+        if (param_2 != 0x48) return;               // exactly 72 bytes
+        if (*(int32*)((char*)param_1 + 0x44) != 0x166) return;   // version 358
+        if (++this->RecentFullTinyTokenACKs > 9) return;         // no more than 9
+        FNetControlMessage<23>::Send(this, ...);   // server's reply
         return;
     }
-    param_1 += 4; param_2 -= 4;                    // снять 4-байтовый префикс
+    param_1 += 4; param_2 -= 4;                    // strip the 4-byte prefix
 }
 ```
 
-ARK-овская строка ошибки: `"ReceivedRawPacket() Packet is too small doesn't
+ARK-specific error string: `"ReceivedRawPacket() Packet is too small doesn't
 include PerPacketTinyTokenToRecieve() plus 1"`.
 
-**Вывод:** на уровне UE4 «токен» — это 4 байта, чей **старший бит установлен**;
-значение **не сравнивается с секретом**. То есть ARK-овский per-packet слой сам
-по себе барьером не является (он отсекает только «не-P2P» мусор).
+**Conclusion:** at the UE4 level a "token" is 4 bytes whose **high bit is set**;
+the value is **not compared against a secret**. In other words, ARK's per-packet layer
+by itself is not a barrier (it only filters out "non-P2P" junk).
 
-**Следствие (главный вывод анализа):** единственный настоящий барьер перед
-UE4-амплификатором «1 пакет = 1 `UNetConnection`» (`IpNetDriver.cpp:255-277`) —
-это **Steam P2P-сессия**. Её ключ выводится из двух SteamID, а **SteamID
-сервера публикуется в A2S-правилах** (`OWNINGID = 90295266303720470`) вместе с
-игровым портом (`P2PPORT = 7778`). То есть разведка под эту атаку бесплатна и
-доступна с query-порта.
+**Consequence (the main conclusion of the analysis):** the only real barrier in front of
+the UE4 amplifier "1 packet = 1 `UNetConnection`" (`IpNetDriver.cpp:255-277`) is the
+**Steam P2P session**. Its key is derived from two SteamIDs, and **the server's SteamID
+is published in the A2S rules** (`OWNINGID = 90295266303720470`) together with
+the game port (`P2PPORT = 7778`). So reconnaissance for this attack is free and
+available from the query port.
 
-**Что нужно:** вывести деривацию P2P-ключа из `steamclient64.dll`/GNS
-(в open-source GNS ключ = хеш от двух SteamID, в Steam-реализации — своя
-функция). Как только ключ выводится, открывается главный DoS-вектор ARK:
-**одна датаграмма = одно соединение UE4 = полный разбор пакета + объект,
-живущий до `InitialConnectTimeout` (300 с)**.
-
----
-
-## N4. `UPrimalItem::ServerHandleItemNetExecCommand` — второй in-band канал команд
-
-`0x1407FBB60` (54 байта) → делегирует в Blueprint `BPServerHandleItemNetExecCommand`.
-То есть кроме `SHOOTERGAME_ServerCheat` в ARK есть **предметный** канал
-исполнения команд (команда приходит от предмета/структуры). Blueprint-логика
-лежит в `.uasset`, в C++ не видна — анализ требует распаковки cooked-ассета.
+**What is needed:** derive the P2P-key derivation from `steamclient64.dll`/GNS
+(in open-source GNS the key = a hash of two SteamIDs; in the Steam implementation it is
+a different function). Once the key is derived, ARK's main DoS vector opens up:
+**one datagram = one UE4 connection = full packet parse + an object
+that lives until `InitialConnectTimeout` (300 s)**.
 
 ---
 
-## N5. Steam-query (A2S) — единственная поверхность, достижимая без клиента
+## N4. `UPrimalItem::ServerHandleItemNetExecCommand` — a second in-band command channel
 
-| Свойство | Значение (измерено) |
+`0x1407FBB60` (54 bytes) → delegates to the Blueprint `BPServerHandleItemNetExecCommand`.
+So besides `SHOOTERGAME_ServerCheat`, ARK has an **item-based** command execution
+channel (the command arrives from an item/structure). The Blueprint logic lives in
+a `.uasset` and is not visible in C++ — analysis requires unpacking the cooked asset.
+
+---
+
+## N5. Steam query (A2S) — the only surface reachable without a client
+
+| Property | Value (measured) |
 |---|---|
-| Правил в ответе | 21, все ARK-овские: `DAYTIME_s`, `GAMEMODE_s`, `HASACTIVEMODS_i`, `MODID_l`, `SEARCHKEYWORDS_s`, `SESSIONFLAGS`, `SESSIONISPVE_i`, `SERVERUSESBATTLEYE_b` ... |
-| Публикует | `OWNINGID` (SteamID сервера) и `P2PPORT` (игровой порт) ⇒ **разведка для N3** |
-| Стоимость | ~26 мкс CPU на запрос |
-| Усиление | ответ 446 Б на запрос 30 Б = **×15** (сервер как рефлектор) |
-| Слоты | рекламируемое `NUMOPENPUBCONN=70` статично; реальный гейт — `AtCapacity()` → `net.MaxPlayersOverride` (1 команда) → «Server full.» для всех |
+| Rules in the reply | 21, all ARK-specific: `DAYTIME_s`, `GAMEMODE_s`, `HASACTIVEMODS_i`, `MODID_l`, `SEARCHKEYWORDS_s`, `SESSIONFLAGS`, `SESSIONISPVE_i`, `SERVERUSESBATTLEYE_b` ... |
+| Publishes | `OWNINGID` (the server's SteamID) and `P2PPORT` (the game port) ⇒ **reconnaissance for N3** |
+| Cost | ~26 µs CPU per request |
+| Amplification | a 446 B reply to a 30 B request = **×15** (the server as a reflector) |
+| Slots | the advertised `NUMOPENPUBCONN=70` is static; the real gate is `AtCapacity()` → `net.MaxPlayersOverride` (1 command) → "Server full." for everyone |
 
 ---
 
-## N6. PIN-коды структур (игровое, не DoS)
+## N6. Structure PIN codes (game-level, not DoS)
 
-`ITargetableInterface::ValidatePinCode(int)` — проверяет только диапазон
+`ITargetableInterface::ValidatePinCode(int)` — validates only the range
 `0..9999`; `APrimalStructureItemContainer::ValidatedByPinCodePlayerControllers` —
-список прошедших, `bIsPinLocked` — признак блокировки. Лимита попыток в C++
-не видно ⇒ 4-значный код перебирается тривиально, но ущерб **игровой**
-(открытие чужой контейнерной структуры), а не отказ в обслуживании.
+the list of players who passed; `bIsPinLocked` — the lock indicator. No attempt limit is
+visible in C++ ⇒ a 4-digit code is trivially brute-forced, but the damage is
+**game-level** (opening someone else's container structure), not a denial of service.
 
 ---
 
-## Рейтинг узкоспециализированных векторов по ущербу
+## Ranking of ARK-specific vectors by damage
 
-| Ранг | Вектор | Требуется | Ущерб | Статус |
+| Rank | Vector | Requires | Damage | Status |
 |---|---|---|---|---|
-| **1** | **N1. `SHOOTERGAME_ServerCheat` RPC** | обычный вход игрока | **1 сообщение = `ScriptCommand`/`DoExit`/`DestroyWildDinos`/`SaveWorld`** | механизм подтверждён; не проверено, кто ставит `bIsAdmin` |
-| **2** | **N5. `net.MaxPlayersOverride` → «Server full.»** | RCON-доступ | все игроки отключены (1 команда) | механизм подтверждён (исходники UE4.5 + бинарь) |
-| **3** | **N3. Steam P2P-ключ → 1 пакет = 1 `UNetConnection`** | вывод ключа из SteamID (данные публичны) | **настоящий DoS**: объекты соединений + работа в тике, до 300 с | анализ готов, не хватает деривации ключа |
-| **4** | **N2. Флуд попыток входа** | много SteamID | исходящие Steam-вызовы + лок + карта на гейм-треде | механизм подтверждён, не измерен |
-| **5** | **N4. Item NetExecCommand** | обычный вход + предмет | второй командный канал | Blueprint-логика не распакована |
-| **6** | **N5. A2S-отражение ×15** | ничего | сервер как источник трафика для 3-х лиц; + разведка | измерено |
-| 7 | N6. PIN структур | обычный вход | игровой (не DoS) | подтверждено |
+| **1** | **N1. `SHOOTERGAME_ServerCheat` RPC** | a normal player login | **1 message = `ScriptCommand`/`DoExit`/`DestroyWildDinos`/`SaveWorld`** | mechanism confirmed; not verified who sets `bIsAdmin` |
+| **2** | **N5. `net.MaxPlayersOverride` → "Server full."** | RCON access | all players kicked out (1 command) | mechanism confirmed (UE4.5 sources + binary) |
+| **3** | **N3. Steam P2P key → 1 packet = 1 `UNetConnection`** | key derivation from SteamIDs (data is public) | **a genuine DoS**: connection objects + tick work, up to 300 s | analysis complete; key derivation missing |
+| **4** | **N2. Login-attempt flood** | many SteamIDs | outbound Steam calls + lock + map on the game thread | mechanism confirmed, not measured |
+| **5** | **N4. Item NetExecCommand** | normal login + an item | a second command channel | Blueprint logic not unpacked |
+| **6** | **N5. A2S reflection ×15** | nothing | the server as a traffic source against third parties; + reconnaissance | measured |
+| 7 | N6. Structure PINs | normal login | game-level (not DoS) | confirmed |
 
 ---
 
-## Что осталось проверить (нужны данные, которых нет на машине)
+## What remains to be checked (requires data not available on this machine)
 
-1. **Писатель `APlayerController::bIsAdmin`** — серверная проверка или влияние
-   клиента через опции логина. Проверяется плагином (чтение поля по PDB) +
-   входом клиента с разными опциями.
-2. **Деривация Steam P2P-ключа** из `steamclient64.dll` (12 МБ) — нужен
-   реверс `CP2PNetworkingSession` / `m_mapP2PConnectionRequests` либо
-   open-source GNS как образец.
-3. **Cooked-ассеты** (`BPBasePlayerController`, `BPServerHandleItemNetExecCommand`)
-   — Blueprint-логика авторизации команд лежит в `.uasset`, а не в C++.
-4. **Живой клиент** (BotPlayer) — единственный способ снять настоящий
-   P2P-хендшейк и проверить N1/N3 в протоколе.
-5. **Исходники движка ARK** (`F:\build\LostIsland\Engine\...`) — их нет на
-   машине; стоковый UE4.5 отличается (в нём нет ни `ServerCheat_Validate`,
-   ни `bIsAdmin`).
+1. **The writer of `APlayerController::bIsAdmin`** — a server-side check or client
+   influence via login options. Tested with a plugin (field read via PDB) +
+   client logins with different options.
+2. **Steam P2P-key derivation** from `steamclient64.dll` (12 MB) — requires
+   reversing `CP2PNetworkingSession` / `m_mapP2PConnectionRequests` or using
+   open-source GNS as a reference.
+3. **Cooked assets** (`BPBasePlayerController`, `BPServerHandleItemNetExecCommand`)
+   — the Blueprint authorization logic of commands lives in a `.uasset`, not in C++.
+4. **A live client** (BotPlayer) — the only way to capture a real
+   P2P handshake and test N1/N3 on the wire.
+5. **The ARK engine sources** (`F:\build\LostIsland\Engine\...`) — not available on
+   this machine; stock UE4.5 differs (it has neither `ServerCheat_Validate`,
+   nor `bIsAdmin`).
 
 ---
 
-## N7. `LoginLock` — распределённая блокировка аккаунта на Redis (ответ на вопрос о «зависании»)
+## N7. `LoginLock` — Redis-backed per-account lock (an answer to the "hang" question)
 
-### Что это
+### What it is
 
-ARK защищает вход не счётчиком слотов, а **lock-записью в Redis на аккаунт**:
+ARK protects logins not with a slot counter but with a **Redis lock record per account**:
 
-| Элемент | Адрес / строка |
+| Element | Address / string |
 |---|---|
-| Ключ в Redis | `playerloginlock:` (`0x14387E780`) |
-| Получить | `UDatabase_LoginData_Redis::GetLoginLock() for account %s` (`0x14387E9E0`) |
-| Отпустить | `UDatabase_LoginData_Redis::ReleaseLoginLock() for account %s` (`0x14387E870`) |
-| Скрипт | `TRY_GETLOGINLOCK_LUA_ID` (Lua-скрипт в Redis; ошибка загрузки - `0x14387E8F0`) |
-| Точка применения | `AShooterGameMode::ExtraPreLoginChecksBeforeWelcomePlayer` (`0x140C50930`, 4695 Б) |
-| Обслуживание | `TickLoginLocks` (`0x140C67FD0`), `RemoveLoginLock` (`0x140C546B0`), `WasSuccessfulLogin` (`0x140CDA920`) |
-| Отказ клиенту | `PreLogin: Waiting on Login Lock. Please try again in a minute.` (`0x1438E2240`), `Waiting on Login Lock. Try again in a few minutes!` (`0x1438E24C0`) |
-| Выключатели | `bHasArkLoginLock` (`0x143D0A968`), `bGlobalDisableLoginLockCheck` (`0x143A68220`), `bTempDisableLoginLockCheck` (`0x143A68260`) |
-| Деградация | `Disabled LoginLock due to loss of redis connection` (`0x1438E3280`) |
-| Метрики | `arkservers.logincheck.preloginerror1/2` (`0x1438E5AC8`), `IncrementPreLoginMetric` (`0x140C017A0`) |
+| Redis key | `playerloginlock:` (`0x14387E780`) |
+| Acquire | `UDatabase_LoginData_Redis::GetLoginLock() for account %s` (`0x14387E9E0`) |
+| Release | `UDatabase_LoginData_Redis::ReleaseLoginLock() for account %s` (`0x14387E870`) |
+| Script | `TRY_GETLOGINLOCK_LUA_ID` (a Lua script in Redis; load failure — `0x14387E8F0`) |
+| Enforcement point | `AShooterGameMode::ExtraPreLoginChecksBeforeWelcomePlayer` (`0x140C50930`, 4695 B) |
+| Maintenance | `TickLoginLocks` (`0x140C67FD0`), `RemoveLoginLock` (`0x140C546B0`), `WasSuccessfulLogin` (`0x140CDA920`) |
+| Client rejection | `PreLogin: Waiting on Login Lock. Please try again in a minute.` (`0x1438E2240`), `Waiting on Login Lock. Try again in a few minutes!` (`0x1438E24C0`) |
+| Kill switches | `bHasArkLoginLock` (`0x143D0A968`), `bGlobalDisableLoginLockCheck` (`0x143A68220`), `bTempDisableLoginLockCheck` (`0x143A68260`) |
+| Degradation | `Disabled LoginLock due to loss of redis connection` (`0x1438E3280`) |
+| Metrics | `arkservers.logincheck.preloginerror1/2` (`0x1438E5AC8`), `IncrementPreLoginMetric` (`0x140C017A0`) |
 
-### Ответ на вопрос: «можно ли эмулировать клиента так, чтобы его подключение висело и не пускало других?»
+### Answer to the question: "can a client be emulated so that its connection hangs and blocks others?"
 
-**Коротко: нет — не в том смысле, в каком обычно представляют. Разложим по уровням.**
+**In short: no — not in the sense usually imagined. Let's break it down by level.**
 
-| Уровень | Что нужно | Занимает слот? | Блокирует других? |
+| Level | What is required | Takes a slot? | Blocks others? |
 |---|---|---|---|
-| **Транспортный squat** | пройти Steam P2P + UE4-хендшейк, логин не завершать | **нет** | **нет** |
-| **Squат фазы входа** | реальная Steam-сессия (валидный токен) | **нет** | **нет** (lock на *свой* аккаунт) |
-| **Squат игрока** | завершённый вход (реальный аккаунт) | **да** (1 из 70) | **да**, но нужны 70 аккаунтов |
-| **Мгновенная блокировка всех** | RCON-доступ | — | `net.MaxPlayersOverride 1` = 1 команда |
+| **Transport squat** | pass Steam P2P + the UE4 handshake, never finish login | **no** | **no** |
+| **Login-phase squat** | a real Steam session (valid token) | **no** | **no** (the lock is on *your own* account) |
+| **Player squat** | completed login (a real account) | **yes** (1 of 70) | **yes**, but 70 accounts are needed |
+| **Instantly blocking everyone** | RCON access | — | `net.MaxPlayersOverride 1` = 1 command |
 
-Обоснование:
+Justification:
 
-1. **Слоты считаются по залогиненным игрокам.** `AGameSession::AtCapacity()`:
+1. **Slots are counted by logged-in players.** `AGameSession::AtCapacity()`:
    `GetWorld()->GetAuthGameMode()->GetNumPlayers() >= MaxPlayersToUse`
-   (`GameSession.cpp:198-203`). `UNetDriver::ClientConnections` в проверке
-   ёмкости не участвует ⇒ висящее соединение слот **не занимает**, и «Server full.»
-   другим не показывается.
+   (`GameSession.cpp:198-203`). `UNetDriver::ClientConnections` is not part of the
+   capacity check ⇒ a hanging connection does **not** take a slot, and "Server full."
+   is not shown to others.
 
-2. **LoginLock - это блокировка по аккаунту, а не глобальная.** Ключ
-   `playerloginlock:<account>` ⇒ удержание блокировки мешает повторному входу
-   **того же** аккаунта («PreLogin: Waiting on Login Lock...»), но не мешает
-   другим игрокам.
+2. **LoginLock is a per-account lock, not a global one.** The key
+   `playerloginlock:<account>` ⇒ holding the lock prevents re-login of **the same**
+   account ("PreLogin: Waiting on Login Lock..."), but does not affect
+   other players.
 
-3. **Без настоящей Steam-сессии до логина не дойти.** `AShooterGameMode::PreLogin`
-   (`0x140C502C0`): при `PlayerId == NULL` - `A valid login was not provided.`
-   / `PreLogin: Invalid login provided.` ⇒ чистая эмуляция протокола (без
-   аккаунта) может «висеть» только на транспортном уровне.
+3. **Without a real Steam session you never reach login.** `AShooterGameMode::PreLogin`
+   (`0x140C502C0`): with `PlayerId == NULL` — `A valid login was not provided.`
+   / `PreLogin: Invalid login provided.` ⇒ a pure protocol emulation (no
+   account) can only "hang" at the transport level.
 
-4. **Что реально даёт транспортный squat.** Каждое такое соединение - это
-   объект `UNetConnection` с каналами и буферами bunch'ей, плюс состояние в
-   P2P-слое Steam. Стоимость на соединение на порядки выше, чем у отброшенного
-   мусора (20 мкс/пакет, измерено), поэтому для деградации тика нужно
-   существенно меньше пакетов, чем для найденного ранее UDP-флуда. Это и есть
-   настоящий "узкий" DoS ARK - но он упирается в необходимость пройти P2P.
+4. **What a transport squat actually buys.** Each such connection is a
+   `UNetConnection` object with channels and bunch buffers, plus state in
+   Steam's P2P layer. Its per-connection cost is orders of magnitude higher than
+   discarded junk (20 µs/packet, measured), so degrading the tick requires
+   far fewer packets than the UDP flood found earlier. That is ARK's genuine
+   "narrow" DoS — but it hinges on getting past P2P.
 
-5. **Есть и ARK-специфичный побочный эффект.** Гейт
-   `ExtraPreLoginChecksBeforeWelcomePlayer` обходит **карту ожидающих
-   авторизаций** (`TMap<FString,FCurrentLoginAuthCheck>`) и **массив
-   подключений** (`TArray<UNetConnection*>`) под `FScopeLock`. То есть при
-   большом числе одновременных логинов сервер может начать **отказывать новым
-   входам** - это троттлинг легитимных игроков, а не блокировка слотов.
+5. **There is also an ARK-specific side effect.** The
+   `ExtraPreLoginChecksBeforeWelcomePlayer` gate touches the **pending-authentication
+   map** (`TMap<FString,FCurrentLoginAuthCheck>`) and the **connection array**
+   (`TArray<UNetConnection*>`) under an `FScopeLock`. So with many simultaneous
+   logins the server may start **rejecting new logins** — throttling legitimate
+   players, not blocking slots.
 
-6. **Защита уязвима сама по себе.** Если Redis недоступен - `Disabled LoginLock
-   due to loss of redis connection`; на стенде/дешёвых хостах Redis может не
-   быть вовсе (`bHasArkLoginLock` выключен) ⇒ механизма нет.
+6. **The protection is fragile by itself.** If Redis is unreachable — `Disabled LoginLock
+   due to loss of redis connection`; on test benches/cheap hosts Redis may be
+   absent entirely (`bHasArkLoginLock` disabled) ⇒ the mechanism does not exist.
 
-### Что нужно для эмпирической проверки
+### What is needed for empirical verification
 
-1. Живой клиент (BotPlayer) - чтобы получить настоящий P2P-хендшейк и измерить
-   стоимость одного висящего соединения (мс/тик на соединение, память).
-2. Поднятый Server2 + включённый NetGuard с расширенными метриками
-   (`liveConnections` уже есть; нужно добавить счётчик соединений в фазе входа
-   и время жизни висящего соединения).
-3. Проверка "кто пишет `APlayerController::bIsAdmin`" (см. N1) - она определяет,
-   можно ли получить `ServerCheat` без админ-прав.
+1. A live client (BotPlayer) — to capture a real P2P handshake and measure
+   the cost of one hanging connection (ms/tick per connection, memory).
+2. A running Server2 with NetGuard and extended metrics
+   (`liveConnections` already exists; a login-phase connection counter and the
+   lifetime of a hanging connection need to be added).
+3. The check "who writes `APlayerController::bIsAdmin`" (see N1) — it determines
+   whether `ServerCheat` can be obtained without admin rights.
 
 ---
 
-## 10. Эмпирическое закрытие (сессия 2026-10-20, стенд Server2 v358.24)
+## 10. Empirical closure (session 2026-10-20, Server2 test bench, v358.24)
 
-Источники: `C:\Dev\crossplay-research` (DIA-кэш PDB `tool-results/symbols-358.txt`,
-клиентские декомпиляции `dumps/ShooterGame-client-358.c`), Ghidra-mcp по
-`v358_ShooterGameServer.exe`, плагин NetGuard (захват + метрики) на живом стенде.
+Sources: `C:\Dev\crossplay-research` (PDB DIA cache `tool-results/symbols-358.txt`,
+client decompilations `dumps/ShooterGame-client-358.c`), Ghidra-mcp on
+`v358_ShooterGameServer.exe`, and the NetGuard plugin (capture + metrics) on the live bench.
 
-### 10.1 N1 — `ServerCheat`: админка на приватном сервере выдаётся ВСЕМ (подтверждено)
+### 10.1 N1 — `ServerCheat`: admin status on a private server is granted to EVERYONE (confirmed)
 
-**Цепочка (клиентский дамп 358, строки 2532531 / 3814806):**
+**Chain (client dump 358, lines 2532531 / 3814806):**
 
 ```c
-// клиент: UI/консоль -> RPC на сервер
-void AShooterPlayerController::AdminCheat(FString Cmd)   // обрезает до 300 символов
+// client: UI/console -> RPC to server
+void AShooterPlayerController::AdminCheat(FString Cmd)   // truncates to 300 chars
 {
     ABasePlayerController::ServerCheat(this, Cmd);
 }
-bool ABasePlayerController::ServerCheat_Validate(FString) { return true; }  // и на клиенте так же
+bool ABasePlayerController::ServerCheat_Validate(FString) { return true; }  // same on the client
 ```
 
-**Серверная часть (v358):**
+**Server side (v358):**
 
-| Что | Где | Факт |
+| What | Where | Fact |
 |---|---|---|
-| Валидация RPC | `ABasePlayerController::ServerCheat_Validate` `0x1F3080` (13 Б) | `return true` **безусловно** |
-| Исполнение | `ABasePlayerController::ServerCheat_Implementation` `0x1F3090` (4396 Б) | проверки `bIsAdmin` **нет** (0 инструкций со смещением 0x5C8) |
-| Кто даёт права | `ABasePlayerController::HasValidAdminIP` `0x1F2BE0` (1177 Б) | см. ниже |
-| Геометрия флага | `FDetermineBitMask_APlayerController_bIsAdmin::SetBit` | `bIsAdmin` = **бит 4** в `uint32` по **0x5C8** |
-| Проверка IP | дизасмбл `1401F2C00: MOVZX EAX, byte ptr [0x144703BAF]` / `JZ 0x1401F306F` | глобал `GIsOfficialServer` по **0x144703BAF** |
+| RPC validation | `ABasePlayerController::ServerCheat_Validate` `0x1F3080` (13 B) | `return true` **unconditionally** |
+| Execution | `ABasePlayerController::ServerCheat_Implementation` `0x1F3090` (4396 B) | **no** `bIsAdmin` check (0 instructions referencing offset 0x5C8) |
+| Who grants rights | `ABasePlayerController::HasValidAdminIP` `0x1F2BE0` (1177 B) | see below |
+| Flag geometry | `FDetermineBitMask_APlayerController_bIsAdmin::SetBit` | `bIsAdmin` = **bit 4** of a `uint32` at **0x5C8** |
+| IP check | disassembly `1401F2C00: MOVZX EAX, byte ptr [0x144703BAF]` / `JZ 0x1401F306F` | the global `GIsOfficialServer` at **0x144703BAF** |
 
-**Логика `HasValidAdminIP`:**
+**`HasValidAdminIP` logic:**
 ```c
-if (!GIsOfficialServer) return true;                 // (1) приватный сервер -> ВСЕ админы
-if (bOfficialIgnoreAdminIPCheck) return true;         // (2) -OfficialIgnoreAdminIPCheck -> ВСЕ
-if (IOnlineSubsystem::Get("Steam")) { ... }          // (3) сверка через Steam
-if (GameMode->AllowedAdminIPs.FindId(ip) != -1) return true;  // (4) локальный список admin-IP
+if (!GIsOfficialServer) return true;                 // (1) private server -> EVERYONE is admin
+if (bOfficialIgnoreAdminIPCheck) return true;         // (2) -OfficialIgnoreAdminIPCheck -> EVERYONE
+if (IOnlineSubsystem::Get("Steam")) { ... }          // (3) verification via Steam
+if (GameMode->AllowedAdminIPs.FindId(ip) != -1) return true;  // (4) local admin-IP list
 return false;
 ```
 
-**Измерение на стенде (плагин NetGuard, живой игрок `isquzee1`):**
+**Bench measurement (NetGuard plugin, live player `isquzee1`):**
 ```
-officialServer : 0        <- GIsOfficialServer == false => сработала ветка (1)
+officialServer : 0        <- GIsOfficialServer == false => branch (1) taken
 validAdminIP   : 1        <- HasValidAdminIP() == true
-admin          : 1        <- bIsAdmin (бит 4 @0x5C8) == 1
+admin          : 1        <- bIsAdmin (bit 4 @0x5C8) == 1
 serverAdmin    : 1        <- bIsServerAdmin (bool @0x1A44) == 1
 ```
 
-**Вывод.** На **приватном** ARK-сервере (а это стенд и подавляющее большинство
-серверов) проверка admin-IP проходит **для любого вошедшего игрока**: ветка (1)
-срабатывает раньше сверки со списком. Значит:
-* `bIsAdmin = 1` у каждого игрока;
-* `ServerCheat_Validate` безусловно `true`;
-* `ServerCheat` -> `UShooterCheatManager` -> **`ScriptCommand` = произвольный
-  Blueprint на сервере**.
+**Conclusion.** On a **private** ARK server (which is what the bench is, and what the
+overwhelming majority of servers are), the admin-IP check passes **for any player who
+logs in**: branch (1) fires before the list comparison. Therefore:
+* `bIsAdmin = 1` for every player;
+* `ServerCheat_Validate` unconditionally `true`;
+* `ServerCheat` -> `UShooterCheatManager` -> **`ScriptCommand` = arbitrary
+  Blueprint on the server**.
 
-**Вектор (узкоспециализированный, максимальный ущерб, ОДИН запрос):** обычный
-игрок, зашедший на приватный сервер, выполняет серверную команду. Пароль RCON и
-права админа не нужны. Ущерб - полный контроль над миром (спавн предметов,
-`DestroyWildDinos`, `DoExit`, правка состояния сервера).
+**Vector (ARK-specific, maximum damage, ONE request):** an ordinary player who joins a
+private server executes a server command. No RCON password and no admin rights are
+needed. Damage — full control over the world (spawning items,
+`DestroyWildDinos`, `DoExit`, editing server state).
 
-**Что НЕ сделано (нужен не-админский клиент):** эмпирически показать, что
-`ServerCheat` от обычного игрока исполняется. Код доказывает путь, но
-«наблюдатель сначала»: нужен второй клиент без прав (или принудительно
-сброшенный `bIsAdmin`).
+**What was NOT done (a non-admin client is needed):** empirically demonstrate that
+`ServerCheat` from an ordinary player executes. The code proves the path, but
+"observer first": a second client without rights is needed (or a forcibly
+cleared `bIsAdmin`).
 
-### 10.2 N3 — per-packet tiny-token (подтверждено на живом трафике)
+### 10.2 N3 — per-packet tiny-token (confirmed on live traffic)
 
-* Клиент (дамп 358, строки 3627100-3627138) шлёт пакет ровно в **72 байта**:
-  `[4 Б: PerPacketTinyTokenToSend | 0x80000000][64 Б "full token"]`.
-* Сервер (`UNetConnection::ReceivedRawPacket` `0x1424C6070`) при установленном
-  старшем бите проверяет **только** длину `0x48` и версию `0x166` по смещению
-  `+0x44`; **значение токена ни с чем не сверяется**.
-* **В захваченной сессии клиент пошёл по обычному пути** (первые 4 байта каждого
-  пакета = `5b17b519`, старший бит НЕ установлен => токен-ветка не
-  использовалась), т.е. `bIsUsingPerPacketTinyToken` был false.
+* The client (dump 358, lines 3627100-3627138) sends a packet of exactly **72 bytes**:
+  `[4 B: PerPacketTinyTokenToSend | 0x80000000][64 B "full token"]`.
+* The server (`UNetConnection::ReceivedRawPacket` `0x1424C6070`), when the high
+  bit is set, checks **only** the length `0x48` and the version `0x166` at offset
+  `+0x44`; **the token value is never compared to anything**.
+* **In the captured session the client went down the regular path** (the first 4 bytes of
+  each packet = `5b17b519`, the high bit NOT set => the token branch was
+  not used), i.e. `bIsUsingPerPacketTinyToken` was false.
 
-Вывод прежний: на уровне UE4 барьера нет, единственный настоящий барьер -
-Steam P2P-сессия (64-байтный "full token" = крипто-материал P2P).
+Conclusion unchanged: at the UE4 level there is no barrier; the only real barrier is
+the Steam P2P session (the 64-byte "full token" = P2P crypto material).
 
-### 10.3 Разбор захвата (что реально приходит по сети)
+### 10.3 Capture analysis (what actually arrives on the wire)
 
-Файл: `…\ArkApi\Plugins\NetGuard\NetGuard_capture.log` (запись пакетов
- UE4-уровня + события NMT/PreLogin/PostLogin).
+File: `…\ArkApi\Plugins\NetGuard\NetGuard_capture.log` (UE4-level packet
+capture + NMT/PreLogin/PostLogin events).
 
 ```
-len=6    5b17b519 01 40                       первый пакет соединения
-len=62   5b17b519 04 8005 ... "135.136.6.19" ...  адрес клиента (через VPN) + 16-байтный FGuid
-         NMT 0 -> NMT 4 (Challenge) -> сервер шлёт 516 Б (challenge c Steam-тикетом)
-len=516  "140000000640C070AA9956D01406B75101001001D575D66AB8..."  hex Steam auth-тикет
+len=6    5b17b519 01 40                       first packet of the connection
+len=62   5b17b519 04 8005 ... "135.136.6.19" ...  client address (via VPN) + a 16-byte FGuid
+         NMT 0 -> NMT 4 (Challenge) -> the server sends 516 B (challenge with a Steam ticket)
+len=516  "140000000640C070AA9956D01406B75101001001D575D66AB8..."  Steam auth ticket, hex
          + "* /Game/Maps/MainMenu?ModId=0?Name=isquzee1"              (travel URL)
          + "76561199331214868"                                        (SteamID64)
          NMT 5 (Failure) -> PreLogin tokenLen=443 -> NMT 4 -> NMT 9 (Login) -> PostLogin
 ```
 
-* Первая попытка входа была **отклонена** (NMT 5 = Failure), вторая прошла.
-* Пароль админа в перехвате **не встречается** (0 вхождений) - значит `bIsAdmin`
-  ставится не по паролю, а по IP-логике (10.1).
-* Итоговая последовательность: `0 -> 4 -> 5 -> PreLogin -> 4 -> 9 -> PostLogin`.
+* The first login attempt was **rejected** (NMT 5 = Failure); the second succeeded.
+* The admin password does **not appear** in the capture (0 occurrences) — so `bIsAdmin`
+  is set not by password but by the IP logic (10.1).
+* Final sequence: `0 -> 4 -> 5 -> PreLogin -> 4 -> 9 -> PostLogin`.
 
-### 10.4 N7 — LoginLock (детали)
+### 10.4 N7 — LoginLock (details)
 
-* `UDatabase_LoginData_Redis::GetLoginLock` (`0x250750`, 1403 Б) - реальный
-  клиент **cpp_redis**, ключ `admin:ips:pc` для списка admin-IP, Lua-скрипт
-  `TRY_GETLOGINLOCK_LUA_ID` для блокировки входа.
-* `AShooterGameSession::ApproveLogin` (`0xCE1100`): глобальная карта
-  `CurrentUsersTryingToAuthAndGetLoginLock` под `FScopeLock`, по записи на
-  SteamID, плюс делегат в `IOnlineSession` (исходящая проверка токена).
-* Отказ: `PreLogin: Waiting on Login Lock. Please try again in a minute.`
-  (срабатывает в `ExtraPreLoginChecksBeforeWelcomePlayer` `0xC50930`).
-* Деградация: `Disabled LoginLock due to loss of redis connection`; на стенде
-  Redis нет (поле `CurrentUsersTryingToAuthAndGetLoginLock` в PDB отсутствует -
-  счётчик `-1`), т.е. **на стенде механизма LoginLock нет вообще**.
+* `UDatabase_LoginData_Redis::GetLoginLock` (`0x250750`, 1403 B) — a real
+  **cpp_redis** client; the key `admin:ips:pc` for the admin-IP list; the Lua script
+  `TRY_GETLOGINLOCK_LUA_ID` for the login lock.
+* `AShooterGameSession::ApproveLogin` (`0xCE1100`): the global map
+  `CurrentUsersTryingToAuthAndGetLoginLock` under an `FScopeLock`, one entry per
+  SteamID, plus a delegate in `IOnlineSession` (an outbound token check).
+* Rejection: `PreLogin: Waiting on Login Lock. Please try again in a minute.`
+  (fires in `ExtraPreLoginChecksBeforeWelcomePlayer` `0xC50930`).
+* Degradation: `Disabled LoginLock due to loss of redis connection`; Redis is absent on
+  the bench (a strange artifact: the `CurrentUsersTryingToAuthAndGetLoginLock` field is missing from the PDB —
+  the counter is `-1`), i.e. **on the bench the LoginLock mechanism does not exist at all**.
 
-### 10.5 Обновлённый рейтинг
+### 10.5 Updated ranking
 
-| Ранг | Вектор | Требуется | Ущерб | Статус |
+| Rank | Vector | Requires | Damage | Status |
 |---|---|---|---|---|
-| **1** | **N1. `ServerCheat` от обычного игрока на приватном сервере** | обычный вход в игру | **полный захват сервера** (ScriptCommand = произвольный Blueprint), 1 запрос | путь доказан по коду + измерение флагов; нужен не-админский клиент для финальной точки |
-| 2 | N5. `net.MaxPlayersOverride` через RCON | RCON | «Server full.» для всех, 1 команда | механизм подтверждён (исходники UE4.5 + бинарь) |
-| 3 | N3. Steam P2P-ключ -> 1 пакет = 1 `UNetConnection` | вывод ключа из `steamclient64` | DoS с ~1 пакета на соединение | барьер подтверждён, ключ не выведен |
-| 4 | N2. Флуд попыток входа | много SteamID | исходящие Steam-вызовы + лок + карта | механизм подтверждён, не измерен |
-| 5 | N7. LoginLock как DoS | реальные аккаунты | блокировка входа по аккаунту | Redis-зависим, на стенде отсутствует |
-| 6 | N4. Item NetExecCommand | вход + предмет | второй командный канал | Blueprint-логика не распакована |
-| 7 | N5. A2S-отражение x15 | ничего | сервер как источник трафика | измерено |
+| **1** | **N1. `ServerCheat` from an ordinary player on a private server** | a normal game login | **full server takeover** (ScriptCommand = arbitrary Blueprint), 1 request | path proven by code + flag measurement; a non-admin client is needed for the final point |
+| 2 | N5. `net.MaxPlayersOverride` via RCON | RCON | "Server full." for everyone, 1 command | mechanism confirmed (UE4.5 sources + binary) |
+| 3 | N3. Steam P2P key -> 1 packet = 1 `UNetConnection` | key derivation from `steamclient64` | DoS from ~1 packet per connection | barrier confirmed, key not derived |
+| 4 | N2. Login-attempt flood | many SteamIDs | outbound Steam calls + lock + map | mechanism confirmed, not measured |
+| 5 | N7. LoginLock as DoS | real accounts | per-account login blocking | Redis-dependent, absent on the bench |
+| 6 | N4. Item NetExecCommand | login + an item | a second command channel | Blueprint logic not unpacked |
+| 7 | N5. A2S reflection x15 | nothing | the server as a traffic source | measured |
 
-### 10.6 Инструмент для финальной точки (уже установлен на стенд)
+### 10.6 Tool for the final point (already deployed on the bench)
 
-Плагин NetGuard получил команду `adminforce on|off` (TCP 127.0.0.1:27101) -
-принудительно ставит/сбрасывает `bIsAdmin` (бит 4 по 0x5C8) у всех игроков.
+The NetGuard plugin received the `adminforce on|off` command (TCP 127.0.0.1:27101) —
+it forcibly sets/clears `bIsAdmin` (bit 4 at 0x5C8) for all players.
 
 ```
 > adminforce off   ->  {'ok': True, 'players': 1, 'value': 0}
@@ -424,174 +424,174 @@ len=516  "140000000640C070AA9956D01406B75101001001D575D66AB8..."  hex Steam auth
    playerList: [{"admin": 1, "serverAdmin": 1, "validAdminIP": 1}]
 ```
 
-Наблюдение: при сбросе `bIsAdmin` **сам собой** обнуляется и `bIsServerAdmin`
-(bool @0x1A44) - значит сервер периодически пересчитывает признак серверного
-админа из `bIsAdmin`, и `bIsAdmin` - ведущий флаг. А `validAdminIP` (=1) при
-этом не меняется - он отражает результат `HasValidAdminIP()`, который на
-приватном сервере всегда истинен.
+Observation: when `bIsAdmin` is cleared, `bIsServerAdmin`
+(bool @0x1A44) clears **by itself** — meaning the server periodically re-derives the
+server-admin indicator from `bIsAdmin`, and `bIsAdmin` is the leading flag. But
+`validAdminIP` (=1) does not change — it reflects the result of `HasValidAdminIP()`, which on
+a private server is always true.
 
-**Решающий тест (нужен один шаг от вас):** в игре откройте админ-консоль
-(или выполните любую команду, уходящую на сервер через `AdminCheat` ->
-`ServerCheat`) и повторите при `adminforce off`:
-* если команда **выполнится** при `adminforce off` - проверки прав нет вовсе,
-  и `ServerCheat` доступен любому вошедшему;
-* если сервер её **отклонит** - проверка есть в Blueprint-слое, и тогда вектор
-  ограничивается тем, что `bIsAdmin` выдаётся всем по IP (т.е. любой, кто
-  зайдёт с «админского» IP, получит и admin, и ServerCheat).
+**Decisive test (one step is needed from you):** in game, open the admin console
+(or run any command that goes to the server via `AdminCheat` ->
+`ServerCheat`) and repeat it with `adminforce off`:
+* if the command **executes** with `adminforce off` — there is no rights check at all,
+  and `ServerCheat` is available to anyone who logs in;
+* if the server **rejects it** — the check lives in the Blueprint layer, and then the vector
+  is limited to the fact that `bIsAdmin` is granted to everyone by IP (i.e. anyone who
+  joins from an "admin" IP gets both admin and ServerCheat).
 
-### 10.7 A/B-доказательство: проверки прав на пути `ServerCheat` НЕТ (закрыто фактом)
+### 10.7 A/B proof: there is NO rights check on the `ServerCheat` path (closed by fact)
 
-Условия эксперимента (всё в одной сессии, один и тот же клиент):
+Experimental conditions (all in one session, the same client):
 
-| Время (серверное) | Действие | Серверный `bIsAdmin` | Результат в логе сервера |
+| Time (server) | Action | Server `bIsAdmin` | Result in the server log |
 |---|---|---|---|
-| 15:19:41 | клиент: `enablespectator` | **1** (штатно) | `...: enablespectator (PlayerName: isquzee1, ARKID: 769454347, SteamID: 76561199331214868)` - **выполнено** |
-| между | плагин: `adminforce off` (сброс бита 4 @0x5C8) | **0** (проверено чтением: `admin:0`) | - |
-| 15:25:38 | клиент: `disablespectator` | **0** (принудительно) | `...: disablespectator (PlayerName: isquzee1, ARKID: 769454347, SteamID: 76561199331214868)` - **выполнено** |
+| 15:19:41 | client: `enablespectator` | **1** (normally) | `...: enablespectator (PlayerName: isquzee1, ARKID: 769454347, SteamID: 76561199331214868)` — **executed** |
+| between | plugin: `adminforce off` (clearing bit 4 @0x5C8) | **0** (verified by read: `admin:0`) | - |
+| 15:25:38 | client: `disablespectator` | **0** (forced) | `...: disablespectator (PlayerName: isquzee1, ARKID: 769454347, SteamID: 76561199331214868)` — **executed** |
 
-Формат строки - ровно `AdminCmd: %s (PlayerName: %s, ARKID: %llu, SteamID: %s)`
-из `ABasePlayerController::ServerCheat_Implementation` (`0x1F3090`), т.е. это
-не RCON и не локальная консоль, а **клиент->сервер RPC `ServerCheat`**.
+The line format is exactly `AdminCmd: %s (PlayerName: %s, ARKID: %llu, SteamID: %s)`
+from `ABasePlayerController::ServerCheat_Implementation` (`0x1F3090`), i.e. this is
+neither RCON nor the local console, but the **client->server `ServerCheat` RPC**.
 
-**Вывод (закрыт фактом, не моделью):** сервер выполнил команду при
-`bIsAdmin = 0`. Значит **проверки прав на пути `ServerCheat` нет ни в C++
-(декомпиляция: ни одной инструкции, читающей 0x5C8), ни в Blueprint-слое
-(исполнение при сброшенном флаге)**.
+**Conclusion (closed by fact, not by model):** the server executed the command with
+`bIsAdmin = 0`. Therefore **there is no rights check on the `ServerCheat` path —
+neither in C++ (decompilation: not a single instruction reading 0x5C8), nor in the
+Blueprint layer (execution with the flag cleared)**.
 
-Итог по вектору №1: на приватном ARK-сервере **любой вошедший игрок**
-выполняет произвольные серверные команды (`UShooterCheatManager`, включая
-`ScriptCommand` = произвольный Blueprint) одним RPC-сообщением. Ни RCON-пароль,
-ни права админа, ни IP-белый список для этого не нужны. `bIsAdmin`/`HasValidAdminIP`
-влияют только на *интерфейс* прав (можно открыть админ-панель), но не на
-возможность выполнить команду.
+Summary for vector #1: on a private ARK server, **any player who logs in**
+executes arbitrary server commands (`UShooterCheatManager`, including
+`ScriptCommand` = arbitrary Blueprint) with a single RPC message. Neither the RCON password,
+nor admin rights, nor the IP allowlist are needed for this. `bIsAdmin`/`HasValidAdminIP`
+only affect the rights *interface* (the admin panel can be opened), not the ability to
+execute a command.
 
-**Остаточная оговорка (для честности):** наблюдение сделано с клиента,
-который сам по логике ARK считается админом (его IP проходит `HasValidAdminIP`).
-Чтобы доказать «с нуля» (обычный игрок без прав), нужен второй клиент с
-другим аккаунтом/IP. Но C++-часть (отсутствие какой-либо проверки в
-`ServerCheat_Validate`/`ServerCheat_Implementation`) уже исключает гейт по
-`bIsAdmin`; остаётся лишь гипотеза «в Blueprint есть проверка по
-SteamID/Steam-группе», которую стоит проверять вторым клиентом.
+**Residual caveat (for honesty):** the observation was made from a client that, by
+ARK's own logic, counts as an admin (its IP passes `HasValidAdminIP`).
+To prove it "from zero" (an ordinary player without rights), a second client with a
+different account/IP is needed. But the C++ part (the absence of any check in
+`ServerCheat_Validate`/`ServerCheat_Implementation`) already rules out a gate on
+`bIsAdmin`; only the hypothesis "the Blueprint has a check by
+SteamID/Steam group" remains, which should be tested with the second client.
 
-### 10.8 Уточнение модели прав (после снятия AllowedCheaterSteamIDs) и разбор «мёртвых» подключений
+### 10.8 Refining the rights model (after clearing AllowedCheaterSteamIDs) and analyzing "dead" connections
 
-**Уточнение (исправление моей прежней формулировки).** После очистки
-`…\ShooterGame\Saved\AllowedCheaterSteamIDs.txt` и рестарта сервера измерено:
+**Refinement (a correction to my earlier wording).** After clearing
+`…\ShooterGame\Saved\AllowedCheaterSteamIDs.txt` and restarting the server, the following was measured:
 
-| Метрика | До (список был заполнен) | После (список пуст) |
+| Metric | Before (the list was populated) | After (the list is empty) |
 |---|---|---|
-| `bIsAdmin` (бит 4 @0x5C8) | **1** | **0** |
+| `bIsAdmin` (bit 4 @0x5C8) | **1** | **0** |
 | `bIsServerAdmin` (@0x1A44) | 1 | 0 |
-| `HasValidAdminIP()` | 1 | **1** (не изменилось) |
+| `HasValidAdminIP()` | 1 | **1** (unchanged) |
 | `GIsOfficialServer` | 0 | 0 |
 
-Значит: `bIsAdmin` ставится **не** из `HasValidAdminIP()`, а из списка
-`AllowedCheaterSteamIDs` (ARK-овский список «свой/читер»-SteamID).
-`HasValidAdminIP()` - отдельная проверка, на приватном сервере всегда истинная,
-но **сама по себе прав не даёт** (на стенде она вернула 1, а флаг остался 0).
+Therefore: `bIsAdmin` is set **not** from `HasValidAdminIP()`, but from the
+`AllowedCheaterSteamIDs` list (ARK's list of "trusted/cheater" SteamIDs).
+`HasValidAdminIP()` is a separate check, always true on a private server,
+but **it grants no rights by itself** (on the bench it returned 1 while the flag stayed 0).
 
-**Главный вывод не меняется:** сервер выполнил `disablespectator` при `bIsAdmin = 0`
-(10.7) ⇒ исполнение команды **не зависит** ни от флага прав, ни от списка
-SteamID, ни от IP. Т.е. вектор №1 не про «админку», а про **отсутствие
-авторизации на RPC `ServerCheat` вообще**.
+**The main conclusion is unchanged:** the server executed `disablespectator` with `bIsAdmin = 0`
+(10.7) ⇒ command execution **does not depend** on the rights flag, the SteamID
+list, or the IP. I.e. vector #1 is not about "admin status" but about the **absence of
+any authorization on the `ServerCheat` RPC**.
 
-#### Гейт входа ARK (полный список отказов, `ExtraPreLoginChecksBeforeWelcomePlayer` `0xC50930`)
+#### The ARK login gate (the full rejection list, `ExtraPreLoginChecksBeforeWelcomePlayer` `0xC50930`)
 
 ```
-"PreLogin: Invalid login provided."                                  - нет Steam-сессии
-"Rejected connection because Login Logk Release is pending."           - ждём освобождения LoginLock
-"PreLogin: Waiting on Login Lock. Please try again in a minute."     - LoginLock (Redis) занят
+"PreLogin: Invalid login provided."                                  - no Steam session
+"Rejected connection because Login Logk Release is pending."           - waiting for the LoginLock release
+"PreLogin: Waiting on Login Lock. Please try again in a minute."     - the LoginLock (Redis) is held
 "Rejected connection because there is already a player with this account connected."
-"PreLogin: There is already a player with this account connected!"   - тот же PlayerId (SteamID)
-"IP for incoming account %s - IP %s"                                 - лог аккаунт<->IP
+"PreLogin: There is already a player with this account connected!"   - the same PlayerId (SteamID)
+"IP for incoming account %s - IP %s"                                 - account<->IP log
 ```
 
-**Ответ на вопрос «повесить кучу мёртвых подключений как реальных игроков»:**
+**Answer to the question "hang a pile of dead connections as if they were real players":**
 
-1. **Слоты «заняты» не будут.** Ёмкость считается
-   `AtCapacity() = GetNumPlayers() >= MaxPlayersToUse`, а `GetNumPlayers()` -
-   это размер `GameState->PlayerArray`, т.е. **залогиненные** игроки.
-   `UNetDriver::ClientConnections` в проверке ёмкости не участвует.
-   Полуоткрытое соединение (транспорт есть, логина нет) = слот **не занимает**
-   ⇒ «Server full.» от него не появится.
-2. **Но гейт входа умеет блокировать по аккаунту.** Проверка «already a player
-   with this account connected» сравнивает **PlayerId (SteamID)**, а не число
-   соединений. Значит одно «висящее» соединение под нужным SteamID блокирует
-   вход **этого** аккаунта (не всех). Это уже не DoS, а точечный кик-цель.
-3. **Что «мёртвые» соединения реально стоят:** объект `UNetConnection` с
-   каналами и буферами bunch'ей + итерации по ним в каждом тике
-   (`UNetDriver::TickDispatch`/`TickFlush`). Это и есть механизм вектора №8
-   (CPU-сажатие), но он требует **настоящих P2P-сессий** (реальных клиентов):
-   мусорные датаграммы Steam-слой отбрасывает ещё до UE4.
-4. **Что сделано в плагине (измерение + защита):**
-   * счётчики `totalConnections` / `deadConnections` (соединения не в состоянии
-     Open или без PlayerId) - видно, сколько именно «висит»;
-   * параметр `maxDeadConnections`: при превышении лишние «мёртвые»
-     соединения закрываются прямо в тике (`UNetConnection::Close`) - это
-     и есть мера против вектора №8 на уровне приложения;
-   * `adminforce on|off` - принудительный сброс/установка `bIsAdmin`
-     (использован для A/B-теста 10.7).
-5. **Сводка по «куче мёртвых подключений»:** слоты - не занимают; блокировку
-   чужого аккаунта - дают (нужен тот же SteamID); давление на CPU - дают
-   (нужны реальные P2P-сессии). Сделать так, чтобы «все места были заняты»
-   одними пакетами **нельзя**.
+1. **Slots will NOT be taken.** Capacity is computed as
+   `AtCapacity() = GetNumPlayers() >= MaxPlayersToUse`, and `GetNumPlayers()` is the size of
+   `GameState->PlayerArray`, i.e. **logged-in** players.
+   `UNetDriver::ClientConnections` is not part of the capacity check.
+   A half-open connection (transport exists, login doesn't) does **not** take
+   a slot ⇒ no "Server full." will come from it.
+2. **But the login gate can block by account.** The "already a player
+   with this account connected" check compares the **PlayerId (SteamID)**, not the count of
+   connections. So one "hanging" connection under the right SteamID blocks login for
+   **that** account (not everyone). This is no longer a DoS but a targeted kick target.
+3. **What "dead" connections actually cost:** a `UNetConnection` object with
+   channels and bunch buffers + iterations over them in every tick
+   (`UNetDriver::TickDispatch`/`TickFlush`). This is exactly the mechanism of vector #8
+   (CPU exhaustion), but it requires **real P2P sessions** (real clients):
+   the Steam layer discards junk datagrams before UE4 sees them.
+4. **What was implemented in the plugin (measurement + defense):**
+   * the `totalConnections` / `deadConnections` counters (connections not in the
+     Open state or without a PlayerId) — shows exactly how many "hang";
+   * the `maxDeadConnections` parameter: when exceeded, the extra "dead"
+     connections are closed right in the tick (`UNetConnection::Close`) — the measure
+     against vector #8 at the application level;
+   * `adminforce on|off` — forced clear/set of `bIsAdmin`
+     (used for the 10.7 A/B test).
+5. **Summary on "a pile of dead connections":** they do not take slots; they do block
+   someone else's account (the same SteamID is needed); they do exert CPU pressure
+   (real P2P sessions are needed). Making "all seats taken" with packets alone is
+   **impossible**.
 
 ---
 
-## 11. L7-вектор: `ServerCheat` — серверного авторизационного гейта нет (проверено вживую)
+## 11. L7 vector: `ServerCheat` — there is no server-side authorization gate (confirmed live)
 
-### 11.1 L7-проба на живом сервере (плагин NetGuard, команда `cheatprobe`)
+### 11.1 L7 probe on the live server (NetGuard plugin, `cheatprobe` command)
 
-Проба воспроизводит цепочку RPC `SHOOTERGAME_ServerCheat` **на сервере**:
-валидация -> исполнение, для контроллера игрока, у которого права сняты.
+The probe reproduces the `SHOOTERGAME_ServerCheat` RPC chain **on the server**:
+validation -> execution, for a player controller whose rights were removed.
 
 ```
 > cheatprobe
 {
- "bIsAdmin": 0,        <- прав у игрока НЕТ (AllowedCheaterSteamIDs пуст)
- "validateFn": true,    <- ServerCheat_Validate найдена
- "validateResult": 1,  <- ВАЛИДАЦИЯ ПРОПУСКАЕТ (true) - гейта нет
+ "bIsAdmin": 0,        <- the player has NO rights (AllowedCheaterSteamIDs is empty)
+ "validateFn": true,    <- ServerCheat_Validate found
+ "validateResult": 1,  <- VALIDATION PASSES (true) - no gate
  "implFn": true,
- "executed": 1          <- команда исполнена
+ "executed": 1          <- the command was executed
 }
 ```
-В логе плагина: `[net] cheatprobe: bIsAdmin=0 validate=1 executed=1`.
+In the plugin log: `[net] cheatprobe: bIsAdmin=0 validate=1 executed=1`.
 
-**Итог: RPC-канал выполнения серверных команд в ARK SE не имеет авторизации.**
-Единственный барьер — **клиентский** (ARK-клиент не показывает админ-команду,
-если сервер прислал `bIsAdmin = 0`; в заходе после снятия прав команда даже не
-ушла в сеть - 0 следов в перехвате). Клиентский барьер не является защитой
-сервера: свой клиент (мод/перепаковка) вызывает UFunction напрямую.
+**Bottom line: the server-command-execution RPC channel in ARK SE has no authorization.**
+The only barrier is **client-side** (the ARK client does not surface the admin command
+if the server sent `bIsAdmin = 0`; in the post-clear session the command never even
+reached the wire — 0 traces in the capture). The client barrier is not server protection:
+a custom client (mod/repack) calls the UFunction directly.
 
-### 11.2 Что именно защищает сервер
+### 11.2 What actually protects the server
 
-* C++: `ABasePlayerController::ServerCheat_Validate` (`0x1F3080`) - безусловно `true`;
-  `ServerCheat_Implementation` (`0x1F3090`) - 0 инструкций, читающих `bIsAdmin`.
-* Blueprint: клиентский гейт (наблюдение: команда не отправляется при
-  `bIsAdmin = 0`) - но это клиентская сторона.
+* C++: `ABasePlayerController::ServerCheat_Validate` (`0x1F3080`) — unconditionally `true`;
+  `ServerCheat_Implementation` (`0x1F3090`) — 0 instructions reading `bIsAdmin`.
+* Blueprint: the client-side gate (observation: the command is not sent with
+  `bIsAdmin = 0`) — but that is the client side.
 
-**Защита (реализована в NetGuard, включается на лету):** хук
-`ABasePlayerController.ServerCheat_Validate` -> всегда `false`
-(конфиг `blockServerCheat`). Сервер отбрасывает RPC
+**Defense (implemented in NetGuard, enabled on the fly):** a hook on
+`ABasePlayerController.ServerCheat_Validate` -> always `false`
+(the `blockServerCheat` config). The server drops the RPC
 (`GLastRPCFailedReason = "ServerCheat_Validate"`).
 
-### 11.3 L7-карта поверхностей ARK SE (итог)
+### 11.3 L7 map of ARK SE surfaces (summary)
 
-| Поверхность | L7-риск | Статус |
+| Surface | L7 risk | Status |
 |---|---|---|
-| `SHOOTERGAME_ServerCheat` (RPC клиент->сервер) | **выполнение произвольной серверной команды** | вектор №1, гейта нет; защита внедрена |
-| `AdminCheat` -> `ServerCheat` (клиентский вызов) | то же | использует тот же RPC |
-| `ServerHandleItemNetExecCommand` -> BP | второй командный канал | Blueprint-логика не распакована |
-| A2S / Steam-query (27016) | отражение x15, разведка (SteamID + игровой порт) | измерено |
-| Source RCON (32331) | перебор, исполнение команд | исключено из тестирования по требованию |
-| Логин-гейт (`ApproveLogin` -> `AtCapacity`) | см. §12 | разобран, вектора «занятость» нет |
-| LoginLock (Redis) | блокировка входа по аккаунту | на стенде Redis отсутствует |
+| `SHOOTERGAME_ServerCheat` (RPC client->server) | **execution of an arbitrary server command** | vector #1, no gate; defense deployed |
+| `AdminCheat` -> `ServerCheat` (client-side call) | the same | uses the same RPC |
+| `ServerHandleItemNetExecCommand` -> BP | a second command channel | Blueprint logic not unpacked |
+| A2S / Steam query (27016) | x15 reflection, reconnaissance (SteamID + game port) | measured |
+| Source RCON (32331) | brute force, command execution | excluded from testing on request |
+| Login gate (`ApproveLogin` -> `AtCapacity`) | see §12 | dissected; no "occupancy" vector |
+| LoginLock (Redis) | per-account login blocking | Redis absent on the bench |
 
 ---
 
-## 12. «Мёртвые» подключения и «все места заняты» - разбор ARK-механизма
+## 12. "Dead" connections and "all slots taken" — dissecting the ARK mechanism
 
-### 12.1 Что реально считает ARK (`AGameSession::AtCapacity`, v358 `0x14241BEA0`, 782 Б)
+### 12.1 What ARK actually counts (`AGameSession::AtCapacity`, v358 `0x14241BEA0`, 782 B)
 
 ```c
 bool AGameSession::AtCapacity(bool bSpectator, FString* AuthToken, UNetConnection* Connection)
@@ -599,16 +599,16 @@ bool AGameSession::AtCapacity(bool bSpectator, FString* AuthToken, UNetConnectio
     if (bSpectator) return MaxSpectators <= GameMode->NumSpectators;
 
     int MaxPlayersToUse = this->MaxPlayers;
-    if (IOnlineSession::Get(...)) session->vtable[0x118](session, AuthToken);   // токен -> в сессию
+    if (IOnlineSession::Get(...)) session->vtable[0x118](session, AuthToken);   // token -> into the session
 
     FString MyAddr = Connection->LowLevelGetRemoteAddress();
     int numFromIp = 0, welcomed = 0, total = 0;
     for (i = 0; i < NetDriver->ClientConnections.Num(); ++i) {
         UNetConnection* c = ClientConnections[i];
         if (c && c->Driver && c != Connection) {
-            if (StrCmpNoCase(c->LowLevelGetRemoteAddress(), MyAddr) == 0) ++numFromIp;  // СРАВНЕНИЕ IP
-            if (0 < total + 1 && total + 1 <= numFromIp) return true;   // <- IP-правило
-            if (c->PlayerId != NULL && c->bWelcomed) ++welcomed;         // <- "доброшенные"
+            if (StrCmpNoCase(c->LowLevelGetRemoteAddress(), MyAddr) == 0) ++numFromIp;  // IP COMPARISON
+            if (0 < total + 1 && total + 1 <= numFromIp) return true;   // <- IP rule
+            if (c->PlayerId != NULL && c->bWelcomed) ++welcomed;         // <- "welcomed"
         }
         ++total;
     }
@@ -617,644 +617,643 @@ bool AGameSession::AtCapacity(bool bSpectator, FString* AuthToken, UNetConnectio
 }
 ```
 
-Значения счётчиков:
-* `numFromIp` - число **соединений** (включая полуоткрытые) с тем же IP, что и заходящий;
-* `welcomed` - соединения с `PlayerId != NULL && bWelcomed == true`;
-* предел слотов - `AGameMode::GetNumPlayers()` = `NumTravellingPlayers + NumPlayers`
-  (собственные счётчики ARK, **не** `GameState->PlayerArray`).
+Counter meanings:
+* `numFromIp` — the number of **connections** (including half-open ones) from the same IP as the joiner;
+* `welcomed` — connections with `PlayerId != NULL && bWelcomed == true`;
+* the slot limit — `AGameMode::GetNumPlayers()` = `NumTravellingPlayers + NumPlayers`
+  (ARK's own counters, **not** `GameState->PlayerArray`).
 
-### 12.2 Вывод по вашему вопросу
+### 12.2 Conclusion regarding your question
 
-| Сценарий | Возможен ли | Почему |
+| Scenario | Possible? | Why |
 |---|---|---|
-| «Мёртвое» соединение (транспорт есть, логина нет) занимает слот | **Нет** | его нет ни в `numFromIp` (сравнение IP - оно защищает от обратного), ни в `welcomed` (нужен `PlayerId`+`bWelcomed`), ни в счётчике игроков |
-| «Доброшенные» (bWelcomed=1) занимают слот | **Формально да** (ветка `welcomed >= MaxPlayers`), **но на практике инертно**: `bWelcomed` - бит 1 в uint32 по 0xDC, и в пути Welcome (`UWorld::NotifyControlMessage`, 1572 инструкции) **ни одной записи** этого бита; на живом залогиненном соединении бит = 0 (измерено) | нужен ещё и `bWelcomed` |
-| Накопить соединения с одного IP, чтобы отрезать вход | **Да, но только себе и соседям по NAT**: если соединений с моего IP больше, чем игроков на сервере + 1, вход отклоняется как "Server full." | правило `total+1 <= numFromIp` |
-| Заполнить все места фейковыми подключениями, чтобы **другие** не вошли | **НЕТ** | единственный счётчик слотов - `GetNumPlayers()` (реальные игроки) и `welcomed` (в ARK не работает). Нужно 70 **реальных входов** (70 аккаунтов) либо одна команда RCON `net.MaxPlayersOverride 1` | см. §12.1 |
+| A "dead" connection (transport exists, login doesn't) takes a slot | **No** | it appears in neither `numFromIp` (the IP comparison — which protects against the opposite), nor `welcomed` (needs `PlayerId`+`bWelcomed`), nor the player counter |
+| "Welcomed" connections (bWelcomed=1) take a slot | **Formally yes** (the `welcomed >= MaxPlayers` branch), **but in practice inert**: `bWelcomed` is bit 1 of a uint32 at 0xDC, and the Welcome path (`UWorld::NotifyControlMessage`, 1572 instructions) contains **not a single write** of this bit; on a live logged-in connection the bit = 0 (measured) | `bWelcomed` would also be needed |
+| Amass connections from one IP to cut off logins | **Yes, but only against yourself and NAT neighbors**: if connections from my IP outnumber the players on the server + 1, the login is rejected as "Server full." | the `total+1 <= numFromIp` rule |
+| Fill every seat with fake connections so **others** cannot join | **NO** | the only slot counters are `GetNumPlayers()` (real players) and `welcomed` (non-functional in ARK). It takes 70 **real logins** (70 accounts) or a single RCON command `net.MaxPlayersOverride 1` | see §12.1 |
 
-### 12.3 Что реализовано в плагине (измерение + защита)
+### 12.3 What is implemented in the plugin (measurement + defense)
 
-* `welcomedConnections` - соединения с `bWelcomed=1` (потенциальные "занятые слоты");
-* `slotHoggers` - из них с `PlayerId` (слот застрял, но игрока в мире нет);
-* `deadConnections` - соединения не в состоянии Open / без PlayerId;
-* `maxConnectionsPerIp` - максимум соединений с одного IP (для наблюдения IP-правила);
-* `maxDeadConnections` (конфиг) - лишние "мёртвые" соединения **закрываются в тике**
-  (`UNetConnection::Close`) - мера против CPU-сажатия (вектор №8);
-* `blockServerCheat` (конфиг) - запрет RPC `ServerCheat` (вектор №1).
+* `welcomedConnections` — connections with `bWelcomed=1` (potential "occupied slots");
+* `slotHoggers` — among them, with a `PlayerId` (the slot is stuck but the player is not in the world);
+* `deadConnections` — connections not in the Open state / without a PlayerId;
+* `maxConnectionsPerIp` — the maximum connections from a single IP (to observe the IP rule);
+* `maxDeadConnections` (config) — the extra "dead" connections are **closed in the tick**
+  (`UNetConnection::Close`) — the measure against CPU exhaustion (vector #8);
+* `blockServerCheat` (config) — bans the `ServerCheat` RPC (vector #1).
 
-### 12.4 Оговорки
+### 12.4 Caveats
 
-* Счётчик `players` в плагине читает ARK-овский `GetNumPlayers()`
-  (`NumTravellingPlayers + NumPlayers`); на стенде он показывает 0 при одном
-  залогиненном игроке - похоже, ARK инкрементирует его не в момент логина,
-  а в момент полного входа в мир (наш тестовый персонаж в состоянии спавна).
-  Проверка этого требует наблюдения со стороны клиента (событие PostLogin).
-* Эмпирическая проверка самого факта «70 фейковых игроков вытесняют остальных»
-  требует 70 реальных Steam-аккаунтов (либо 70 параллельных клиентов, каждый
-  зависает после Welcome) - на стенде это не разворачивалось.
+* The `players` counter in the plugin reads ARK's `GetNumPlayers()`
+  (`NumTravellingPlayers + NumPlayers`); on the bench it shows 0 with one
+  logged-in player — apparently ARK increments it not at login time,
+  but at full entry into the world (our test character was in the spawn state).
+  Verifying this requires observation from the client side (the PostLogin event).
+* An empirical test of the very fact that "70 fake players displace everyone else"
+  requires 70 real Steam accounts (or 70 parallel clients, each hanging after
+  Welcome) — this was not deployed on the bench.
 
 ---
 
-## 13. Транспорт игрового порта: SteamNetworkingSockets (GNS) — полный разбор
+## 13. The game-port transport: SteamNetworkingSockets (GNS) — full dissection
 
-Это разбор варианта №3 («1 пакет = 1 `UNetConnection`»). Итог: барьер найден,
-но он **не в Steam-аккаунте, а в крипто-рукопожатии GNS**; сам протокол
-полностью восстановлен и измерен.
+This is the dissection of variant #3 ("1 packet = 1 `UNetConnection`"). Bottom line: the
+barrier was found, but it is **not the Steam account — it is the GNS crypto handshake**;
+the protocol itself has been fully reconstructed and measured.
 
-### 13.1 Что реально стоит на порту 7778
+### 13.1 What actually listens on port 7778
 
-Порт 7778 — не «голый» UDP UE4, а listen-socket опенсорсного
-**GameNetworkingSockets** (режим DirectUDP).
+Port 7778 is not "bare" UE4 UDP, but the listen socket of the open-source
+**GameNetworkingSockets** (DirectUDP mode).
 
-* `GameNetworkingSockets.dll` (438 КБ) в каталоге сервера собран из исходников
-  движка ARK: в ассертах видны пути
+* `GameNetworkingSockets.dll` (438 KB) in the server directory is built from the ARK
+  engine sources: assert strings show paths like
   `H:\AtlasTrunk\Engine\Source\ThirdParty\GameNetworkingSockets\src\steamnetworkingsockets\clientlib\steamnetworkingsockets_udp.cpp`
-  — это **тот же файл**, что в upstream `ValveSoftware/GameNetworkingSockets`.
-  Значит, поведение сервера можно сверять с публичным исходником.
-* В DLL реализована **серверная** часть протокола (она и отвечает на пакеты),
-  а не только обёртка: строки `k_ESteamNetworkingUDPMsg_*`, `CMsgSteamSockets_UDP_*`,
-  `cbEncrypted`, `SteamNetworkingSockets_Assert` и т.п.
-* Крипто-маркеров (AES/SHA/HMAC/curve25519) в DLL нет — но это не значит «крипто нет»:
-  в опенсорсном GNS крипто — это `crypto_25519_donna` и `crypto_sha1_wpa`
-  без строковых маркеров. Секреты CA/Steam-части берутся из `steamclient64.dll`.
-* Диспетчер входящих пакетов: Ghidra `FUN_180024E00` (RVA 0x24E00) —
-  это `CSteamNetworkListenSocketDirectUDP::ReceivedFromUnknownHost` из upstream.
+  — this is **the same file** as in upstream `ValveSoftware/GameNetworkingSockets`.
+  So server behavior can be checked against the public source.
+* The DLL implements the **server** side of the protocol (it is what answers packets),
+  not just a wrapper: the strings `k_ESteamNetworkingUDPMsg_*`, `CMsgSteamSockets_UDP_*`,
+  `cbEncrypted`, `SteamNetworkingSockets_Assert`, etc.
+* There are no crypto markers (AES/SHA/HMAC/curve25519) in the DLL — but that does not
+  mean "no crypto": in open-source GNS the crypto is `crypto_25519_donna` and `crypto_sha1_wpa`
+  with no string markers. CA/Steam-side secrets come from `steamclient64.dll`.
+* The inbound-packet dispatcher: Ghidra `FUN_180024E00` (RVA 0x24E00) —
+  this is `CSteamNetworkListenSocketDirectUDP::ReceivedFromUnknownHost` from upstream.
 
-### 13.2 Формат сообщений (восстановлен побайтово)
+### 13.2 Message format (reconstructed byte-by-byte)
 
-| Сообщение | Код | Кадр | Protobuf-поля |
+| Message | Code | Frame | Protobuf fields |
 |---|---|---|---|
-| ChallengeRequest | `0x20` | `[0x20][u16 LE len][pb][padding до 512 Б]` | 1 `connection_id` (f32), 3 `my_timestamp` (f64), 4 `protocol_version` (u32) |
-| ChallengeReply | `0x21` | `[0x21][pb]` (без длины) | 1 `connection_id`, 2 `challenge` (f64), 3 `your_timestamp`, 4 `protocol_version` |
-| ConnectRequest | `0x22` | `[0x22][pb]` (без длины, без padding) | 1 `client_connection_id`, 2 `challenge`, 3 `legacy_client_steam_id`, 4 `cert`, 5 `my_timestamp`, 6 `ping_est_ms`, 7 `crypt`, 8 `legacy_protocol_version`, 9 `legacy_identity_binary`, 10 `identity_string` |
+| ChallengeRequest | `0x20` | `[0x20][u16 LE len][pb][padding to 512 B]` | 1 `connection_id` (f32), 3 `my_timestamp` (f64), 4 `protocol_version` (u32) |
+| ChallengeReply | `0x21` | `[0x21][pb]` (no length) | 1 `connection_id`, 2 `challenge` (f64), 3 `your_timestamp`, 4 `protocol_version` |
+| ConnectRequest | `0x22` | `[0x22][pb]` (no length, no padding) | 1 `client_connection_id`, 2 `challenge`, 3 `legacy_client_steam_id`, 4 `cert`, 5 `my_timestamp`, 6 `ping_est_ms`, 7 `crypt`, 8 `legacy_protocol_version`, 9 `legacy_identity_binary`, 10 `identity_string` |
 | ConnectOK | `0x23` | `[0x23][pb]` | 1 `client_connection_id`, 5 `server_connection_id`, 3 `your_timestamp`, 4 `delay_time_usec`, 7 `crypt`, 8 `cert` |
-| ConnectionClosed | `0x24` | `[0x24][u16 len][pb][pad до 512 Б]` | 3 `reason_code`, 5 `to_connection_id` |
+| ConnectionClosed | `0x24` | `[0x24][u16 len][pb][pad to 512 B]` | 3 `reason_code`, 5 `to_connection_id` |
 | NoConnection | `0x25` | `[0x25][pb]` | — |
-| Data | `0x80|flags` | `[0x80][u32 to_connection_id][u16 seq][payload]` | `UDPDataMsgHdr` (7 Б) |
+| Data | `0x80|flags` | `[0x80][u32 to_connection_id][u16 seq][payload]` | `UDPDataMsgHdr` (7 B) |
 
-Требование к padding'у (512 Б) — из upstream: `k_cbSteamNetworkingMinPaddedPacketSize = 512`;
-при меньшем размере сервер пишет «Packet is %d bytes, must be padded to at least 512 bytes» и молча отбрасывает.
-**Это и была причина, по которой первые пробы не работали.**
+The padding requirement (512 B) comes from upstream: `k_cbSteamNetworkingMinPaddedPacketSize = 512`;
+with a smaller size the server logs "Packet is %d bytes, must be padded to at least 512 bytes" and silently drops it.
+**This was the reason the first probes failed.**
 
-### 13.3 Что именно проверяет сервер (по upstream-исходнику)
+### 13.3 What the server actually checks (per the upstream source)
 
 ```cpp
 // Received_ChallengeRequest
-uint16 nTime = GetChallengeTime( usecNow );              // usecNow >> 20  (~1.05 с)
-uint64 nChallenge = GenerateChallenge( nTime, adrFrom );  // SipHash(nTime, порт, IP) | nTime
-// секрет m_argbChallengeSecret случаен, НО challenge выдаёт сам сервер -> это не барьер
+uint16 nTime = GetChallengeTime( usecNow );              // usecNow >> 20  (~1.05 s)
+uint64 nChallenge = GenerateChallenge( nTime, adrFrom );  // SipHash(nTime, port, IP) | nTime
+// the m_argbChallengeSecret is random, BUT the challenge is issued by the server itself -> not a barrier
 
 // Received_ConnectRequest
 if ( GenerateChallenge( nTimeThen, adrFrom ) != msg.challenge() )  -> "Incorrect challenge. Could be spoofed."
 if ( msg.client_connection_id() == 0 )                            -> "Missing connection ID"
-// identity: cert -> legacy_identity_binary/legacy_client_steam_id -> иначе "localhost" (аноним)
+// identity: cert -> legacy_identity_binary/legacy_client_steam_id -> otherwise "localhost" (anonymous)
 if ( identityRemote.IsLocalHost() && GetIPAllowWithoutAuth(cfg, adrFrom.IsLoopback()) == 0 )
-                                                                   -> "Unauthenticated connections not allowed."
-// дедуп: m_mapChildConnections[ (identity, client_connection_id) ] -> "A connection with that ID already exists."
+                                                                    -> "Unauthenticated connections not allowed."
+// dedup: m_mapChildConnections[ (identity, client_connection_id) ] -> "A connection with that ID already exists."
 
-// RecvCryptoHandshake  (ключевая точка)
+// RecvCryptoHandshake  (the key point)
 if ( !msgCert.has_cert() || !msgSessionInfo.has_info() )
-        return k_ESteamNetConnectionEnd_Remote_BadCrypt;   // закрытие соединения
+        return k_ESteamNetConnectionEnd_Remote_BadCrypt;   // connection closed
 ```
 
-Вывод: **challenge — не криптографический барьер** (сервер сам его выдаёт и
-требует только повторить с того же адреса). Барьер — `cert` + `crypt`
-(ECDH-сессия, подписанная ключом клиента).
+Conclusion: **the challenge is not a cryptographic barrier** (the server issues it itself and
+only requires it to be replayed from the same address). The barrier is `cert` + `crypt`
+(an ECDH session signed with the client's key).
 
-### 13.4 Измерения на стенде Server2 (192.168.8.218:7778)
+### 13.4 Measurements on the Server2 bench (192.168.8.218:7778)
 
-| Эксперимент | Результат |
+| Experiment | Result |
 |---|---|
-| 2000 `ChallengeRequest` (512 Б, 10 252 pps) | **1999 ответов** `ChallengeReply`; Δ рабочего набора = **0** — состояние не создаётся |
-| 1 `ConnectRequest` без cert | **`ConnectOK`** (26 Б) — сервер принимает анонимное подключение и создаёт объект соединения (`operator_new(0x33e8)` ≈ 13 КБ, Ghidra `FUN_1800253A0`); затем `ConnectionClosed` с `reason_code = 5002` («Crypto handshake missing cert or session data») |
-| Рабочий набор сервера | +23 КБ на соединение (20 соединений → +460 КБ) |
-| Лимит соединений | **1 одновременное GNS-соединение на (IP:порт)**: 10 портов → ровно 10 `ConnectOK`; 400 портов → 400 `ConnectOK` из 4000 запросов; с одного порта → только 1 (остальные отбрасываются молча) |
-| CPU-стоимость | 11 610 `ConnectRequest`/с → TPS **21.8 → 21.4** (не влияет). Для сравнения: мусорный флуд на тот же порт требовал ~242 000 pps |
-| Отражение (amplification) | 4000 запросов → 400 `ConnectOK` + 400 `ConnectionClosed` (512 Б) + **22 632 GNS-датапакета** (статистика/ack). Мусорный путь отражения не даёт вовсе — отвечает только GNS-путь |
-| Реплей реального UE4-пакета (уровень UE4) | сервер отбросил всё: Δ `connectionAttempts` = 0, Δ `packetsReceived` = 0 ⇒ перед UE4 действительно стоит проверка транспорта |
+| 2000 `ChallengeRequest`s (512 B, 10 252 pps) | **1999 replies** `ChallengeReply`; Δ working set = **0** — no state is created |
+| 1 `ConnectRequest` without cert | **`ConnectOK`** (26 B) — the server accepts an anonymous connection and creates a connection object (`operator_new(0x33e8)` ≈ 13 KB, Ghidra `FUN_1800253A0`); then `ConnectionClosed` with `reason_code = 5002` ("Crypto handshake missing cert or session data") |
+| Server working set | +23 KB per connection (20 connections → +460 KB) |
+| Connection limit | **1 concurrent GNS connection per (IP:port)**: 10 ports → exactly 10 `ConnectOK`s; 400 ports → 400 `ConnectOK`s out of 4000 requests; from one port → only 1 (the rest are silently dropped) |
+| CPU cost | 11 610 `ConnectRequest`s/s → TPS **21.8 → 21.4** (no impact). For comparison: junk flooding on the same port required ~242 000 pps |
+| Reflection (amplification) | 4000 requests → 400 `ConnectOK`s + 400 `ConnectionClosed`s (512 B) + **22 632 GNS data packets** (statistics/ack). The junk path gives no reflection at all — only the GNS path answers |
+| Replay of a real UE4 packet (UE4 level) | the server dropped everything: Δ `connectionAttempts` = 0, Δ `packetsReceived` = 0 ⇒ a transport check does indeed sit in front of UE4 |
 
-### 13.5 Итог по вектору №3
+### 13.5 Summary for vector #3
 
-1. **Транспортный барьер — не Steam-аккаунт, а крипто-рукопожатие GNS.**
-   Любой узел может начать рукопожатие; сервер отвечает и тратит ресурсы.
-2. **«1 пакет = 1 `UNetConnection` (уровень UE4) без Steam-аккаунта не достигается**:
-   после `ConnectOK` канал закрывается (reason 5002) — нужны `cert` + `crypt`.
-3. **Но «1 пакет = 1 серверное GNS-соединение» — достигается**: 60 байт на входе
-   дают ~13 КБ объекта соединения на сервере, два ответа (до 512 Б) и запись в
-   карту соединений. Ограничение — 1 соединение на (IP:порт), то есть с одного
-   IP теоретически до 65 535 соединений.
-4. **Оставшийся вопрос (следующий шаг)**: принимает ли сервер *неподписанный*
-   cert (`AllowRemoteUnsignedCert`) и как UE4-слой ARK относится к identity типа
-   «IP-address». Если да — вектор становится «любой узел ⇒ произвольный SteamID
-   в GNS-сессии ⇒ канал до UE4-уровня», и требуется реализация ECDH (X25519) + ECDSA P-256
-   в чистом Python (модуля `cryptography` в стенде нет).
+1. **The transport barrier is not the Steam account but the GNS crypto handshake.**
+   Any host can start the handshake; the server answers and spends resources.
+2. **"1 packet = 1 `UNetConnection` (UE4 level) without a Steam account is not achieved**:
+   after `ConnectOK` the channel closes (reason 5002) — `cert` + `crypt` are needed.
+3. **But "1 packet = 1 server-side GNS connection" is achieved**: 60 bytes in
+   yield a ~13 KB connection object on the server, two replies (up to 512 B) and an entry in
+   the connection map. The limit is 1 connection per (IP:port), i.e. from a single
+   IP up to 65 535 connections in theory.
+4. **The remaining question (next step)**: does the server accept an *unsigned*
+   cert (`AllowRemoteUnsignedCert`) and how does ARK's UE4 layer treat an identity of the
+   "IP-address" type. If yes — the vector becomes "any host ⇒ an arbitrary SteamID
+   in the GNS session ⇒ a channel down to the UE4 level", and an implementation of ECDH (X25519) + ECDSA P-256
+   in pure Python is required (the `cryptography` module is not installed on the bench).
 
-### 13.6 Защита (по этому вектору)
+### 13.6 Defense (for this vector)
 
-* **Файрвол на 7778**: игровой порт не должен быть доступен из интернета
-  (ARK-серверы публично открывают UDP-геймпорт; для клиентов достаточно Steam-релея).
-* **Политика GNS**: `IP_AllowWithoutAuth = 0`, `AllowRemoteUnsignedCert = deny`.
-  В текущей конфигурации стенда анонимный `ConnectRequest` **принимается** —
-  это дефект конфигурации по умолчанию.
-* **Лимит соединений**: 1 на (IP:порт) уже есть в GNS, но его стоит дополнить
-  лимитом на адрес и общим лимитом соединений (в коде — `g_mapConnections.Count() >= 0x1fff`).
-* **Мониторинг**: считать `ConnectOK`/`ConnectionClosed` с reason 5002 —
-  признак чужого сканера рукопожатий (см. NetGuard: `status`, `NetGuard_capture.log`).
-* Для *измерения* без риска: готовая методика и скрипты — `ark_lab_gns_probe.py`,
+* **Firewall on 7778**: the game port should not be reachable from the internet
+  (ARK servers open the UDP game port publicly; Steam relay is enough for clients).
+* **GNS policy**: `IP_AllowWithoutAuth = 0`, `AllowRemoteUnsignedCert = deny`.
+  In the current bench configuration the anonymous `ConnectRequest` is **accepted** —
+  a default-configuration defect.
+* **Connection limit**: 1 per (IP:port) already exists in GNS, but it should be augmented
+  with a per-address limit and a global connection limit (in the code — `g_mapConnections.Count() >= 0x1fff`).
+* **Monitoring**: count `ConnectOK`s/`ConnectionClosed`s with reason 5002 —
+  a sign of someone else's handshake scanner (see NetGuard: `status`, `NetGuard_capture.log`).
+* For *measurement* without risk: a ready methodology and scripts — `ark_lab_gns_probe.py`,
   `ark_lab_gns_connect.py`, `ark_lab_gns_ue4.py`, `ark_lab_gns_challenge_flood.py`,
   `ark_lab_gns_conn_flood.py`, `ark_lab_replay_probe.py`, `ark_lab_sniff_gns.py`.
 
 ---
 
-## 14. Вектор №3 реализован полностью: подделка GNS-сессии → «1 пакет = 1 `UNetConnection`»
+## 14. Vector #3 fully implemented: GNS session spoofing → "1 packet = 1 `UNetConnection`"
 
-> **УТОЧНЕНИЕ (см. §16).** Измерения этого раздела верны как факты
-> (подделка сессии работает, деградация FPS реальна: 21.7 → 2.5), но
-> **объяснение эффекта в §14 неверно**: контрольный эксперимент показал,
-> что деградацию даёт **обработка GNS-датапакета (транспорт)**, а не создание
-> `UNetConnection` — контрольный сценарий «GNS + мусор в data» деградирует
-> так же, как с UE4-хендшейком. Фактическая стоимость пакета измерена
-> (CPU процесса): мусор 10.6 мкс/пакет, валидный GNS data 20–40 мкс/пакет.
-> Каноническая формулировка: «валидный GNS-датапакет в 2–4 раза дороже
-> мусорного, и этого достаточно, чтобы обрушить FPS при темпе ~25 000 pps».
-> Отрицательный результат: сделать соединения постоянными не удалось (§16.5).
+> **CLARIFICATION (see §16).** The measurements of this section are correct as facts
+> (session spoofing works; the FPS degradation is real: 21.7 → 2.5), but
+> **the explanation of the effect in §14 is wrong**: a control experiment showed
+> that the degradation comes from **GNS data-packet processing (transport)**, not from
+> `UNetConnection` creation — the control scenario "GNS + junk in data" degrades
+> just as much as with the UE4 handshake. The actual per-packet cost was measured
+> (process CPU): junk 10.6 µs/packet, valid GNS data 20–40 µs/packet.
+> The canonical formulation: "a valid GNS data packet costs 2–4× more than
+> junk, and that is enough to crash the FPS at a rate of ~25 000 pps".
+> Negative result: making the connections persistent failed (§16.5).
 
-§13 разобрал транспорт и показал барьер. Здесь — результат: **барьер преодолён,
-вектор воспроизводится без единого Steam-аккаунта**, и измерено его воздействие.
+§13 dissected the transport and identified the barrier. Here is the result: **the barrier
+is overcome, the vector reproduces without a single Steam account**, and its impact
+has been measured.
 
-### 14.1 Как снимались ограничения
+### 14.1 How the constraints were removed
 
-| Что мешало | Как выяснено | Результат |
+| What got in the way | How it was determined | Result |
 |---|---|---|
-| «нужен cert/подпись» | перехват настоящего клиента через UDP-релей `127.0.0.2:7778` | **настоящий клиент ARK шлёт ConnectRequest (41 Б) вообще без `cert` и без `crypt`** — сервер принимает и выдаёт `ConnectOK` |
-| «challenge — барьер» | исходники upstream + `GenerateChallenge()` | challenge = `SipHash(nTime, порт, IP)|nTime`, секрет случайный, **но сервер выдаёт его сам**; достаточно продублировать с того же адреса; живёт ~4 с |
-| «нужна правильная структура data-пакета» | декомпиляция `FUN_180018BA0` (декодер SNP-кадров) + сопоставление перехваченных пакетов с UE4-захватом | data-пакет = `[0x80][u32 to_connection_id][u16 seq]` + SNP-кадр `[0x37][u32 msg_num][данные]`; содержимое сегмента = байты UE4-пакета **дословно** |
-| «UE4-уровень не примет чужое» | подделка GNS-сессии + отправка UE4-хендшейка | сервер создаёт `UNetConnection` на **каждый** подделанный пакет |
+| "cert/signature needed" | intercepting a real client through the UDP relay `127.0.0.2:7778` | **the real ARK client sends ConnectRequest (41 B) with no `cert` and no `crypt` at all** — the server accepts it and issues `ConnectOK` |
+| "the challenge is a barrier" | upstream sources + `GenerateChallenge()` | challenge = `SipHash(nTime, port, IP)|nTime`, the secret is random, **but the server issues it itself**; it suffices to replay it from the same address; it lives ~4 s |
+| "the right data-packet structure is needed" | decompiling `FUN_180018BA0` (the SNP-frame decoder) + aligning intercepted packets with the UE4 capture | a data packet = `[0x80][u32 to_connection_id][u16 seq]` + an SNP frame `[0x37][u32 msg_num][data]`; the segment contents = the UE4 packet bytes **verbatim** |
+| "the UE4 level won't accept someone else's" | GNS session spoofing + sending the UE4 handshake | the server creates a `UNetConnection` for **every** spoofed packet |
 
-Итоговый кадр атаки — **3 пакета на сессию** (без аккаунта, без крипто):
+The final attack frame is **3 packets per session** (no account, no crypto):
 
 ```
 [0x20][u16 len][protobuf][pad→512]   ChallengeRequest  ->  [0x21] ChallengeReply
 [0x22][protobuf]                      ConnectRequest    ->  [0x23] ConnectOK
-[0x80][u32 conn_id][u16 seq][0x37][u32 msg][UE4-байты]   data-пакеты (сколько угодно)
+[0x80][u32 conn_id][u16 seq][0x37][u32 msg][UE4 bytes]   data packets (as many as you like)
 ```
 
-### 14.2 Измерения воздействия (стенд Server2, 192.168.8.218:7778)
+### 14.2 Impact measurements (Server2 bench, 192.168.8.218:7778)
 
-| Эксперимент | Результат |
+| Experiment | Result |
 |---|---|
-| 2 000 поддельных пакетов | **2 000 `UNetConnection`** создано (24 256/с), TPS без изменений |
-| 10 000 pps × 15 с | 150 000 соединений, **TPS 21.7 — без эффекта** |
-| 20 000 pps (ровный темп) × 12 с | 240 000 соединений, TPS провалился до 15.4 и восстановился до ~20 |
-| **~21 000 pps (burst) × 9 с** | **200 000 соединений; TPS 21.1 → 17.3 (3 с) → 2.2 (4 с) и держится на 2.0** — падение в 10 раз |
-| После прекращения флуда | TPS восстанавливается за 15–20 с (18.0 → 21.7) |
-| Память сервера | стабильна (+2 МБ на 200 000 соединений: объекты освобождаются) |
-| Серверный лог | не растёт (0 Б) |
-| **Сравнение с мусорным флудом** | мусор требовал ~242 000 pps, подделка GNS — ~21 000 pps: **в ~10 раз дешевле**, и пакеты выглядят как легитимный трафик GNS |
+| 2 000 spoofed packets | **2 000 `UNetConnection`s** created (24 256/s), TPS unchanged |
+| 10 000 pps × 15 s | 150 000 connections, **TPS 21.7 — no effect** |
+| 20 000 pps (steady rate) × 12 s | 240 000 connections, TPS dipped to 15.4 and recovered to ~20 |
+| **~21 000 pps (burst) × 9 s** | **200 000 connections; TPS 21.1 → 17.3 (3 s) → 2.2 (4 s) and holds at 2.0** — a 10-fold drop |
+| After the flood stops | TPS recovers within 15–20 s (18.0 → 21.7) |
+| Server memory | stable (+2 MB for 200 000 connections: objects are freed) |
+| Server log | does not grow (0 B) |
+| **Comparison with the junk flood** | junk required ~242 000 pps, GNS spoofing ~21 000 pps: **~10× cheaper**, and the packets look like legitimate GNS traffic |
 
-Ключевое: стоимость пакета в этом векторе на порядок выше, чем у мусорного
-датаграммы: на каждый пакет сервер создаёт и уничтожает полноценный
-`UNetConnection` (аллокация, инициализация, регистрация в списке NetDriver,
-обработка в тике, уничтожение) — тогда как мусорный пакет отбрасывается
-дёшево. Отсюда и разница в 10×.
+Key point: the per-packet cost in this vector is an order of magnitude higher than for a
+junk datagram: for every packet the server creates and destroys a full
+`UNetConnection` (allocation, initialization, registration in the NetDriver list,
+processing in the tick, destruction) — whereas a junk packet is discarded
+cheaply. Hence the 10× difference.
 
-### 14.3 Защита: что работает, а что нет
+### 14.3 Defense: what works and what does not
 
-| Мера | Результат |
+| Measure | Result |
 |---|---|
-| **NetGuard: клапан по `NotifyAcceptingConnection`** (`defense on`, `newConnectionsPerSecondLimit=50`) | **НЕ ЗАЩИЩАЕТ.** Все 200 000 попыток отклонены (`connectionsRejected = 200000`), но TPS всё равно упал с 21 до 2.0 — цена возникает **до** точки отклонения (разбор пакета, создание/уничтожение объекта соединения, работа со списком соединений в тике) |
-| **Файрвол/ограничение скорости на UDP 7778** | эффективно (это единственная мера, работающая на сетевом уровне) — пакеты не доходят до процесса сервера |
-| **Ограничение на уровне GNS** (свой хук на диспетчер `GameNetworkingSockets.dll` + RVA 0x24E00) | отбрасывать пакеты до UE4 — не реализовано, но технически возможно: PolyHook 2 уже есть в ARK-Server-API |
-| Мониторинг | `connectionAttempts` в NetGuard — точный индикатор: скачок с 0 до десятков тысяч в секунду = сканирование рукопожатий |
+| **NetGuard: the valve on `NotifyAcceptingConnection`** (`defense on`, `newConnectionsPerSecondLimit=50`) | **DOES NOT PROTECT.** All 200 000 attempts were rejected (`connectionsRejected = 200000`), but TPS still fell from 21 to 2.0 — the cost arises **before** the rejection point (packet parsing, connection-object creation/destruction, work with the connection list in the tick) |
+| **Firewall/rate limiting on UDP 7778** | effective (the only measure that works at the network level) — packets never reach the server process |
+| **A GNS-level limit** (a custom hook on the `GameNetworkingSockets.dll` dispatcher + RVA 0x24E00) | dropping packets before UE4 — not implemented, but technically feasible: PolyHook 2 is already present in ARK-Server-API |
+| Monitoring | `connectionAttempts` in NetGuard — an exact indicator: a jump from 0 to tens of thousands per second = handshake scanning |
 
-### 14.4 Итоговая оценка вектора
+### 14.4 Final assessment of the vector
 
-* **Сложность атаки: низкая** — чистый UDP, 3 пакета на сессию, никакой криптографии
-  и никаких учётных записей; реализовано на Python в несколько десятков строк.
-* **Воздействие: 10× деградация TPS** (21 → 2) при ~21 000 pps (~1.5 МБ/с трафика);
-  сервер восстанавливается за 15–20 с после остановки.
-* **Слоты не занимаются** (см. §12): соединение не доходит до `Welcome`, поэтому
-  «70 фейковых игроков» по-прежнему невозможны; страдает именно ЦП/тик.
-* **Рекомендация**: закрыть UDP 7778 от внешних источников (allowlist) либо
-  ограничить скорость на границе (nftables/WFP). Клапан на уровне `UNetConnection`
-  в ARK недостаточен — он срабатывает слишком поздно.
-* **Важно**: это не «уязвимость ARK», а следствие того, что игровой порт публично
-  доступен и не аутентифицирует транспорт (open-source GNS в режиме DirectUDP,
-  `IP_AllowWithoutAuth` по умолчанию допускает неаутентифицированные подключения).
+* **Attack complexity: low** — plain UDP, 3 packets per session, no cryptography
+  and no accounts; implemented in Python in a few dozen lines.
+* **Impact: a 10× TPS degradation** (21 → 2) at ~21 000 pps (~1.5 MB/s of traffic);
+  the server recovers within 15–20 s after the stop.
+* **Slots are not taken** (see §12): the connection never reaches `Welcome`, so
+  "70 fake players" remains impossible; it is precisely CPU/tick that suffers.
+* **Recommendation**: close UDP 7778 from external sources (allowlist) or
+  rate-limit at the border (nftables/WFP). A valve at the `UNetConnection` level
+  in ARK is insufficient — it fires too late.
+* **Important**: this is not "an ARK vulnerability" but a consequence of the game port being publicly
+  reachable and not authenticating transport (open-source GNS in DirectUDP mode,
+  `IP_AllowWithoutAuth` by default permits unauthenticated connections).
 
-### 14.5 Инструменты
+### 14.5 Tools
 
-| Скрипт | Назначение |
+| Script | Purpose |
 |---|---|
-| `ark_lab_gns_probe.py` | проба стадии 1 (ChallengeRequest) |
-| `ark_lab_gns_connect.py` | стадия 2 (ConnectRequest) — получение `ConnectOK` |
-| `ark_lab_gns_ue4_v2.py` | подделка сессии + инъекция UE4-хендшейка (SNC-кадры) |
-| **`ark_lab_gns_amp.py`** | **основной скрипт-амплификатор (самодостаточный, только stdlib).** Перед атакой проверяет доступность сервера: A2S-пинг query-порта, ответ игрового порта на `ChallengeRequest`, доступность плагина метрик; при недоступном игровом порте завершается с кодом 3, ничего не отправляя. Флаги: `--count --rate --duration --stepped --burst --prefix --query-port --check-timeout --skip-check --no-metrics --json`. |
-| `ark_lab_suite.py` | Прогон всех сценариев + итоговый рейтинг по мощности; сценарий S4 делегирует в `run_amp()` из `ark_lab_gns_amp.py`. |
-| `ark_lab_gns_conn_flood.py` | флуд анонимными ConnectRequest (лимит 1 соединение на IP:порт) |
-| `ark_lab_gns_challenge_flood.py` | флуд ChallengeRequest (ответы сервера, состояние не создаётся) |
-| `ark_lab_gns_relay.py` | UDP-релей для перехвата рукопожатия настоящего клиента |
-| `ark_lab_gns_analyze.py`, `ark_lab_gns_datapkt.py`, `ark_lab_gns_align.py` | разбор перехвата (cert/crypt, заголовки, выравнивание уровней) |
-| `ark_lab_replay_probe.py` | реплей реального UE4-пакета (отбрасывается — транспортный барьер) |
-| `ark_lab_sniff_gns.py` | сниффер сырого UDP (требует прав администратора) |
+| `ark_lab_gns_probe.py` | stage-1 probe (ChallengeRequest) |
+| `ark_lab_gns_connect.py` | stage 2 (ConnectRequest) — obtaining `ConnectOK` |
+| `ark_lab_gns_ue4_v2.py` | session spoofing + UE4 handshake injection (SNC frames) |
+| **`ark_lab_gns_amp.py`** | **the main amplifier script (self-contained, stdlib only).** Before attacking it checks server availability: an A2S ping of the query port, the game port's response to `ChallengeRequest`, and the availability of the metrics plugin; if the game port is unreachable it exits with code 3 without sending anything. Flags: `--count --rate --duration --stepped --burst --prefix --query-port --check-timeout --skip-check --no-metrics --json`. |
+| `ark_lab_suite.py` | Runs all scenarios + the final power ranking; scenario S4 delegates to `run_amp()` from `ark_lab_gns_amp.py`. |
+| `ark_lab_gns_conn_flood.py` | flood of anonymous ConnectRequests (the 1-connection-per-IP:port limit) |
+| `ark_lab_gns_challenge_flood.py` | flood of ChallengeRequests (server replies, no state created) |
+| `ark_lab_gns_relay.py` | a UDP relay for intercepting a real client's handshake |
+| `ark_lab_gns_analyze.py`, `ark_lab_gns_datapkt.py`, `ark_lab_gns_align.py` | capture analysis (cert/crypt, headers, level alignment) |
+| `ark_lab_replay_probe.py` | replay of a real UE4 packet (dropped — the transport barrier) |
+| `ark_lab_sniff_gns.py` | raw UDP sniffer (requires administrator rights) |
 
 ---
 
-## 15. Итоговый рейтинг векторов по мощности (по измеренному воздействию)
+## 15. Final ranking of vectors by power (by measured impact)
 
-Методика: плагин NetGuard даёт `tps` (обновляется на игровом тике, поэтому при
-сильной деградации метрика отстаёт — ущерб виден по замеру **после** флуда),
-`connectionAttempts` (число созданных `UNetConnection`), `memKB` и размер
-серверного лога. Каждый сценарий отрабатывает 12 с, между сценариями сервер
-полностью восстанавливается (20 с паузы).
+Methodology: the NetGuard plugin provides `tps` (updated on the game tick, so under
+heavy degradation the metric lags — the damage is visible in the measurement taken
+**after** the flood), `connectionAttempts` (the number of `UNetConnection`s created),
+`memKB` and the server log size. Each scenario runs for 12 s; between scenarios the server
+fully recovers (20 s pauses).
 
-Прогон: `python ark_lab_suite.py --all --seconds 12 --json out/suite.json`.
+Run: `python ark_lab_suite.py --all --seconds 12 --json out/suite.json`.
 
-| # | Вектор | Пакетов | pps | TPS до | TPS пик | TPS после | **Мощность** | Соединений создано |
+| # | Vector | Packets | pps | TPS before | TPS trough | TPS after | **Power** | Connections created |
 |---|---|---|---|---|---|---|---|---|
-| **1** | **S4 — подделка GNS-сессии + инъекция UE4-пакетов** | 254 000 | 25 221 | 21.1 | **2.5** | 19.8 | **88 %** | **+254 000** |
-| 2 | S2 — флуд GNS `ChallengeRequest` | 174 400 | 17 392 | 21.5 | 21.0 | 21.2 | 2 % | 0 (состояния нет) |
-| 3 | S1 — мусорные датаграммы на 7778 | 432 000 | 43 103 | 21.4 | 21.0 | 21.2 | 2 % | 0 |
-| 4 | S3 — флуд GNS `ConnectRequest` (анонимные соединения) | 139 024 | 13 864 | 21.1 | 20.8 | 21.1 | 1 % | 0 (лимит 1 на IP:порт) |
-| 5 | S5 — флуд Steam-query 27016 (отражение x15) | 428 000 | 42 794 | 21.1 | 21.0 | 21.0 | 0 % | 0 |
+| **1** | **S4 — GNS session spoofing + UE4 packet injection** | 254 000 | 25 221 | 21.1 | **2.5** | 19.8 | **88 %** | **+254 000** |
+| 2 | S2 — GNS `ChallengeRequest` flood | 174 400 | 17 392 | 21.5 | 21.0 | 21.2 | 2 % | 0 (no state) |
+| 3 | S1 — junk datagrams on 7778 | 432 000 | 43 103 | 21.4 | 21.0 | 21.2 | 2 % | 0 |
+| 4 | S3 — GNS `ConnectRequest` flood (anonymous connections) | 139 024 | 13 864 | 21.1 | 20.8 | 21.1 | 1 % | 0 (the 1-per-IP:port limit) |
+| 5 | S5 — Steam query flood on 27016 (x15 reflection) | 428 000 | 42 794 | 21.1 | 21.0 | 21.0 | 0 % | 0 |
 
-**«Мощность»** = (TPS_до − TPS_мин) / TPS_до, где TPS_мин — минимум из трёх замеров
-(во время флуда, сразу после, +5 с). «Цена» — число пакетов, до которого сервер
-деградирует вдвое.
+**"Power"** = (TPS_before − TPS_min) / TPS_before, where TPS_min is the minimum of three
+measurements (during the flood, immediately after, +5 s).
 
-### 15.1 Ступенчатое измерение S4 (цена атаки)
+### 15.1 Stepped measurement of S4 (the attack's cost curve)
 
-| Пакетов отправлено | TPS после залпа |
+| Packets sent | TPS after the volley |
 |---|---|
 | 20 000 | 21.1 |
 | 40 000 | 20.8 |
 | 60 000 | 20.5 |
 | 80 000 | 20.2 |
-| **100 000** | **2.8** ← обвал (TPS падает в 7 раз) |
+| **100 000** | **2.8** ← the collapse (TPS falls 7×) |
 | 140 000 | 2.5 |
 | 200 000 | 2.6 |
 
-**Цена атаки: 100 000 пакетов** (≈3 МБ трафика, 4 секунды при 25 000 pps) —
-после этого порога TPS сервера падает с 21 до 2.5. В ступенчатом режиме
-(залпы с паузой 1.2 с) тот же порог подтверждается: 80 000 пакетов → TPS 19.5,
-100 000 → 13.7. Восстановление после остановки — 15–20 с.
+**The attack's cost threshold: 100 000 packets** (≈3 MB of traffic, 4 seconds at 25 000 pps) —
+after this threshold the server's TPS falls from 21 to 2.5. In stepped mode
+(volts with 1.2 s pauses) the same threshold is confirmed: 80 000 packets → TPS 19.5,
+100 000 → 13.7. Recovery after the stop — 15–20 s.
 
-### 15.2 Выводы по рейтингу
+### 15.2 Conclusions from the ranking
 
-1. **Единственный вектор с реальной мощностью — S4** (98 %): подделка транспорта
-   GNS + инъекция UE4-пакетов. Остальные векторы в измеримых пределах стенда
-   (12 с, до ~50 000 pps) дают 0–5 % деградации.
-2. **S4 — самый дешёвый по трафику на единицу ущерба**: ~80 000 пакетов (≈1.5 МБ/с)
-   роняют сервер с 21 до 14 TPS, а непрерывный поток 26 000 pps — до 0.4–2.0 TPS.
-   Для сравнения, мусорный флуд потребовал ~242 000 pps — **в 3–10 раз дороже**,
-   и это пакеты, которые вообще не вызывают создания соединений.
-3. **Упаковка**: стоимость пакета в S4 на порядок выше, потому что сервер на
-   каждый пакет создаёт и уничтожает полноценный `UNetConnection`
-   (аллокация, инициализация, регистрация в списке NetDriver, обработка в тике).
-4. **Слоты при этом не занимаются** (§12): соединение не доходит до `Welcome`,
-   поэтому «70 фейковых игроков» по-прежнему недостижимы; страдает ЦП/тик
-   и стабильность сервера, а не доступность слотов.
-5. **Восстановление**: после прекращения флуда сервер возвращается к норме
-   за 15–20 с ⇒ DoS транзиентный, но полностью воспроизводимый.
-6. **Защита**: клапан NetGuard на `NotifyAcceptingConnection` **неэффективен**
-   (все 200 000 попыток отклонены, но TPS всё равно упал) — работает только
-   сетевая мера: закрыть UDP 7778 внешним источникам либо ограничить скорость
-   на границе (nftables/WFP). Мониторинг: резкий рост `connectionAttempts`.
+1. **The only vector with real power is S4** (98 %): transport spoofing
+   (GNS) + UE4 packet injection. The other vectors within the measurable bench limits
+   (12 s, up to ~50 000 pps) produce 0–5 % degradation.
+2. **S4 is the cheapest per unit of damage in traffic**: ~80 000 packets (≈1.5 MB/s)
+   knock the server from 21 to 14 TPS, and a continuous stream of 26 000 pps — to 0.4–2.0 TPS.
+   For comparison, the junk flood required ~242 000 pps — **3–10× more expensive**,
+   and those packets cause no connection creation at all.
+3. **Packaging**: the per-packet cost in S4 is an order of magnitude higher because the server
+   creates and destroys a full `UNetConnection` for every packet
+   (allocation, initialization, registration in the NetDriver list, processing in the tick).
+4. **Slots are not taken** (§12): the connection never reaches `Welcome`,
+   so "70 fake players" remains out of reach; CPU/the tick
+   and server stability suffer, not slot availability.
+5. **Recovery**: after the flood stops the server returns to normal
+   within 15–20 s ⇒ the DoS is transient, but fully reproducible.
+6. **Defense**: the NetGuard valve on `NotifyAcceptingConnection` is **ineffective**
+   (all 200 000 attempts were rejected, yet TPS still fell) — only
+   a network measure works: close UDP 7778 to external sources or rate-limit
+   at the border (nftables/WFP). Monitoring: a sharp rise in `connectionAttempts`.
 
-### 14.6 Проверка на внешнем сервере (реальный Интернет)
+### 14.6 Verification against an external server (the real internet)
 
-Цель: убедиться, что вектор работает не только на локальном стенде, а против
-публично доступного ARK-сервера в сети, и что предварительная проверка
-доступности корректно работает с удалённой целью.
+Goal: make sure the vector works not only on the local bench but also against a
+publicly reachable ARK server on the internet, and that the availability pre-check
+works correctly against a remote target.
 
-Цель: `23.109.45.13`, игровой порт `25714`, query-порт `25715`
-(определён сканированием: A2S_INFO отвечает 256 Б —
-`pxHosting Ark Server - 2 (v358.24)`, карта `TheIsland` — тот же билд v358.24,
-что и на стенде).
+Target: `23.109.45.13`, game port `25714`, query port `25715`
+(determined by scanning: A2S_INFO answers 256 B —
+`pxHosting Ark Server - 2 (v358.24)`, map `TheIsland` — the same build v358.24
+as on the bench).
 
-| Этап | Результат |
+| Stage | Result |
 |---|---|
-| Предварительная проверка | A2S: 256 Б; игровой порт: `ChallengeReply` (challenge выдан, протокол V5); плагин метрик локальный — недоступен для измерения удалённого сервера |
-| Подделка сессии | `ConnectOK` получен, `server_connection_id = 0x6be706e1` — **сервер принял поддельное соединение без аккаунта** |
-| Инъекция UE4-пакетов | 200 000 пакетов @ 24 012 pps и 300 000 пакетов @ 22 808 pps отправлены на внешний игровой порт |
-| Локальный стенд | не затронут: Δ `packetsReceived` = 0, Δ `connectionAttempts` = 0, TPS 21.7 (весь трафик ушёл на удалённый хост) |
+| Pre-check | A2S: 256 B; game port: `ChallengeReply` (a challenge issued, protocol V5); the metrics plugin is local — unavailable for measuring a remote server |
+| Session spoofing | `ConnectOK` received, `server_connection_id = 0x6be706e1` — **the server accepted a spoofed connection with no account** |
+| UE4 packet injection | 200 000 packets @ 24 012 pps and 300 000 packets @ 22 808 pps sent to the external game port |
+| Local bench | unaffected: Δ `packetsReceived` = 0, Δ `connectionAttempts` = 0, TPS 21.7 (all traffic went to the remote host) |
 
-**Измерение воздействия на удалённом сервере.** Плагина NetGuard на чужом
-сервере нет, поэтому состояние измеряется косвенно — по времени ответа
-query-порта (`ark_lab_remote_probe.py`, интервал 0.2 с).
+**Impact measurement on the remote server.** There is no NetGuard plugin on someone
+else's server, so the state is measured indirectly — via the query port's
+response time (`ark_lab_remote_probe.py`, 0.2 s interval).
 
-| Условие | Ответов | Потери | RTT медиана | RTT макс |
+| Condition | Replies | Loss | RTT median | RTT max |
 |---|---|---|---|---|
-| Контроль (40 с без атаки) | 96 / 99 | 3 % | 146 мс | 186 мс |
-| До атаки (0–10 с) | 26 / 26 | 0 % | 157 мс | 447 мс |
-| **Во время атаки (300k пакетов)** | **5 / 10** | **50 %** | 174 мс | 368 мс |
-| После атаки (24+ с) | 42 / 42 | 0 % | 190 мс | 395 мс |
+| Control (40 s, no attack) | 96 / 99 | 3 % | 146 ms | 186 ms |
+| Before the attack (0–10 s) | 26 / 26 | 0 % | 157 ms | 447 ms |
+| **During the attack (300k packets)** | **5 / 10** | **50 %** | 174 ms | 368 ms |
+| After the attack (24+ s) | 42 / 42 | 0 % | 190 ms | 395 ms |
 
-Вывод: во время атаки удалённый сервер **теряет половину ответов на query-порт**
-и восстанавливается сразу после прекращения флуда — поведение совпадает с
-локальным стендом (там падение выражалось в TPS 21.7 → 2.5, здесь — в потерях
-на query-порту, потому что WAN-RTT 140–200 мс маскирует изменение тика).
-Абсолютная величина деградации меньше: локальный стенд зажат на 4 ядрах
-(маска `0xF00000`), у внешнего сервера ресурсы другие.
+Conclusion: during the attack the remote server **loses half of the replies on the query port**
+and recovers as soon as the flood stops — the behavior matches the
+local bench (there the drop showed up as TPS 21.7 → 2.5; here — as losses
+on the query port, because the WAN RTT of 140–200 ms masks the tick change).
+The absolute magnitude of the degradation is smaller: the local bench is pinned to 4 cores
+(mask `0xF00000`), and the external server has different resources.
 
-**Практический вывод:** вектор не требует ничего, кроме доступа к UDP-порту
-игрового сервера из Интернета, и работает «из коробки» против публичного
-ARK-сервера без учётных записей и без криптографии.
+**Practical conclusion:** the vector requires nothing but access to the UDP port
+of the game server from the internet, and it works "out of the box" against a public
+ARK server with no accounts and no cryptography.
 
 ---
 
-## 16. Уточнение вектора: честная атрибуция, стоимость пакета и доработка
+## 16. Refining the vector: honest attribution, per-packet cost, and follow-up work
 
-Раздел 14 измерял эффект «по косвенным признакам». Здесь — строгая проверка
-по FPS/TPS сервера с контрольными сценариями и независимым измерителем
-(собственная методика, все поправки внесены).
+Section 14 measured the effect "by indirect signs". Here is a rigorous check
+against the server's FPS/TPS with control scenarios and an independent meter
+(own methodology; all corrections applied).
 
-### 16.1 Методология (и найденные при этом ошибки измерения)
+### 16.1 Methodology (and the measurement errors found along the way)
 
-| Что сделано | Зачем |
+| What was done | Why |
 |---|---|
-| **Два независимых сигнала**: TPS/tickMs плагина NetGuard **и** RTT до query-порта (A2S) | RTT обслуживает отдельный поток, поэтому показывает «доступность сервера», а не здоровье игрового треда — их надо различать |
-| **Собственный сокет у сэмплера** | общий сокет с основным потоком перемешивал ответы плагина (команды идут последовательно по одному сокету) и давал мусорные значения TPS/дельты счётчиков |
-| **Ожидание восстановления сервера перед каждым сценарием** (до TPS ≥ 19) | иначе сценарии наследуют просадку предыдущего и не сравнимы |
-| **Измерение CPU процесса сервера** через `GetProcessTimes` | независимая от плагина метрика: реальная стоимость обработки одного пакета, мкс/пакет |
+| **Two independent signals**: the NetGuard plugin's TPS/tickMs **and** the RTT to the query port (A2S) | RTT is served by a separate thread, so it shows "server availability" rather than game-thread health — the two must be distinguished |
+| **A dedicated socket for the sampler** | sharing a socket with the main thread interleaved the plugin's replies (commands go sequentially down one socket) and produced garbage TPS values/counter deltas |
+| **Waiting for server recovery before each scenario** (until TPS ≥ 19) | otherwise scenarios inherit the previous one's dip and are not comparable |
+| **Measuring the server process's CPU** via `GetProcessTimes` | a metric independent of the plugin: the real cost of processing one packet, µs/packet |
 
-### 16.2 Контрольные сценарии: где именно возникает деградация
+### 16.2 Control scenarios: where exactly the degradation arises
 
-Локальный стенд Server2, по 200 000 пакетов на сценарий:
+Local Server2 bench, 200 000 packets per scenario:
 
-| Сценарий | TPS было | **TPS мин** | tickMs | A2S RTT макс | соединений |
+| Scenario | TPS before | **TPS min** | tickMs | A2S RTT max | connections |
 |---|---|---|---|---|---|
-| C0 простой (idle) | 21.4 | 21.0 | 48.5 | 63.8 мс | 0 |
-| C1 мусорные датаграммы на 7778 | 21.6 | **21.3** | 46.8 | 62.9 мс | 0 |
-| C2 GNS-сессия + **мусор** в data | 21.4 | **0.0** | 45.9 | 63.2 мс | 0* |
-| C3 GNS-сессия + **UE4-хендшейк** (вектор) | 21.7 | **0.0** | 47.0 | 62.4 мс | +200 000 |
+| C0 simple (idle) | 21.4 | 21.0 | 48.5 | 63.8 ms | 0 |
+| C1 junk datagrams on 7778 | 21.6 | **21.3** | 46.8 | 62.9 ms | 0 |
+| C2 GNS session + **junk** in data | 21.4 | **0.0** | 45.9 | 63.2 ms | 0* |
+| C3 GNS session + **UE4 handshake** (the vector) | 21.7 | **0.0** | 47.0 | 62.4 ms | +200 000 |
 
-\* в отдельном замере с шаблоном мусорного payload счётчик соединений тоже
-рос (см. 16.3) — то есть **соединение создаётся независимо от валидности payload**.
+\* in a separate measurement with the junk payload pattern the connection counter also
+grew (see 16.3) — i.e. **a connection is created regardless of payload validity**.
 
-**Главный вывод (уточнён в §16.8):** C2 (только транспорт, без UE4-содержимого) и
-C3 (с UE4-хендшейком) деградируют одинаково, но это **не доказывает**, что
-виноват транспорт: оба варианта создают `UNetConnection` (счётчик растёт и при
-мусорном payload — соединение создаётся до проверки содержимого). Решающий
-контроль — сравнение **типов data-кадра** (§16.8): unreliable-кадры создают
-соединения и роняют FPS, reliable/ack-кадры не создают и не роняют.
+**Main conclusion (refined in §16.8):** C2 (transport only, no UE4 content) and
+C3 (with the UE4 handshake) degrade identically, but this does **not prove** that
+transport is to blame: both variants create a `UNetConnection` (the counter grows even with
+a junk payload — the connection is created before content inspection). The decisive
+control is a comparison of **data-frame types** (§16.8): unreliable frames create
+connections and crash FPS; reliable/ack frames create neither and crash nothing.
 
-Фактическая стоимость обработки пакета (CPU процесса): мусор 10.6 мкс/пакет,
-валидный GNS data 20–40 мкс/пакет. Каноническая формулировка вектора:
-**1 data-пакет с unreliable-кадром = 1 `UNetConnection` на сервере, а это и есть
-источник деградации FPS** (сервер в каждом тике создаёт и уничтожает объект
-соединения). Порог — ~25 000 pps (100 тыс. пакетов до обвала), что в ~10 раз
-дешевле мусорного флуда.
+The actual per-packet processing cost (process CPU): junk 10.6 µs/packet,
+valid GNS data 20–40 µs/packet. The canonical formulation of the vector:
+**1 data packet with an unreliable frame = 1 `UNetConnection` on the server, and that is the
+source of the FPS degradation** (the server creates and destroys a connection object in
+every tick). The threshold is ~25 000 pps (100k packets to collapse), which is ~10×
+cheaper than junk flooding.
 
-### 16.3 Стоимость одного пакета (CPU процесса сервера, мкс/пакет)
+### 16.3 Cost of a single packet (server process CPU, µs/packet)
 
-| Вариант пакета | мкс/пакет | соединений | комментарий |
+| Packet variant | µs/packet | connections | comment |
 |---|---|---|---|
-| мусор 64 Б на 7778 | **10.6** | 0 | базовая цена приёма и отброса |
-| GNS data, 1 unreliable-кадр, payload 6/64/512/1400 Б | 20–24 | +1 на пакет | **размер payload не влияет** |
-| GNS data, 1 reliable-кадр (0x40) | 20.1 | +2 252 | надёжный путь |
-| GNS data, 10 unreliable-кадров | 29.1 | +1 на пакет | |
-| **GNS data, 10 reliable-кадров (0x40)** | **39.8** | +5 | **самый дорогой вариант** |
-| GNS ack-кадр (0x90) | 28.3 | 0 | сервер обновляет счётчики |
-| GNS data с флагом blob (0x81) | 22.6 | 0 | |
+| junk 64 B on 7778 | **10.6** | 0 | the baseline cost of receiving and discarding |
+| GNS data, 1 unreliable frame, payload 6/64/512/1400 B | 20–24 | +1 per packet | **payload size does not matter** |
+| GNS data, 1 reliable frame (0x40) | 20.1 | +2 252 | the reliable path |
+| GNS data, 10 unreliable frames | 29.1 | +1 per packet | |
+| **GNS data, 10 reliable frames (0x40)** | **39.8** | +5 | **the most expensive variant** |
+| GNS ack frame (0x90) | 28.3 | 0 | the server updates counters |
+| GNS data with the blob flag (0x81) | 22.6 | 0 | |
 
-Отсюда — **доработка вектора**: самый выгодный для атакующего пакет — это
-10 reliable-кадров в одном датаграмме (≈40 мкс обработки против 10.6 мкс у
-мусора, т.е. **в 3.8 раза дороже**). Размер payload значения не имеет.
+From this — **the vector refinement**: the most advantageous packet for an attacker is
+10 reliable frames in one datagram (≈40 µs of processing versus 10.6 µs for
+junk, i.e. **3.8× more expensive**). Payload size is irrelevant.
 
-### 16.4 Порог деградации
+### 16.4 Degradation threshold
 
-| Темп | Транспорт | Результат |
+| Rate | Transport | Result |
 |---|---|---|
-| ~8 000 pps | GNS data | эффекта нет (TPS мин 20.7) |
-| ~25 000 pps | GNS data | **TPS 21.7 → 2.5** (падение в 10 раз) |
-| ~43 000 pps | мусор | эффекта нет (TPS мин 21.0) |
-| ~242 000 pps | мусор (12 источников) | эффект есть (прежнее измерение) |
+| ~8 000 pps | GNS data | no effect (TPS min 20.7) |
+| ~25 000 pps | GNS data | **TPS 21.7 → 2.5** (a 10-fold drop) |
+| ~43 000 pps | junk | no effect (TPS min 21.0) |
+| ~242 000 pps | junk (12 sources) | an effect exists (the earlier measurement) |
 
-⇒ Вектор с поддельной GNS-сессией примерно **в 10 раз дешевле** мусорного
-флуда по требуемому темпу, а с reliable-кадрами выигрыш ещё выше (стоимость
-пакета ×3.8).
+⇒ The vector with a spoofed GNS session is roughly **10× cheaper** than the junk
+flood in required rate, and with reliable frames the gain is even higher (per-packet
+cost ×3.8).
 
-### 16.5 Отрицательный результат: «постоянные» соединения не подтвердились
+### 16.5 Negative result: "persistent" connections not confirmed
 
-Гипотеза: если завершить UE4-хендшейк, соединение останется жить и стоимость
-перейдёт на сервер (память + итерации по соединениям в тике) — тогда атакующий
-может перестать слать пакеты.
+Hypothesis: if the UE4 handshake is completed, the connection will remain alive and its cost
+will shift to the server (memory + connection iterations in the tick) — then the
+attacker can stop sending packets.
 
-Что сделано: подделана GNS-сессия, затем в неё отправлены **копии data-пакетов
-настоящего клиента** (перехват `gns_relay_capture.jsonl`) с подменой
-`to_connection_id` на выданный сервером.
+What was done: a GNS session was spoofed, then **copies of a real client's data packets**
+were sent into it (from `gns_relay_capture.jsonl`) with `to_connection_id`
+substituted with the one issued by the server.
 
-* Сервер **начал отвечать** непрерывным потоком GNS-датапакетов (246 пакетов /
-  4.9 КБ за 30 с) — рукопожатие на стороне сервера продвинулось;
-* 200 таких сессий дали **+42 МБ** памяти (≈210 КБ на соединение);
-* **но** UE4-соединения не удерживаются: `liveConnections` возвращается к 2,
-  память освобождается через ~10 с. Живут только GNS-соединения (уровня
-  транспорта), UE4-соединения закрываются, потому что cookie не проходит
-  проверку (он выдан реальному клиенту).
+* The server **started answering** with a continuous stream of GNS data packets (246 packets /
+  4.9 KB over 30 s) — the server-side handshake progressed;
+* 200 such sessions cost **+42 MB** of memory (≈210 KB per connection);
+* **but** the UE4 connections are not held: `liveConnections` returns to 2,
+  and the memory is freed within ~10 s. Only the GNS (transport-level)
+  connections persist; the UE4 connections close because the cookie fails
+  verification (it was issued to the real client).
 
-**Вывод:** «постоянный» DoS не подтверждается — плата за соединения небольшая
-(210 КБ) и они недолговечны. Поэтому основная форма вектора — **волна**
-пакетов: атакующий держит темп ~25 000 pps, сервер проваливается в 10 раз,
-а после остановки восстанавливается за 15–20 с.
+**Conclusion:** a "persistent" DoS is not confirmed — the charge per connection is small
+(210 KB) and they are short-lived. Therefore the vector's primary form is a **wave**
+of packets: the attacker sustains a rate of ~25 000 pps, the server dips 10-fold,
+and after the stop it recovers within 15–20 s.
 
-### 16.6 Итоговый рейтинг с поправкой
+### 16.6 Final ranking, adjusted
 
-| # | Вектор | Мощность (по TPS) | Цена | Примечание |
+| # | Vector | Power (by TPS) | Cost | Note |
 |---|---|---|---|---|
-| 1 | **GNS-сессия + data-пакеты (10 reliable-кадров)** | **88–98 %** (TPS 21.7 → 2.5) | ~25 000 pps (≈20–25 тыс. пакетов = 100 тыс. до обвала) | эффект даёт **транспорт**, не создание соединений |
-| 2 | мусорный флуд 7778 | 0 % на 43 000 pps | ~242 000 pps | в 10 раз дороже |
-| 3 | GNS ChallengeRequest / ConnectRequest / A2S-флуд | 0–2 % | — | состояния не создают / отражения дают x15 |
-| 4 | «фейковые игроки» (слоты) | 0 % | 70 аккаунтов | слоты не занимаются (§12) |
+| 1 | **GNS session + data packets (10 reliable frames)** | **88–98 %** (TPS 21.7 → 2.5) | ~25 000 pps (≈20–25k packets = 100k to collapse) | the effect comes from **transport**, not connection creation |
+| 2 | junk flood on 7778 | 0 % at 43 000 pps | ~242 000 pps | 10× more expensive |
+| 3 | GNS ChallengeRequest / ConnectRequest / A2S flood | 0–2 % | — | create no state / give x15 reflection |
+| 4 | "fake players" (slots) | 0 % | 70 accounts | slots are not taken (§12) |
 
-**Ограничения применимости (честно):**
-* деградирует **игровой тред** (игроки, их пакеты), но **не доступность сервера**:
-  A2S-порт обслуживается отдельным потоком и продолжает отвечать (локально
-  RTT не изменился: 47–63 мс). На внешнем VPS эффект выглядит сильнее, потому
-  что там страдает весь бокс (50 % потерь на query-порту);
-* эффект транзиентный: 15–20 с после остановки флуда;
-* «1 пакет = 1 `UNetConnection» — факт, но не механизм: стоимость в обработке
-  пакета, а соединения живут ~10 с и стоят ~210 КБ.
+**Applicability limits (honestly):**
+* what degrades is the **game thread** (players, their packets), but **not server availability**:
+  the A2S port is served by a separate thread and keeps answering (locally
+  the RTT did not change: 47–63 ms). On an external VPS the effect looks stronger because
+  the whole box suffers there (50 % losses on the query port);
+* the effect is transient: 15–20 s after the flood stops;
+* "1 packet = 1 `UNetConnection`" is a fact, but not the mechanism: the cost is in processing
+  the packet, while connections live ~10 s and cost ~210 KB.
 
-### 16.7 Новые инструменты
+### 16.7 New tools
 
-| Скрипт | Назначение |
+| Script | Purpose |
 |---|---|
-| `ark_lab_gns_fps_test.py` | Строгое измерение по FPS/TPS с контрольными сценариями C0–C3, ожиданием восстановления и измерением «залипания» игрового треда. |
-| `ark_lab_gns_cost.py` | Стоимость вариантов пакетов (CPU процесса через GetProcessTimes) + скоростной свип. Варианты: junk, unreliable/reliable/ack/blob, x10/x50 кадров, разные payload. |
-| `ark_lab_gns_persist.py`, `ark_lab_gns_persist2.py` | Попытка сделать соединения постоянными (копия пакетов клиента) — отрицательный результат, зафиксирован в 16.5. |
-| `ark_lab_gns_persist_dos.py` | Массовое создание поддельных сессий (200 сессий = +42 МБ) и наблюдение за живыми соединениями. |
-| `ark_lab_remote_probe.py` | Внешний зонд: RTT до query-порта удалённого сервера (для оценки удалённого воздействия). |
+| `ark_lab_gns_fps_test.py` | Rigorous FPS/TPS measurement with control scenarios C0–C3, recovery waits, and measurement of game-thread "seizing". |
+| `ark_lab_gns_cost.py` | Cost of packet variants (process CPU via GetProcessTimes) + a rate sweep. Variants: junk, unreliable/reliable/ack/blob, ×10/×50 frames, various payloads. |
+| `ark_lab_gns_persist.py`, `ark_lab_gns_persist2.py` | Attempt to make connections persistent (a copy of the client's packets) — a negative result, recorded in 16.5. |
+| `ark_lab_gns_persist_dos.py` | Mass creation of spoofed sessions (200 sessions = +42 MB) and observation of live connections. |
+| `ark_lab_remote_probe.py` | External probe: RTT to a remote server's query port (for estimating remote impact). |
 
-### 16.8 Решающий контроль: тип data-кадра (исправление к §16.2)
+### 16.8 The decisive control: the data-frame type (a correction to §16.2)
 
-§16.2 сравнивал «GNS + мусор» и «GNS + UE4-хендшейк» и получил одинаковую
-деградацию. Это **не доказывало**, что виноват транспорт: обе разновидности
-создают `UNetConnection` (счётчик растёт и при мусорном payload — соединение
-создаётся до проверки содержимого). Различающий контроль — **тип SNP-кадра**
-внутри data-пакета: unreliable-кадр (0x37) доходит до UE4 как stateless-connect
-и создаёт соединение; reliable (0x40) и ack (0x90) обрабатываются только
-транспортным слоем и соединений не создают.
+§16.2 compared "GNS + junk" with "GNS + UE4 handshake" and got the same
+degradation. That did **not prove** that transport was to blame: both variants
+create a `UNetConnection` (the counter grows even with a junk payload — a connection
+is created before content inspection). The discriminating control is the **SNP-frame type**
+inside the data packet: an unreliable frame (0x37) reaches UE4 as a stateless-connect
+and creates a connection; reliable (0x40) and ack (0x90) frames are handled only
+by the transport layer and create none.
 
-Локальный стенд, по 120 000 пакетов на вариант, 22–27 тыс. pps:
+Local bench, 120 000 packets per variant, 22–27k pps:
 
-| Вариант data-пакета | **TPS мин** | Соединений создано | Эффект |
+| Data-packet variant | **TPS min** | Connections created | Effect |
 |---|---|---|---|
-| `unreliable` (0x37, 1 кадр) | **2.6** | +120 000 | **деградация** |
-| `unreliable-x10` (10 кадров 0x37) | **2.7** | +120 000 | **деградация** |
-| `blob` (0x81 + inline protobuf) | **2.7** | +120 000 | **деградация** |
-| `mixed` (0x37 + 0x40 + 0x90) | **2.7** | +120 000 | **деградация** |
-| `reliable` (0x40, 1 кадр) | **21.1** | 0 | **нет эффекта** |
-| `reliable-x10` (10 кадров 0x40) | **21.1** | 0 | **нет эффекта** |
-| `ack` (0x90) | **21.1** | 0 | **нет эффекта** |
+| `unreliable` (0x37, 1 frame) | **2.6** | +120 000 | **degradation** |
+| `unreliable-x10` (10 frames of 0x37) | **2.7** | +120 000 | **degradation** |
+| `blob` (0x81 + inline protobuf) | **2.7** | +120 000 | **degradation** |
+| `mixed` (0x37 + 0x40 + 0x90) | **2.7** | +120 000 | **degradation** |
+| `reliable` (0x40, 1 frame) | **21.1** | 0 | **no effect** |
+| `reliable-x10` (10 frames of 0x40) | **21.1** | 0 | **no effect** |
+| `ack` (0x90) | **21.1** | 0 | **no effect** |
 
-**Итог: деградацию даёт именно создание `UNetConnection`, а не обработка
-транспорта.** Формулировка «1 пакет = 1 `UNetConnection`» в §14 подтверждена
-контролируемым экспериментом. Практические следствия:
+**Bottom line: the degradation comes precisely from `UNetConnection` creation, not from
+transport processing.** The formulation "1 packet = 1 `UNetConnection`" in §14 is confirmed
+by a controlled experiment. Practical consequences:
 
-* самый дешёвый для атакующего — **обычный unreliable-кадр** (1 кадр, 18 байт
-  пакета): добавление 9 дополнительных кадров в пакет ничего не даёт
-  (соединение всё равно одно, TPS мин 2.6 против 2.7);
-* reliable/ack-кадры для DoS бесполезны: они не создают соединений и не
-  деградируют сервер (их можно использовать только как «тихий» трафик);
-* стоимость обработки (CPU): unreliable 20–25 мкс/пакет, reliable 20,
-  reliable×10 40, ack 28 — то есть **самый дорогой по CPU вариант (reliable×10)
-  наименее эффективен**: дорогая обработка без создания соединений.
+* the cheapest for an attacker is the **plain unreliable frame** (1 frame, 18 bytes
+  per packet): adding 9 more frames to a packet gains nothing
+  (there is still exactly one connection; TPS min 2.6 vs 2.7);
+* reliable/ack frames are useless for DoS: they create no connections and do not
+  degrade the server (they can only serve as "quiet" traffic);
+* processing cost (CPU): unreliable 20–25 µs/packet, reliable 20,
+  reliable×10 40, ack 28 — i.e. **the most CPU-expensive variant (reliable×10)
+  is the least effective**: expensive processing without creating connections.
 
-### 16.9 Проверка на внешнем сервере: ранжирование вариантов невозможно
+### 16.9 Verification on the external server: variant ranking is impossible
 
-Тот же прогон на внешнем стенде `23.109.45.13:25714` (по 150–200 тыс. пакетов
-на вариант, измеряется по потерям на query-порту):
+The same run on the external bench `23.109.45.13:25714` (150–200k packets
+per variant, measured by query-port losses):
 
-| Вариант | Потери на query-порту | RTT макс |
+| Variant | Query-port losses | RTT max |
 |---|---|---|
-| unreliable | 19.0 % / 27.8 % | 170 / 143 мс |
-| unreliable-x10 | 15.0 % | 178 мс |
-| blob | 15.8 % | 174 мс |
-| mixed | 15.8 % | 385 мс |
-| reliable-x10 (контроль) | 31.2 % / 26.3 % | 404 / 168 мс |
+| unreliable | 19.0 % / 27.8 % | 170 / 143 ms |
+| unreliable-x10 | 15.0 % | 178 ms |
+| blob | 15.8 % | 174 ms |
+| mixed | 15.8 % | 385 ms |
+| reliable-x10 (control) | 31.2 % / 26.3 % | 404 / 168 ms |
 
-**Контрольный вариант (`reliable-x10`, который локально не создаёт соединений и
-не деградирует) показывает столько же потерь, сколько эффективные** ⇒
-на удалённом сервере сигнал полностью забит шумом WAN-канала, и ранжировать
-варианты по нему нельзя. Ранжирование даёт только локальное измерение по FPS.
+**The control variant (`reliable-x10`, which locally creates no connections and
+causes no degradation) shows as many losses as the effective ones** ⇒
+on the remote server the signal is completely buried in WAN-channel noise, and variants
+cannot be ranked by it. Only the local FPS measurement provides ranking.
 
-Дополнительно: локальный стенд при всех прогонах по внешнему серверу остался
-незатронутым (TPS 21.1–21.7, Δ `packetsReceived` = 0) — контроль, что весь
-трафик уходил на удалённый хост.
+Additionally: the local bench was unaffected during all runs against the external server
+(TPS 21.1–21.7, Δ `packetsReceived` = 0) — control that all
+traffic went to the remote host.
 
-### 16.10 Итоговая формулировка вектора (после всех контролей)
+### 16.10 Final formulation of the vector (after all controls)
 
-> **Один data-пакет GNS с unreliable-кадром (0x37) = один `UNetConnection`,
-> созданный сервером.** Именно создание соединения (в каждом тике: аллокация,
-> инициализация, регистрация в списке NetDriver, разбор stateless-connect,
-> уничтожение) роняет FPS игрового треда: **21.7 → 2.5** при ~25 000 pps,
-> порог обвала — ~100 000 пакетов, восстановление 15–20 с. Аутентификация на
-> транспорте отсутствует (обычный `ConnectRequest` без cert принимается), поэтому
-> атака не требует ни Steam-аккаунта, ни криптографии.
-> Защита: сетевая (закрыть/ограничить UDP 7778) — прикладной клапан на
-> `NotifyAcceptingConnection` неэффективен (отклонённые соединения всё равно
-> стоят серверу аллокации и разбора).
+> **One GNS data packet with an unreliable frame (0x37) = one `UNetConnection`
+> created by the server.** It is precisely connection creation (in every tick: allocation,
+> initialization, registration in the NetDriver list, parsing the stateless-connect,
+> destruction) that crashes the game thread's FPS: **21.7 → 2.5** at ~25 000 pps,
+> the collapse threshold — ~100 000 packets, recovery 15–20 s. Authentication on
+> transport is absent (a plain `ConnectRequest` without cert is accepted), so the
+> attack requires neither a Steam account nor cryptography.
+> Defense: network-level (close/rate-limit UDP 7778) — an application-level valve on
+> `NotifyAcceptingConnection` is ineffective (rejected connections still cost the
+> server allocation and parsing).
 
-### 16.11 «Только для локалки?» — порог деградации на разных серверах
+### 16.11 "Local-only?" — the degradation threshold across different servers
 
-Наблюдение пользователя: на внешнем сервере эффекта не видно. Проверено
-ступенчатым тестом (`ark_lab_remote_threshold.py`) — по 100…500 тыс. пакетов
-на внешнем сервере `23.109.45.13:25714` (вариант `unreliable`, ~19–20 тыс. pps):
+User observation: no effect is visible on the external server. Verified with a
+stepped test (`ark_lab_remote_threshold.py`) — 100…500k packets
+against the external server `23.109.45.13:25714` (the `unreliable` variant, ~19–20k pps):
 
-| Пакетов | pps | Секунд | Потери на query-порту (во время флуда) | Потери (база, без флуда) | RTT макс |
+| Packets | pps | Seconds | Query-port losses (during the flood) | Losses (baseline, no flood) | RTT max |
 |---|---|---|---|---|---|
-| 100 000 | 19 436 | 5.1 | **0.0 %** | 0.0 % | 312 мс |
-| 200 000 | 20 384 | 9.8 | **0.0 %** | 0.0 % | 96 мс |
-| 300 000 | 18 832 | 15.9 | **0.0 %** | 0.0 % | 96 мс |
-| 500 000 | 19 708 | 25.4 | **3.4 %** | 0.0 % | 97 мс |
+| 100 000 | 19 436 | 5.1 | **0.0 %** | 0.0 % | 312 ms |
+| 200 000 | 20 384 | 9.8 | **0.0 %** | 0.0 % | 96 ms |
+| 300 000 | 18 832 | 15.9 | **0.0 %** | 0.0 % | 96 ms |
+| 500 000 | 19 708 | 25.4 | **3.4 %** | 0.0 % | 97 ms |
 
-**Ответ: эффект не «только для локалки», но его величина определяется ресурсами
-сервера.** Локальный стенд обрушивается на ~80–100 тыс. пакетов
-(TPS 21.7 → 2.5), внешний VPS — только на ~500 тыс. (и пока лишь 3.4 % потерь
-на query-порту). Разница в 5–6 раз.
+**Answer: the effect is not "local-only", but its magnitude is set by the server's
+resources.** The local bench collapses at ~80–100k packets
+(TPS 21.7 → 2.5); the external VPS only at ~500k (and even then only 3.4 % losses
+on the query port). A 5–6× difference.
 
-**Почему локальный стенд так чувствителен (методологические оговорки):**
+**Why the local bench is so sensitive (methodological caveats):**
 
-| Фактор | Влияние |
+| Factor | Impact |
 |---|---|
-| **Сервер зажат на 4 ядрах** (маска `0xF00000`, ядра 20–23) на хосте с 24 ядрами | запас CPU у сервера минимален; любой дефицит CPU сразу виден в тике |
-| **На том же хосте работает Server1** (тот же каталог менеджера, порт 7777) + Steam-клиент + инструментарий | CPU и сеть хоста делятся между двумя ARK-серверами и клиентом |
-| **Пакеты идут по локальному пути** (в пределах одного хоста) | тот же темп на loopback/LAN-драйвере даёт куда более высокую нагрузку на прерывания/softirq, чем на реальной сети |
-| **На локалном сервере стоит диагностический плагин NetGuard** (хуки на `ReceivedRawPacket` и `NotifyAcceptingConnection` + файл захвата) | добавляет работу в игровом треде; сам захват ограничен 4000 пакетов, хуки — единицы мкс на пакет, то есть вклад мал, но не нулевой |
-| **Атакующий тоже на этом хосте** | его CPU конкурирует с теми же ядрами; контрольный тест (мусор) показал, что это не причина: при том же темпе мусор эффекта не даёт |
+| **The server is pinned to 4 cores** (mask `0xF00000`, cores 20–23) on a 24-core host | the server's CPU headroom is minimal; any CPU deficit shows immediately in the tick |
+| **Server1 runs on the same host** (the same manager directory, port 7777) + the Steam client + tooling | the host's CPU and network are shared between two ARK servers and the client |
+| **Packets travel the local path** (within one host) | the same rate over loopback/LAN produces a far higher interrupt/softirq load than a real network |
+| **The diagnostic NetGuard plugin is installed on the local server** (hooks on `ReceivedRawPacket` and `NotifyAcceptingConnection` + a capture file) | it adds work in the game thread; the capture itself is capped at 4000 packets, the hooks cost a few µs per packet — a small but non-zero contribution |
+| **The attacker is on the same host too** | its CPU competes for the same cores; the control test (junk) showed this is not the cause: at the same rate junk produces no effect |
 
-**Как это меняет оценку вектора (честно):**
+**How this changes the vector's assessment (honestly):**
 
-* механизм (создание `UNetConnection` игровым тредом) — одинаков на всех стендах,
-  это подтверждается и тем, что внешний сервер при 500 тыс. пакетов всё-таки
-  начинает терять ответы;
-* **практическая цена атаки на типовом внешнем сервере выше, чем показывает
-  локальный стенд**: 80–100 тыс. пакетов (~3–5 МБ) на внешнем VPS эффекта не
-  дают, нужно ~500 тыс. (~20 МБ) и выше;
-* «деградация FPS в 10 раз» — это характеристика **местного стенда**, а не
-  универсальная величина; в рейтинге это отмечено;
-* наблюдаемый снаружи эффект (потери на query-порту) требует, чтобы пострадал
-  весь бокс, а не только игровой тред — на VPS с запасом CPU этого не происходит,
-  и это правильное поведение: игроки страдают от просадки FPS, но сервер остаётся
-  доступным.
+* the mechanism (`UNetConnection` creation on the game thread) is the same on all benches,
+  which is also confirmed by the external server starting to lose replies at 500k packets;
+* **the practical cost of the attack on a typical external server is higher than the local
+  bench shows**: 80–100k packets (~3–5 MB) produce no effect on an external VPS;
+  ~500k (~20 MB) or more is needed;
+* "a 10-fold FPS degradation" is a characteristic of the **local bench**, not a
+  universal figure; the ranking notes this;
+* the externally observable effect (query-port losses) requires the whole box to suffer,
+  not just the game thread — on a VPS with CPU headroom this does not happen,
+  and that is the correct behavior: players suffer from the FPS dip, but the server stays
+  available.
 
-**Что стоит сделать дальше (следующий шаг по вектору):** измерить порог на
-внешнем сервере при **нескольких источниках** одновременно (суммарный темп
-выше, чем может выдать один поток Python: с одного источника удаётся ~20 тыс. pps)
-и проверить, восстанавливается ли внешний сервер так же быстро, как локальный.
+**What is worth doing next (the next step on this vector):** measure the threshold on
+an external server with **multiple sources** at once (a combined rate above what a single
+Python thread can produce: one source manages ~20k pps)
+and check whether the external server recovers as fast as the local one.
 
-> Примечание: на момент этих измерений локальный стенд Server2 (с плагином
-> NetGuard) остановлен, поэтому локальные замеры для продолжения работы нужно
-> будет возобновить после его перезапуска.
+> Note: at the time of these measurements the local Server2 bench (with the NetGuard
+> plugin) was stopped, so local measurements to continue the work will need to be
+> resumed after its restart.
 
-### 16.12 Можно ли эффективнее и дешевле? — разбор рычагов
+### 16.12 Can it be more effective and cheaper? — dissecting the levers
 
-Проверены три гипотезы «дешёвой» атаки; все три дали чёткий ответ.
+Three hypotheses of a "cheap" attack were tested; all three gave a clear answer.
 
-**Гипотеза A: несколько UE4-соединений в одном сетевом пакете** (положить в
-один data-пакет N полных UE4-пакетов «stateless connect», каждый со своим
-номером последовательности, каждый в своём SNP-кадре).
+**Hypothesis A: several UE4 connections in a single network packet** (packing N full
+UE4 "stateless connect" packets into one data packet, each with its own sequence
+number, each in its own SNP frame).
 
-| Вариант | Сетевых пакетов | Соединений создано | Соединений на пакет |
+| Variant | Network packets | Connections created | Connections per packet |
 |---|---|---|---|
-| `ue4-62b` (один connect в пакете) | 20 000 | 20 000 | 1.00 |
-| `ue4-multi4` (4 connect'а в пакете) | 20 000 | 20 000 | 1.00 |
+| `ue4-62b` (one connect per packet) | 20 000 | 20 000 | 1.00 |
+| `ue4-multi4` (4 connects per packet) | 20 000 | 20 000 | 1.00 |
 | `ue4-multi10` | 20 000 | 20 000 | 1.00 |
 | `ue4-multi20` | 20 000 | 20 000 | 1.00 |
 
-**Опровергнуто.** UE4-слой обрабатывает датаграмму как один поток: первый
-stateless-connect «съедает» пакет, остальные уходят в него же. Потолок
-«1 сетевой пакет = 1 `UNetConnection`» уже достигнут, обойти его нельзя.
+**Refuted.** The UE4 layer processes the datagram as a single stream: the first
+stateless-connect "eats" the packet, and the rest go into it as well. The ceiling of
+"1 network packet = 1 `UNetConnection`" is already reached and cannot be bypassed.
 
-**Гипотеза B: дешёвая за счёт размера пакета** — размер payload не влияет на
-стоимость (6 Б ≈ 64 Б ≈ 512 Б ≈ 1400 Б ≈ 20–24 мкс/пакет по CPU процесса).
-Значит, «толстый» пакет не даёт выигрыша: цена атаки измеряется **числом
-пакетов**, а не байтами. Трафик 500 тыс. пакетов = 9 МБ полезной нагрузки
-(~30 МБ на проводе) — по полосе атака неинтересна.
+**Hypothesis B: cheap via packet size** — payload size does not affect cost
+(6 B ≈ 64 B ≈ 512 B ≈ 1400 B ≈ 20–24 µs/packet of process CPU).
+So a "fat" packet gives no advantage: the attack's cost is measured in the **number
+of packets**, not bytes. The 500k-packet traffic = 9 MB of payload
+(~30 MB on the wire) — the attack is uninteresting in bandwidth terms.
 
-**Гипотеза C: постоянные соединения** (завершить stateless-connect, чтобы
-соединение жило до таймаута 300 с и сервер нёс его в каждом тике). Проверено
-двумя способами: копия data-пакетов настоящего клиента (100 сессий) и
-чтение ответов сервера (иначе буфер приёмки переполняется и сервер рвёт
-сессию сам). Результат: `liveConnections` 0–1, память не накапливается,
-соединения живут секунды. Причина — cookie stateless-connect выдан реальному
-клиенту и к нашей сессии не привязан; чтобы сделать соединение живым, нужно
-разобрать обмен UE4-handshake (challenge сервера → cookie) и подделать его —
-это отдельная задача, и даже при её решении выигрыш ограничен памятью
-(≈210 КБ на соединение) и накладными расходами NetDriver в тике, а не
-самим обрушением FPS.
+**Hypothesis C: persistent connections** (finish the stateless-connect so that the
+connection lives until the 300 s timeout and the server carries it in every tick). Tested
+two ways: a copy of a real client's data packets (100 sessions) and
+reading the server's replies (otherwise the receive buffer overflows and the server
+tears down the session itself). Result: `liveConnections` 0–1, no memory accumulation,
+connections live for seconds. The reason — the stateless-connect cookie was issued to the real
+client and is not bound to our session; to make a connection live, the UE4-handshake
+exchange (the server's challenge → cookie) must be dissected and spoofed —
+a separate task, and even if solved the gain is bounded by memory
+(≈210 KB per connection) and NetDriver overhead in the tick, not by
+FPS collapse itself.
 
-**Итог по эффективности: вектор уже на практическом оптимуме по «урон на
-пакет»** (1 пакет = 1 соединение, цена фиксирована ~17 мкс CPU сервера).
-Остаются два реальных рычага:
+**Bottom line on efficiency: the vector is already at the practical optimum for "damage per
+packet"** (1 packet = 1 connection, the price is fixed at ~17 µs of server CPU).
+Two real levers remain:
 
-| Рычаг | Что даёт | Цена |
+| Lever | What it buys | Cost |
 |---|---|---|
-| **Темп (несколько источников)** | обвал начинается, когда входящий темп выше скорости разбора тика (~25 тыс. pps на локальном стенде); 4 параллельных отправителя дают ~80–100 тыс. pps | ~1.5 МБ/с трафика, 4–10 с работы |
-| **Другой класс вектора** | `ServerCheat` RPC (вектор №1) — 1 пакет = выполнение серверной команды (не DoS, а повышение привилегий) | 1 пакет |
-| **Отражение (A2S, x15)** | трафик к third parties от имени сервера | 1 пакет → 446 Б |
+| **Rate (multiple sources)** | the collapse begins when the inbound rate exceeds the tick's parsing speed (~25k pps on the local bench); 4 parallel senders give ~80–100k pps | ~1.5 MB/s of traffic, 4–10 s of work |
+| **A different class of vector** | the `ServerCheat` RPC (vector #1) — 1 packet = executing a server command (not a DoS but a privilege escalation) | 1 packet |
+| **Reflection (A2S, ×15)** | traffic to third parties in the server's name | 1 packet → 446 B |
 
-То есть «более дешёвого» варианта **этого** вектора нет; экономить можно
-либо на объёме (за счёт роста темпа), либо выбирать другой класс воздействия
-(команда, а не отказ в обслуживании).
+So there is no "cheaper" variant of **this** vector; the savings can come
+either from volume (via a higher rate), or from choosing a different class of impact
+(a command, not a denial of service).

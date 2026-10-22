@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Серия A/B, раунд 2: пары СИНХРОНИЗИРОВАНЫ с "чистым" интервалом между
-# автосейвами (период автосейва ровно 15 мин, окно 300 с + подготовка ~11.5 мин
-# => обе руки пары помещаются между двумя сейвами => окна не контаминируются).
+# A/B series, round 2: pairs are SYNCHRONIZED with the "clean" interval between
+# autosaves (autosave period is exactly 15 min; a 300 s window + ~11.5 min prep
+# => both arms of a pair fit between two saves => windows are not contaminated).
 #
-# Протокол каждой руки: overlapall 0 (сброс базы) -> пауза -> свой trim -> пауза
-# -> окно 300 с -> разбор строки "window окно:" из лога.
+# Protocol of each arm: overlapall 0 (base reset) -> pause -> its own trim -> pause
+# -> 300 s window -> parse the "window result:" line from the log.
 import json
 import os
 import re
@@ -32,13 +32,13 @@ def log_lines():
 
 def last_save_end():
     for l in reversed(log_lines()):
-        if 'save: запись .ark завершилась' in l:
+        if 'save: .ark write finished' in l:
             return l
     return ''
 
 
 def count_windows():
-    return sum(1 for l in log_lines() if 'window окно:' in l)
+    return sum(1 for l in log_lines() if 'window result:' in l)
 
 
 def rcon(cmd, timeout=20):
@@ -49,22 +49,22 @@ def rcon(cmd, timeout=20):
 
 
 def wait_next_clean_slot(max_wait=20 * 60):
-    """Ждём окончания ближайшего сейва + 20 с, чтобы окно не задело запись мира."""
+    """Wait for the nearest save to finish + 20 s so the window does not overlap the world write."""
     seen = last_save_end()
     t0 = time.time()
     while time.time() - t0 < max_wait:
         cur = last_save_end()
         if cur != seen and cur:
-            print('   сейв завершён: %s -> стартуем через 20 с' % cur, flush=True)
+            print('   save finished: %s -> starting in 20 s' % cur, flush=True)
             time.sleep(20)
             return True
         time.sleep(10)
-    print('   сейв не дождались, стартуем как есть', flush=True)
+    print('   save never seen, starting as is', flush=True)
     return False
 
 
 def hand(name, trim_cmd, settle=25):
-    print('\n=== РУКА %s (%s) ===' % (name, trim_cmd), flush=True)
+    print('\n=== ARM %s (%s) ===' % (name, trim_cmd), flush=True)
     rcon('TickProf.overlapall 0')
     time.sleep(settle)
     rcon(trim_cmd)
@@ -74,7 +74,7 @@ def hand(name, trim_cmd, settle=25):
         if 'overlaptrim' in l:
             state = l
             break
-    print('   состояние: %s' % state, flush=True)
+    print('   state: %s' % state, flush=True)
     before = count_windows()
     rcon('TickProf.window %d' % WIN)
     t0 = time.time()
@@ -82,10 +82,10 @@ def hand(name, trim_cmd, settle=25):
         time.sleep(10)
         if count_windows() > before:
             break
-    lines = [l for l in log_lines() if 'window окно:' in l]
+    lines = [l for l in log_lines() if 'window result:' in l]
     rec = {'hand': name, 'trim': trim_cmd, 'state': state}
     nums = [l for l in lines if 't/s=' in l]
-    cont = [l for l in lines if 'контаминировано' in l]
+    cont = [l for l in lines if 'contaminated' in l]
     if nums:
         last = nums[-1]
         rec['raw'] = last
@@ -100,7 +100,7 @@ def hand(name, trim_cmd, settle=25):
         if cont:
             print('   %s' % cont[-1], flush=True)
     else:
-        print('   ОКНО НЕ ПОЛУЧЕНО', flush=True)
+        print('   WINDOW NOT OBTAINED', flush=True)
     return rec
 
 
@@ -108,7 +108,7 @@ def main():
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     pairs = []
     for p in range(1, PAIRS + 1):
-        print('\n########## ПАРА %d ##########' % p, flush=True)
+        print('\n########## PAIR %d ##########' % p, flush=True)
         wait_next_clean_slot()
         a = hand('A#%d (trim2)' % p, 'TickProf.overlaptrim 2')
         b = hand('B#%d (trim3)' % p, 'TickProf.overlaptrim3')
@@ -116,16 +116,16 @@ def main():
         with open(OUT, 'w', encoding='utf-8') as f:
             json.dump(pairs, f, ensure_ascii=False, indent=2)
         if a.get('valid') and b.get('valid'):
-            print('\n--- пара %d ПРИНЯТА: d(t/s)=%+.2f d(ms/tick)=%+.2f' %
+            print('\n--- pair %d ACCEPTED: d(t/s)=%+.2f d(ms/tick)=%+.2f' %
                   (p, b['tps'] - a['tps'], b['ms_tick'] - a['ms_tick']), flush=True)
         else:
-            print('\n--- пара %d не принята (A=%s B=%s)' % (p, a.get('valid'), b.get('valid')), flush=True)
-    print('\nИТОГ РАУНДА 2:', flush=True)
+            print('\n--- pair %d not accepted (A=%s B=%s)' % (p, a.get('valid'), b.get('valid')), flush=True)
+    print('\nROUND 2 SUMMARY:', flush=True)
     for pr in pairs:
         a, b = pr['A'], pr['B']
         ok = a.get('valid') == 'VALID' and b.get('valid') == 'VALID'
-        print('  пара %d: %s d(t/s)=%+.2f d(ms/tick)=%+.2f' %
-              (pr['pair'], 'ПРИНЯТА' if ok else 'нет',
+        print('  pair %d: %s d(t/s)=%+.2f d(ms/tick)=%+.2f' %
+              (pr['pair'], 'ACCEPTED' if ok else 'no',
                b.get('tps', 0) - a.get('tps', 0), b.get('ms_tick', 0) - a.get('ms_tick', 0)), flush=True)
 
 

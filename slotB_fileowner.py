@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-# Слот B (v7): владелец файлового IO в профиле фазы.
+# Slot B (v7): owner of the file IO in the phase profile.
 #
-# Идея: ZwQueryDirectoryFileEx = FindFirstFile/FindNextFile. В exe эти вызовы идут
-# из FWindowsPlatformFile::IterateDirectory (windowsplatformfile.cpp:273/283).
-# IterateDirectory зовётся из FindFiles / FindPluginsRecursively / UWorldComposition::Rescan.
-# В профиле фазы ищем сэмплы exe рядом с ожиданиями файлового IO - если рядом
-# есть кадр IterateDirectory/FindFiles, значит файловый IO идёт оттуда.
+# Idea: ZwQueryDirectoryFileEx = FindFirstFile/FindNextFile. In the exe these calls come
+# from FWindowsPlatformFile::IterateDirectory (windowsplatformfile.cpp:273/283).
+# IterateDirectory is called from FindFiles / FindPluginsRecursively / UWorldComposition::Rescan.
+# In the phase profile we look for exe samples next to file-IO waits - if an
+# IterateDirectory/FindFiles frame is nearby, the file IO originates there.
 import struct, collections, sys, os
 sys.path.insert(0, r'C:\Dev\_research')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -19,7 +19,7 @@ BACK = os.path.join(PLUG, '_backup', 'TickProf')
 ghidra, gstarts = pn.load_ghidra_names()
 namer = pn.Namer(ghidra, gstarts)
 
-# диапазоны функций exe, связанных с файловым IO
+# exe function ranges related to file IO
 FILE_FUNCS = {
     0x1F49900: ('IterateDirectory', 623),
     0x1EBAF0: ('FindFiles', 873),
@@ -58,7 +58,7 @@ def in_file_func(o):
     return None
 
 
-# сэмплы внутри файловых функций exe
+# samples inside the exe file functions
 inside = collections.Counter()
 for r in rips:
     o = exer(r)
@@ -67,13 +67,13 @@ for r in rips:
     f = in_file_func(o)
     if f:
         inside[f] += 1
-print('=== сэмплы exe внутри файловых функций (профиль %s) ===' % prof)
+print('=== exe samples inside file functions (profile %s) ===' % prof)
 for k, v in inside.most_common():
     print('   %5d  %s' % (v, k))
 if not inside:
-    print('   НЕТ ни одного сэмпола в файловых функциях')
+    print('   NO sample at all in the file functions')
 
-# кто вызывает: для сэмплов в IterateDirectory/FindFiles смотрим [RSP]
+# who calls: for samples in IterateDirectory/FindFiles look at [RSP]
 callers = collections.Counter()
 for i, r in enumerate(rips):
     o = exer(r)
@@ -84,6 +84,6 @@ for i, r in enumerate(rips):
         continue
     c = exer(rets[i])
     callers[(f, fname(c) if c is not None else '<non-exe>')] += 1
-print('\n=== вызывающие файловых функций ([RSP]) ===')
+print('\n=== callers of the file functions ([RSP]) ===')
 for (f, c), v in callers.most_common(15):
     print('   %5d  %-28s <- %s' % (v, f, c))

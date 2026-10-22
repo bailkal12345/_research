@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Ожидание подъёма RCON после бута (порт 32330) с контролем процесса.
+# Waiting for RCON to come up after boot (port 32330) with process monitoring.
 import socket, subprocess, sys, time
 
 PID = int(sys.argv[1]) if len(sys.argv) > 1 else 0
@@ -24,13 +24,13 @@ def rcon_port():
 
 for i in range(LIMIT):
     if PID and not alive(PID):
-        print('ПРОЦЕСС УПАЛ на итерации', i)
+        print('PROCESS DIED on iteration', i)
         sys.exit(1)
     if rcon_port():
-        print('RCON слушает на итерации %d (%.0f c)' % (i, i * 15))
+        print('RCON listening at iteration %d (%.0f s)' % (i, i * 15))
         sys.exit(0)
     if i % 4 == 0:
-        print('итер %d: процесс жив=%s, RCON ещё нет' % (i, alive(PID) if PID else '?'))
+        print('iter %d: process alive=%s, RCON not yet' % (i, alive(PID) if PID else '?'))
     time.sleep(15)
-print('таймаут')
+print('timeout')
 sys.exit(1)

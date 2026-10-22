@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Атрибуция файлового IO: последовательность листьев ожидания.
-# Если чтение каталога - наш собственный опрос .ark (1 Гц), записи идут ПАЧКАМИ
-# (десятки подряд) с равномерным шагом ~1 с. Если это движок - пачки реже/реже.
+# File IO attribution: sequence of wait leaves.
+# If directory reads are our own .ark polling (1 Hz), records come in BURSTS
+# (dozens in a row) with an even ~1 s step. If it is the engine - bursts are rarer.
 import collections
 import os
 import struct
@@ -41,7 +41,7 @@ def main():
             nm = ex[short.lower()].name_of(off)
         leaves.append(nm or ('%s+0x%s' % (short, ('None' if off is None else hex(off)))))
 
-    # пачки одинаковых листьев
+    # runs of identical leaves
     runs = []
     cur = leaves[0]
     ln = 1
@@ -54,28 +54,28 @@ def main():
             ln = 1
     runs.append((cur, ln))
 
-    print('=== профиль %s: %d записей ожидания ===' % (prof, cnt))
-    print('\n--- топ листьев ---')
+    print('=== profile %s: %d wait records ===' % (prof, cnt))
+    print('\n--- top leaves ---')
     for k, v in collections.Counter(leaves).most_common(10):
         print('%8d  %s' % (v, k))
 
-    print('\n--- пачки (run) для файлового IO ---')
+    print('\n--- runs for file IO ---')
     io_runs = [(k, v, i) for i, (k, v) in enumerate(runs) if 'Directory' in k or 'Find' in k or 'Query' in k]
-    print('всего пачек IO: %d, записей в них: %d' % (len(io_runs), sum(v for _, v, _ in io_runs)))
+    print('total IO runs: %d, records in them: %d' % (len(io_runs), sum(v for _, v, _ in io_runs)))
     for k, v, i in io_runs[:25]:
-        print('  пачка #%d: %-40s len=%d (позиция в последовательности %d)' % (i, k, v, i))
+        print('  run #%d: %-40s len=%d (position in the sequence %d)' % (i, k, v, i))
 
-    print('\n--- число пачек IO и сумма длин ---')
+    print('\n--- count of IO runs and sum of lengths ---')
     lens = [v for _, v, _ in io_runs]
     if lens:
-        print('пачек=%d, средняя длина=%.1f, макс=%d, всего=%d' %
+        print('runs=%d, mean length=%.1f, max=%d, total=%d' %
               (len(lens), sum(lens) / len(lens), max(lens), sum(lens)))
 
-    print('\n--- шаг между пачками IO (в записях) ---')
+    print('\n--- step between IO runs (in records) ---')
     idx = [i for _, _, i in io_runs]
     gaps = [b - a for a, b in zip(idx, idx[1:])]
     if gaps:
-        print('шаги: min=%d max=%d медиана=%d, первые 20: %s' %
+        print('steps: min=%d max=%d median=%d, first 20: %s' %
               (min(gaps), max(gaps), sorted(gaps)[len(gaps) // 2], gaps[:20]))
 
 

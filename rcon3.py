@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# RCON-клиент для ARK: читает ВСЕ пакеты, пропускает keep-alive (id=-1),
-# возвращает ответ на команду (id=2).
+# RCON client for ARK: reads ALL packets, skips keep-alive (id=-1),
+# returns the command response (id=2).
 import socket, struct, io, time
 
 PORT = 32330
@@ -14,7 +14,7 @@ def _pack(rid, payload):
 
 
 def _unpack(buf):
-    """Разбор пакета: (size, id, payload)."""
+    """Packet parsing: (size, id, payload)."""
     if len(buf) < 4:
         return None
     size = struct.unpack_from('<i', buf, 0)[0]
@@ -72,7 +72,7 @@ def rcon(cmd, timeout=6.0, port=PORT, pw=PW, wait=1.5):
                     buf = buf[ln:]
                     if rid == 2:
                         out.append(payload)
-                    # rid == -1 => keep alive, игнорируем
+                    # rid == -1 => keep alive, ignored
             s.close()
             if out:
                 return b''.join(out).decode('utf-8', 'replace')
@@ -87,4 +87,4 @@ if __name__ == '__main__':
     for c in (sys.argv[1:] or ['status']):
         r = rcon(c)
         print('=== %s ===' % c)
-        print(repr(r)[:1500] if r is not None else 'НЕТ ОТВЕТА')
+        print(repr(r)[:1500] if r is not None else 'NO RESPONSE')

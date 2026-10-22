@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Снимает раскладку CPU по потокам живого ShooterGameServer.
+Captures the per-thread CPU breakdown of a live ShooterGameServer.
 
-Потоки UE4 именуются через SetThreadDescription (GameThread, TaskGraphThread N,
-PhysicsThread, ...), поэтому имена берутся из Windows, а не из PDB.
+UE4 threads are named via SetThreadDescription (GameThread, TaskGraphThread N,
+PhysicsThread, ...), so names are taken from Windows, not from the PDB.
 
     python threadcpu.py [--pid N] [--seconds 30] [--interval 1.0]
 """
@@ -52,7 +52,7 @@ THREAD_QUERY_INFORMATION = 0x0040
 
 
 def find_pid(name="ShooterGameServer.exe"):
-    # без psutil: Toolhelp по процессам
+    # without psutil: Toolhelp over processes
     TH32CS_SNAPPROCESS = 0x00000002
 
     class PROCESSENTRY32(C.Structure):
@@ -120,7 +120,7 @@ def cpu_times(tid):
         return None
     k100 = (k.dwHighDateTime << 32) | k.dwLowDateTime
     u100 = (u.dwHighDateTime << 32) | u.dwLowDateTime
-    return (k100 + u100) / 1e7  # секунды CPU
+    return (k100 + u100) / 1e7  # CPU seconds
 
 
 def main():
@@ -157,7 +157,7 @@ def main():
                 base[t] = v
         samples.append(cur)
 
-    # усредняем по окну
+    # average over the window
     span = args.seconds or 1.0
     rows = []
     for t in tids:
@@ -178,7 +178,7 @@ def main():
             continue
         print("%-16s %6.2f %7.1f%%  %d" % (nm[:16], cpu, pct, t))
     print("-" * 60)
-    print("threads: %d, суммарно занято ядер: %.2f" % (len(rows), total))
+    print("threads: %d, total cores busy: %.2f" % (len(rows), total))
 
 
 if __name__ == "__main__":

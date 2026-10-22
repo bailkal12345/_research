@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-# Слот E: A/B-серия bptrace OFF/ON на реальных окнах сэмплирования.
-# Методика слота D (slotD_ab2.py): TickProf.window 120 -> строка окна
-# (t/s, cpu, ms/tick, VALID/CONTAMINATED); между окнами пауза 65 с (cooldown);
-# окна стартуют после ближайшего сейва (чистый интервал 15-минутной каденции).
-# Всего: 2 пары OFF/ON. Затем bptrace 0 и проверка живости.
+# Slot E: A/B series bptrace OFF/ON on real sampling windows.
+# Slot D methodology (slotD_ab2.py): TickProf.window 120 -> window line
+# (t/s, cpu, ms/tick, VALID/CONTAMINATED); a 65 s pause between windows (cooldown);
+# windows start after the nearest save (clean interval of the 15-minute cadence).
+# Total: 2 OFF/ON pairs. Then bptrace 0 and a liveness check.
 import re
 import sys
 import time
@@ -17,7 +17,7 @@ LOG = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\Plugins\Tic
 
 def last_window_line():
     for l in reversed(log_lines()):
-        if 'window окно:' in l and 't/s=' in l:
+        if 'window result:' in l and 't/s=' in l:
             return l
     return ''
 
@@ -33,7 +33,7 @@ def run_hand(tag, bp_state, win_line_before):
             time.sleep(2)
             return tag, last_window_line()
         time.sleep(6)
-    return tag, 'ТАЙМАУТ окна: ' + last_window_line()
+    return tag, 'WINDOW TIMEOUT: ' + last_window_line()
 
 
 def parse(line):
@@ -45,7 +45,7 @@ def parse(line):
             'valid': m.group(7)}
 
 
-print('=== ждём чистый интервал после сейва ===', flush=True)
+print('=== waiting for a clean interval after the save ===', flush=True)
 wait_next_clean_slot()
 
 hands = [('OFF-1', 0), ('OFF-2', 0), ('ON-1', 1), ('ON-2', 1 )]
@@ -57,15 +57,15 @@ for tag, st in hands:
     results.append((tag, st, line, p))
     print('  %s: %s' % (tag, line[:180]), flush=True)
     if tag not in ('ON-2',):
-        time.sleep(65)  # cooldown после сэмплер-окна
+        time.sleep(65)  # cooldown after the sampler window
 rcon('TickProf.bptrace 0')
 time.sleep(3)
 
-print('\n=== сводка ===', flush=True)
+print('\n=== summary ===', flush=True)
 ok = []
 for tag, st, line, p in results:
     if not p:
-        print('  %s: разбор не удался' % tag)
+        print('  %s: parse failed' % tag)
         continue
     ok.append((tag, st, p))
 out = []
@@ -82,4 +82,4 @@ if len(arm_off) >= 2 and len(arm_on) >= 2:
         if a['valid'] == 'VALID' and b['valid'] == 'VALID':
             pairs.append((b['t/s'] - a['t/s'], b['ms/tick'] - a['ms/tick']))
 for i, (dt, dm) in enumerate(pairs, 1):
-    print('пара %d: d(t/s)=%+.2f d(ms/tick)=%+.2f' % (i, dt, dm), flush=True)
+    print('pair %d: d(t/s)=%+.2f d(ms/tick)=%+.2f' % (i, dt, dm), flush=True)

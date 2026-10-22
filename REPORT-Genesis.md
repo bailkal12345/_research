@@ -1,87 +1,87 @@
 # REPORT-Genesis
 
-Слот 1. Прод-конфигурация: NetServerMaxTickRate штатное (0), зажим тикрейта штатный,
-пять оптимизаций включены (fncache, iscache, cachename, nochart, overlaptrim 2).
-Стенд запущен прод-строкой из `Saved/Config/WindowsServer/RunServer.cmd`.
+Slot 1. Prod configuration: NetServerMaxTickRate stock (0), tick rate clamp stock,
+the five optimizations enabled (fncache, iscache, cachename, nochart, overlaptrim 2).
+The bench launched with the prod line from `Saved/Config/WindowsServer/RunServer.cmd`.
 
-NetServerMaxTickRate: штатное (0). Фактический t/s П0/П1: **9.99**.
-Кламп тикрейта: штатный (fixclamp 0). Замеры CPU — поток GameThread, tid 11668,
-пид 16396. Все окна, кроме помеченных, проведены вне сохранений мира.
+NetServerMaxTickRate: stock (0). Actual t/s of P0/P1: **9.99**.
+Tick rate clamp: stock (fixclamp 0). CPU measurements — the GameThread, tid 11668,
+pid 16396. All windows, except those marked, were taken outside world saves.
 
-## Ответы на вопросы вахты
+## Answers to the watch's questions
 
-**1. Сколько стоит реальный сейв без игроков.**
+**1. How much does a real save cost without players.**
 
-| Метрика | Значение |
+| Metric | Value |
 |---|---|
-| тиков/с | **9.99** |
-| CPU GameThread | 0.098 s/s (9.8% одного ядра) |
-| мс CPU на тик | **9.77** |
-| CPU всего процесса | 0.07–0.14 s/s |
-| сохранение мира | каждые 15 мин (`AutoSavePeriodMinutes=15`), фриз ~4.3 с |
+| ticks/s | **9.99** |
+| GameThread CPU | 0.098 s/s (9.8% of one core) |
+| ms CPU per tick | **9.77** |
+| total process CPU | 0.07–0.14 s/s |
+| world save | every 15 min (`AutoSavePeriodMinutes=15`), freeze ~4.3 s |
 
-Главное: **кадр длится ~100 мс, но занимает меньше 10 мс CPU**. Сервер не
-вычислительно ограничен — он ограничен темпом тиков: процесс суммарно
-занял 7–14% ядра. Лимит t/s (~10) задаёт паддинг, а не нагрузка.
+The main point: **the frame lasts ~100 ms but consumes under 10 ms of CPU**. The server is not
+compute-bound — it is bound by the tick rate: in total the process
+used 7–14% of a core. The t/s limit (~10) is set by padding, not by load.
 
-**2. Жрёт ли большие базы GameThread через O(n²) overlap.**
+**2. Do large bases eat the GameThread through O(n²) overlap.**
 
-| Режим | мс CPU/тик | т/с | CPU GameThread, s/s |
+| Mode | ms CPU/tick | t/s | CPU GameThread, s/s |
 |---|---|---|---|
-| overlaptrim выключен | 21.97 | 9.96 | 0.219 |
+| overlaptrim off | 21.97 | 9.96 | 0.219 |
 | overlaptrim=2 | 9.00 | 9.98 | 0.090 |
-| **дельта** | **−59.0%** | +0.2% | −58.9% |
+| **delta** | **−59.0%** | +0.2% | −58.9% |
 
-Да. На Genesis обрезание списков пересечений у компонентов с ≥2 пересечениями
-снимает 12.97 мс на тик — 59% стоимости кадра. Тики/с при этом не растут,
-потому что кадр и так упирается в паддинг, а не в CPU.
+Yes. On Genesis trimming the overlap lists of components with ≥2 overlaps
+removes 12.97 ms per tick — 59% of the frame cost. Ticks/s do not rise, because
+the frame is already bottlenecked by padding, not by CPU.
 
-**3. Сколько стоит фриз SaveWorld.**
+**3. How much does the SaveWorld freeze cost.**
 
-| Прогон | фриз, мс |
+| Run | freeze, ms |
 |---|---|
 | 1 | 4308 |
 | 2 | 4371 |
 
-**Порог ТЗ 500 мс превышен в 8.7 раза.** Оба прогона стабильны (разброс 63 мс).
-Задача в бэклог ТЗ.
+**The ToR threshold of 500 ms is exceeded by a factor of 8.7.** Both runs are stable (a spread of 63 ms).
+Task added to the ToR backlog.
 
-## П2 — A/B overlaptrim (окна по 300 с, вне сохранений)
+## P2 — A/B overlaptrim (300 s windows, outside saves)
 
-| Окно | мс/тик | т/с | примечание |
+| Window | ms/tick | t/s | note |
 |---|---|---|---|
-| A-1 | 24.97 | 9.86 | **искажено автосохранением** — в бэклог не идёт |
-| A-2 | 21.97 | 9.96 | чистое |
-| B-1 | 14.65 | 9.86 | **искажено автосохранением** — в бэклог не идёт |
-| B-2 | 9.00 | 9.98 | чистое |
+| A-1 | 24.97 | 9.86 | **contaminated by autosave** — excluded from the backlog |
+| A-2 | 21.97 | 9.96 | clean |
+| B-1 | 14.65 | 9.86 | **contaminated by autosave** — excluded from the backlog |
+| B-2 | 9.00 | 9.98 | clean |
 
-Побочно из искажённых окон: во время сохранения мира стоимость кадра растёт
-с 9.8 до 25.0 мс/тик — то есть **само сохранение стоит ~15 мс на тик**,
-больше, чем весь остальной кадр.
+As a side observation from the contaminated windows: during a world save the frame cost rises
+from 9.8 to 25.0 ms/tick — i.e. **the save itself costs ~15 ms per tick**,
+more than the rest of the frame combined.
 
-## Переписи (бесплатные данные матрицы)
+## Censuses (free data of the matrix)
 
-| Показатель | Значение |
+| Metric | Value |
 |---|---|
-| уровней | 142 |
-| акторов | 106 255 |
-| компонентов | 404 819 |
-| тикующих компонентов | 1 995 |
+| levels | 142 |
+| actors | 106 255 |
+| components | 404 819 |
+| ticking components | 1 995 |
 | `AllEnabledTickFunctions` | 1 264 462 |
-| компонентов с `bGenerateOverlapEvents` | 247 447 из 271 331 |
-| всего пересечений | 199 380 |
+| components with `bGenerateOverlapEvents` | 247 447 of 271 331 |
+| total overlaps | 199 380 |
 
-## Профиль (steady-state, 60 с, 30 463 сэмплов)
+## Profile (steady-state, 60 s, 30 463 samples)
 
-Простой (Sleep/Wait в ntdll) — 83.8% wall. Исполняемый код — 4 932 сэмпла.
+Idle (Sleep/Wait in ntdll) — 83.8% wall. Executable code — 4 932 samples.
 
-| Доля | Символ |
+| Share | Symbol |
 |---|---|
 | 7.40% | `UVictoryCore::ServerOctreeOverlapActors` |
 | 6.47% | `TOctree<UPrimitiveComponent*>::AdvanceToNextIntersectingElement` |
 | 5.76% | `UObjectBaseUtility::IsA` |
 | 3.97% | `UObject::execLocalVariable` |
-| 3.33% | `TickProf.dll+0x258CF` (накладные расходы самого профилёра) |
+| 3.33% | `TickProf.dll+0x258CF` (the profiler's own overhead) |
 | 2.82% | `UObject::execDynamicCast` |
 | 2.60% | `UPrimalInventoryComponent::GetItemTemplateQuantity` |
 | 2.17% | `UObject::ProcessInternal` |
@@ -95,95 +95,95 @@ NetServerMaxTickRate: штатное (0). Фактический t/s П0/П1: **
 | 1.62% | `UProperty::CopyCompleteValueFromScriptVM` |
 | 1.24% | `UPrimalItem::IsValidForCrafting` |
 
-Сводно по классам: `UObject` (интерпретатор Blueprint) **22.8%**,
+Rolled up by classes: `UObject` (the Blueprint interpreter) **22.8%**,
 `UVictoryCore` 7.4%, `TOctree` 8.2%, `UObjectBaseUtility` (IsA) 5.8%,
 `UPrimalInventoryComponent`+`UPrimalItem` 3.9%.
 
-Три крупнейших направления оптимизации на Genesis:
-1. **Blueprint-интерпретатор — 22.8%.** Топ-символы `execLocalVariable`,
-   `execDynamicCast`, `ProcessContextOpcode`, `execLet` — это байткод,
-   исполняемый каждый кадр. Основной резерв.
-2. **Октри и `UVictoryCore::ServerOctreeOverlapActors` — 15.7%.** Октарь
-   обходится целиком плюс вызовы AI-перекрытий с `AddUnique` — известный O(n²).
-3. **`UObjectBaseUtility::IsA` — 5.8%.** Проверки типа на горячем пути;
-   тот же приём, что уже дал −13% на `UStruct::IsChildOf` (iscache).
+The three largest optimization directions on Genesis:
+1. **Blueprint interpreter — 22.8%.** The top symbols `execLocalVariable`,
+   `execDynamicCast`, `ProcessContextOpcode`, `execLet` are bytecode
+   executed every frame. The main reserve.
+2. **Octree and `UVictoryCore::ServerOctreeOverlapActors` — 15.7%.** The octree
+   is traversed in full, plus AI-overlap calls with `AddUnique` — the known O(n²).
+3. **`UObjectBaseUtility::IsA` — 5.8%.** Type checks on the hot path;
+   the same technique that already gave −13% on `UStruct::IsChildOf` (iscache).
 
-## Наблюдения по инструментам и стенду
+## Observations on tools and the bench
 
-1. **Автосохранение искажает любой замер.** Первый профиль Genesis был снят
-   поверх сохранения мира: весь исполняемый код — сериализация
+1. **Autosave contaminates any measurement.** The first Genesis profile was taken
+   on top of a world save: all the executable code is serialization
    (`UStruct::SerializeTaggedProperties` 3.81%, `FSaveFileObjectWriter` 2.89%,
-   `UWorld::SaveToFile` 0.82%). Измерения без учёта этого непригодны.
-2. **`.ark` уменьшился при автосейве:** 102.72 → 96.93 МБ (01:21).
-   Связано с обрезанием списков пересечений и сборкой мусора; на загрузку
-   не влияет, файл открывается штатно.
-3. **Падение профилёра не воспроизвелось.** Раньше сервер умирал сразу после
-   снятия профиля (дважды, без крашстака и дампа). На этот раз тот же профиль
-   отработал, сервер выжил. Вывод: падение связано не с профилёром как таким,
-   а с его попаданием на сохранение мира.
-4. **Шаги слота выполнялись вручную, по одному, с проверкой здоровья стенда
-   после каждого** (`manual.py state|ready|config|idle-after|window|census|profile|saveworld`).
+   `UWorld::SaveToFile` 0.82%). Measurements without accounting for this are unusable.
+2. **`.ark` shrank at the autosave:** 102.72 → 96.93 MB (01:21).
+   Related to the trimming of overlap lists and garbage collection; it does not affect loading,
+   the file opens normally.
+3. **The profiler crash did not reproduce.** Earlier the server died right after
+   a profile was taken (twice, with no crash stack and no dump). This time the same profile
+   ran cleanly and the server survived. Conclusion: the crash was not tied to the profiler as such,
+   but to its landing on a world save.
+4. **The slot steps were executed manually, one by one, with a bench health check
+   after each one** (`manual.py state|ready|config|idle-after|window|census|profile|saveworld`).
 ---
 
-## A6 — гигиена отчётов (правка ревьюера)
+## A6 — report hygiene (reviewer edit)
 
-### 1. Состояние, в котором снята каждая перепись
+### 1. The state in which each census was taken
 
-| Отчёт | Перепись снята | Что это значит |
+| Report | Census taken in | What it means |
 |---|---|---|
-| REPORT-Genesis.md | **восстановленное состояние** — после `TickProf.overlapall 0`, затем `overlaptrim 2` | `overlaptrim 2` не перечищает живые компоненты заново, поэтому числа пересечений и флагов относятся к восстановленному состоянию |
-| REPORT-TheIsland.md | **восстановленное состояние** — та же последовательность | то же |
-| REPORT-Fjordur.md | **состояние деплоя** — `overlaptrim 2` из прод-конфига, `overlapall 0` не применялся | единственная перепись, соответствующая прод-конфигурации |
+| REPORT-Genesis.md | **restored state** — after `TickProf.overlapall 0`, then `overlaptrim 2` | `overlaptrim 2` does not re-sweep live components, so the overlap and flag numbers refer to the restored state |
+| REPORT-TheIsland.md | **restored state** — the same sequence | same |
+| REPORT-Fjordur.md | **deploy state** — `overlaptrim 2` from the prod config, `overlapall 0` was not applied | the only census matching the prod configuration |
 
-Переписи **между картами напрямую не сравнимы**: Genesis и TheIsland сняты в другом
-состоянии, чем Fjordur. Внутри одной карты переписи сопоставимы между собой.
+The censuses are **not directly comparable across maps**: Genesis and TheIsland were taken in a different
+state than Fjordur. Within one map the censuses are comparable with each other.
 
-### 2. Крат фриза SaveWorld
+### 2. The spread of the SaveWorld freeze
 
-По всем шести прогонам: 3738, 3866, 3991, 4026, 4308, 4371 мс при пороге 500 мс.
-Разброс по максимуму: **×7.5 – ×8.7**. Прежняя формулировка «×8.6» относилась
-только к Genesis и не отражала максимум.
+Across all six runs: 3738, 3866, 3991, 4026, 4308, 4371 ms against the 500 ms threshold.
+Spread by the maximum: **×7.5 – ×8.7**. The earlier wording "×8.6" referred
+only to Genesis and did not reflect the maximum.
 
-### 3. Сноска о несравнимости П0/П1
+### 3. Footnote on the incomparability of P0/P1
 
-> П0/П1 на всех картах снят через ~2 минуты после готовности мира, а окна П2 —
-> сразу после окончания автосейва. Абсолютные значения П0/П1 и окон П2
-> сопоставимы только внутри одной карты и одного протокола.
+> P0/P1 on all maps was taken ~2 minutes after world readiness, while the P2 windows were
+> taken right after the end of the autosave. The absolute values of P0/P1 and of the P2 windows
+> are comparable only within one map and one protocol.
 
-### 4. Стоимость операции автосейва
+### 4. The cost of the autosave operation
 
-> **Автосейв добавляет +15 мс/тик на время сохранения и вызывает фриз 3.9–4.3 с.**
-> На Genesis в окне, захваченном сохранением, стоимость кадра выросла с 9.8 до
-> 25.0 мс/тик. Само сохранение обходится дороже всего остального кадра.
+> **The autosave adds +15 ms/tick for the duration of the save and causes a freeze of 3.9–4.3 s.**
+> On Genesis, in the window captured by the save, the frame cost rose from 9.8 to
+> 25.0 ms/tick. The save alone costs more than the rest of the frame.
 
-### 5. Механизм «свежего мира» — это ГИПОТЕЗА, а не установленный факт
+### 5. The "fresh world" mechanism is a HYPOTHESIS, not an established fact
 
-Наблюдение: сразу после автосейва кадр дешевле (TheIsland: 3.91 против 10.17 мс/тик).
-Возможные объяснения, ни одно не проверено:
-- **стазис актёров** — после сохранения часть актёров сбрасывается в «спящее» состояние;
-- **переходные процессы** — после свежей загрузки идут фазы инициализации, которые затем затихают;
-- **сборка мусора и очистка** — до автосейва накапливаются новые объекты, после сброса их меньше.
+Observation: right after the autosave the frame is cheaper (TheIsland: 3.91 versus 10.17 ms/tick).
+Possible explanations, none verified:
+- **actor stasis** — after the save some actors are reset into a "sleeping" state;
+- **transient processes** — after a fresh load there are initialization phases that then die down;
+- **garbage collection and cleanup** — before the autosave new objects accumulate, after the reset there are fewer of them.
 
-Требуется отдельный замер: профиль сразу после автосейва и через 10 минут,
-сравнение долей `APrimalCharacter::Tick`, `FTickTaskManager::RunTickGroup`, GC-символов.
-**До этого числа «после сохранения» нельзя трактовать как улучшение карты.**
+A separate measurement is required: a profile right after the autosave and 10 minutes later,
+comparing the shares of `APrimalCharacter::Tick`, `FTickTaskManager::RunTickGroup`, and GC symbols.
+**Until then, the "after the save" numbers must not be treated as an improvement of the map.**
 
-### 6. Был ли стартовый сейв до П0/П1 — проверка по сырым данным
+### 6. Was there a starting save before P0/P1 — a check against the raw data
 
-Свидетельство: `*_AntiCorruptionBackup.bak` создаётся **во время загрузки мира**
-(копия прочитанного .ark), а сам `.ark` переписывается только при реальном сохранении.
+Evidence: `*_AntiCorruptionBackup.bak` is created **during world loading**
+(a copy of the read .ark), while the `.ark` itself is rewritten only on an actual save.
 
-| Карта | запуск | RCON готов | окно П0/П1 | `.bak` | `.ark` переписан |
+| Map | launch | RCON ready | P0/P1 window | `.bak` | `.ark` rewritten |
 |---|---|---|---|---|---|
-| Genesis | 00:32:48 | 00:40:03 | 00:42:26–00:46:46 | 00:37:54 (в загрузке) | впервые 01:21:38 |
-| TheIsland | 01:33:43 | 01:39:53 | 01:42:13–01:46:32 | 01:37:56 (в загрузке) | впервые 02:07 |
-| Fjordur | 02:19:19 | 02:26:01 | 02:28:29–02:32:49 | 02:23:59 (в загрузке) | впервые 02:38 |
+| Genesis | 00:32:48 | 00:40:03 | 00:42:26–00:46:46 | 00:37:54 (during load) | first at 01:21:38 |
+| TheIsland | 01:33:43 | 01:39:53 | 01:42:13–01:46:32 | 01:37:56 (during load) | first at 02:07 |
+| Fjordur | 02:19:19 | 02:26:01 | 02:28:29–02:32:49 | 02:23:59 (during load) | first at 02:38 |
 
-**Вывод: завершённого стартового сохранения перед П0/П1 не было ни на одной карте.**
-Ожидание «конца стартового сейва» в слотах Genesis/TheIsland — это ожидание
-покоя файлов, а не ожидание сейва: `.ark` в это время не менялся.
+**Conclusion: there was no completed starting save before P0/P1 on any map.**
+The waiting for "the end of the starting save" in the Genesis/TheIsland slots was waiting
+for file quiescence, not for a save: the `.ark` was not changing at that time.
 
-Следствие: посылка ревьюера «Genesis ждал конца стартового сейва» **не подтверждается
-данными**. П0/П1 на трёх картах сняты в сопоставимых условиях (через ~2 минуты
-после подъёма мира, без предшествующего сохранения). Сравнимость самих значений
-ограничена разным содержимым карт, а не разными условиями замера.
+Consequence: the reviewer's premise that "Genesis waited for the end of a starting save" is **not
+supported by the data**. P0/P1 on the three maps was taken in comparable conditions (~2 minutes
+after the world lift, with no preceding save). The comparability of the values themselves
+is limited by the different contents of the maps, not by different measurement conditions.

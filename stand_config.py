@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Прод-конфиг §2 ARCH.md + чек-лист doit6 §2 (maxfps 60 и fixclamp 0 - сразу после бута).
-# Вывод TickProf идёт в TickProf.log, поэтому проверяем эффект по логу.
+# Prod config §2 ARCH.md + doit6 §2 checklist (maxfps 60 and fixclamp 0 - right after boot).
+# TickProf output goes to TickProf.log, so we verify the effect via the log.
 import os, sys, time, subprocess
 sys.path.insert(0, r'C:\Dev\_research')
 os.environ.setdefault('RCON_HOST', '192.168.8.218')
@@ -15,7 +15,7 @@ def logtail(n=12):
         with open(LOG, 'r', encoding='utf-8', errors='replace') as f:
             return f.read().splitlines()[-n:]
     except Exception as e:
-        return ['<лог недоступен: %s>' % e]
+        return ['<log unavailable: %s>' % e]
 
 
 def apply(cmds):
@@ -39,15 +39,15 @@ def apply(cmds):
 
 if __name__ == '__main__':
     apply([
-        ('TickProf.maxfps 60', 'чек-лист: тикрейт 60 (ini-значение до runtime не доходит)'),
-        ('TickProf.fixclamp 0', 'чек-лист: снять зажим тикрейта'),
-        ('TickProf.fncache 1', 'прод-конфиг §2 #1'),
-        ('TickProf.iscache 1', 'прод-конфиг §2 #2'),
-        ('TickProf.cachename 1', 'прод-конфиг §2 #3'),
-        ('TickProf.nochart 1', 'прод-конфиг §2 #4'),
-        ('TickProf.overlaptrim3', 'прод-конфиг §2 #5 (схема v2, белый список A2) - подтверждено A/B: 4 валидные пары, медиана +3.5 t/s'),
-        ('TickProf.status', 'итоговое состояние'),
+        ('TickProf.maxfps 60', 'checklist: tickrate 60 (the ini value does not reach runtime)'),
+        ('TickProf.fixclamp 0', 'checklist: remove the tickrate clamp'),
+        ('TickProf.fncache 1', 'prod config §2 #1'),
+        ('TickProf.iscache 1', 'prod config §2 #2'),
+        ('TickProf.cachename 1', 'prod config §2 #3'),
+        ('TickProf.nochart 1', 'prod config §2 #4'),
+        ('TickProf.overlaptrim3', 'prod config §2 #5 (scheme v2, whitelist A2) - confirmed by A/B: 4 valid pairs, median +3.5 t/s'),
+        ('TickProf.status', 'final state'),
     ])
-    print('\n=== хвост лога ===')
+    print('\n=== log tail ===')
     for l in logtail(16):
         print('  ', l)

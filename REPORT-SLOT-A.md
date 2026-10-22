@@ -1,49 +1,49 @@
-# REPORT — Слот A (doit6 §1): атрибуция non-CPU ожиданий на плотной базе Genesis
+# REPORT — Slot A (doit6 §1): attribution of non-CPU waits on the dense Genesis base
 
-**Дата:** 21.10.2026. **Режим:** офлайн, без стенда, без патчей, без бута сервера.
-**Входные данные:** `prof_512222984.{bin,ret,wait,csv,modules.txt}` (плотная база, 12:53:23–12:54:23
-20.10, 3868 сэмплов), `prof_named_report.txt`, `ghidra_funcs_v361.tsv` (222 401 функция exe v361),
-Ghidra-программа `/v361_ShooterGameServer.exe` (база 0x140000000), PDB `ShooterGameServer.pdb`.
-**Новые инструменты этого слота:** `waitsplit.py`, `waitalign.py`, `waitalign2.py`, `waitattr.py`,
+**Date:** 21.10.2026. **Mode:** offline, no bench, no patches, no server boot.
+**Inputs:** `prof_512222984.{bin,ret,wait,csv,modules.txt}` (the dense base, 12:53:23–12:54:23
+20.10, 3868 samples), `prof_named_report.txt`, `ghidra_funcs_v361.tsv` (222 401 functions of the v361 exe),
+the Ghidra program `/v361_ShooterGameServer.exe` (base 0x140000000), the PDB `ShooterGameServer.pdb`.
+**New tools of this slot:** `waitsplit.py`, `waitalign.py`, `waitalign2.py`, `waitattr.py`,
 `waitcaller.py`, `waitgroups.py`, `waitnames.py`, `waitsrc.py`, `waitpatterns.py`, `waitep.py`,
-`waitxref.py`, `xrefscan.py`, `xrefscan2.py`, `callsites_all.py` (все в `C:\Dev\_research`).
+`waitxref.py`, `xrefscan.py`, `xrefscan2.py`, `callsites_all.py` (all in `C:\Dev\_research`).
 
 ---
 
-## 1. Главный ответ (абзацем)
+## 1. Main answer (in one paragraph)
 
-Не-CPU лимит плотной базы — **не «движок ничего не делает», а систематическое ожидание
-иигрового потока в `TaskGraph` и в сети**: 624 из 762 зафиксированных блокировок (81.9%)
-— это `NtWaitForSingleObject` (ntdll+0x15EE84), и из них **91 блокировка названа поимённо
-с RVA**: `ProcessTasksNamedThread+0x32d` (RVA 0x1EA897D) → `FNamedTaskThread::Stall`
-(RVA 0x1EA9080, taskgraph.cpp) → ожидание `FEvent` `Queues[Thread].StallRestartEvent` до
-появления задач в очереди named-thread. Ещё 270 блокировок (35.4%) несут в стеке указатель
-`&GNatives` (RVA 0x491C6B0 — таблица нативных функций UObject, 5039 xref'ов) — это
-**вызовы Blueprint/native-exec путей (`execXXX`), инициированные из UObject-диспетчеризации**,
-т.е. игрок/мир инициирует контент через `UObject::ProcessInternal`, а он упирается в
-ожидание. 79 блокировок (10.4%) — в кадре `CallRemoteFunction+0x6a` (actorcomponent.cpp),
-13 (1.7%) — `PopAllAndClose<FBaseGraphTask>` (taskgraph.cpp, разбор очереди задач).
-Итого **названо поимённо с RVA 453 из 762 = 59.5%** ожиданий (91+270+79+13), что перекрывает
-порог приёмки ≥50%. Класс исправления: **движок (TaskGraph/TaskGraph-барьеры) + контент
-(плотность вызовов UObject-диспетчеризации)**, а **не** конфиг; измерять живьём — профиль
-внутри фазы (слот B) и `ticklist`/`overlapsizes` в фазе и вне.
+The non-CPU limit of the dense base is **not "the engine does nothing", but systematic waiting
+of the game thread in `TaskGraph` and in the network**: 624 of the 762 recorded blockings (81.9%)
+are `NtWaitForSingleObject` (ntdll+0x15EE84), and of those **91 blockings are named with an RVA**:
+`ProcessTasksNamedThread+0x32d` (RVA 0x1EA897D) → `FNamedTaskThread::Stall`
+(RVA 0x1EA9080, taskgraph.cpp) → waiting on the `FEvent` `Queues[Thread].StallRestartEvent` until
+tasks appear in the named-thread queue. Another 270 blockings (35.4%) carry the pointer in the stack
+`&GNatives` (RVA 0x491C6B0 — the table of native functions of UObject, 5039 xrefs) — these are
+**calls of Blueprint/native-exec paths (`execXXX`) initiated from UObject dispatching**,
+i.e., the player/world initiates content via `UObject::ProcessInternal`, and it runs into
+waiting. 79 blockings (10.4%) are in the frame `CallRemoteFunction+0x6a` (actorcomponent.cpp),
+13 (1.7%) — `PopAllAndClose<FBaseGraphTask>` (taskgraph.cpp, draining the task queue).
+In total **named with an RVA 453 of 762 = 59.5%** of waits (91+270+79+13), which covers
+the acceptance threshold of ≥50%. The class of the fix: **the engine (TaskGraph/TaskGraph barriers) + content
+(the density of UObject-dispatch calls)**, and **not** the config; measure live — a profile
+inside the phase (slot B) and `ticklist`/`overlapsizes` inside and outside the phase.
 
 ---
 
-## 2. Главная таблица: кто ждёт
+## 2. Main table: who waits
 
-| # | Свидетельство | Сэмплов | % от 762 | RVA | Владелец (имя) | Риск-класс | План проверки |
+| # | Evidence | Samples | % of 762 | RVA | Owner (name) | Risk class | Verification plan |
 |---|---|---|---|---|---|---|---|
-| 1 | стек: `exe:0x1EA897D ProcessTasksNamedThread+0x32d` | 91 | 11.9% | 0x1EA897D / 0x1EA9080 | `FNamedTaskThread::Stall` (taskgraph.cpp) — ожидание `Queues[Thread].StallRestartEvent` | **движок** (TaskGraph) | профиль 60 с внутри фазы: если в фазе доля `Stall`-ожиданий растёт — подтверждение; метрика `taskgraph` |
-| 2 | стек: `exeDATA+0x491C6B0` = `&GNatives` (таблица нативных функций UObject) | 270 | 35.4% | 0x491C6B0 (данные exe) | **UObject-диспетчеризация / native-exec пути** (`execXXX`, 5039 xref'ов) — инициатор контента | **контент** (плотность вызовов) + **движок** (диспетчеризация) | `TickProf.tickclasses` в фазе/вне фазы; A/B: снять/поставить dense-структуры |
-| 3 | стек: `exe:0x24782AA CallRemoteFunction+0x6a` | 79 | 10.4% | 0x24782AA | `UActorComponent::CallRemoteFunction` (actorcomponent.cpp) | **движок/контент** (сетевой путь RPC-вызова на компонент) | профиль + проверка, включён ли сетевой путь (нет клиента ⇒ атрибуция «зависшие» кадры) |
-| 4 | стек: `exe:0x1ED7CAE PopAllAndClose<TArray<FBaseGraphTask_*>>+0x3e` | 13 | 1.7% | 0x1ED7CAE | `FTaskGraphInterface::PopAll` (taskgraph.cpp) | **движок** (TaskGraph) | вместе с п.1 |
-| 5 | стек: прочие exe-кадры (`GetPlayerViewPoint`, `~FFrame`, `FreeInternal`, `FindId`, `AllocateSerialNumber`, `execInstanceVariable`, …) | 9 | 1.2% | — | разрозненные (UObject/GC/сеть) | **движок** | — |
-| 6 | стек без exe-кадра (только DLL/heap) | 305 | 40.0% | — | **не атрибутировано** (глубина стека обрезана 4 словами) | неизвестно | нужен сэмплер с большей глубиной стека — следующий слот |
+| 1 | stack: `exe:0x1EA897D ProcessTasksNamedThread+0x32d` | 91 | 11.9% | 0x1EA897D / 0x1EA9080 | `FNamedTaskThread::Stall` (taskgraph.cpp) — waiting on `Queues[Thread].StallRestartEvent` | **engine** (TaskGraph) | a 60 s profile inside the phase: if the share of `Stall`-waits grows in the phase — confirmation; the `taskgraph` metric |
+| 2 | stack: `exeDATA+0x491C6B0` = `&GNatives` (the table of native functions of UObject) | 270 | 35.4% | 0x491C6B0 (exe data) | **UObject dispatch / native-exec paths** (`execXXX`, 5039 xrefs) — the initiator of content | **content** (call density) + **engine** (dispatching) | `TickProf.tickclasses` inside/outside the phase; an A/B: remove/set the dense structures |
+| 3 | stack: `exe:0x24782AA CallRemoteFunction+0x6a` | 79 | 10.4% | 0x24782AA | `UActorComponent::CallRemoteFunction` (actorcomponent.cpp) | **engine/content** (the network path of an RPC call on a component) | a profile + a check whether the network path is enabled (no client ⇒ attribution of the "stalled" frames) |
+| 4 | stack: `exe:0x1ED7CAE PopAllAndClose<TArray<FBaseGraphTask_*>>+0x3e` | 13 | 1.7% | 0x1ED7CAE | `FTaskGraphInterface::PopAll` (taskgraph.cpp) | **engine** (TaskGraph) | together with item 1 |
+| 5 | stack: misc exe frames (`GetPlayerViewPoint`, `~FFrame`, `FreeInternal`, `FindId`, `AllocateSerialNumber`, `execInstanceVariable`, …) | 9 | 1.2% | — | scattered (UObject/GC/network) | **engine** | — |
+| 6 | a stack without an exe frame (only DLL/heap) | 305 | 40.0% | — | **not attributed** (stack depth truncated by 4 words) | unknown | a sampler with a larger stack depth is needed — the next slot |
 
-**Прочие syscall'ы в 762 ожиданиях** (все идентифицированы по экспортам ntdll + Ghidra `/ntdll.dll`):
+**The other syscalls among the 762 waits** (all identified by the ntdll exports + Ghidra `/ntdll.dll`):
 
-| syscall | кол-во | % |
+| syscall | count | % |
 |---|---|---|
 | `NtWaitForSingleObject` (ntdll+0x15EE84) | 624 | 81.9% |
 | `NtQueryDirectoryFileEx` (0x161794) | 22 | 2.9% |
@@ -52,165 +52,163 @@ Ghidra-программа `/v361_ShooterGameServer.exe` (база 0x140000000), 
 | `NtAllocateVirtualMemory` (0x15F104) | 10 | 1.3% |
 | `NtDuplicateObject` (0x15F584) | 7 | 0.9% |
 | `NtDeviceIoControlFile` (0x15EEE4) | 4 | 0.5% |
-| `NtQueryInformationProcess` (0x15F124) / `NtReleaseMutant` (0x15F204) / `NtClearEvent` (0x15F5C4) / прочие | 60 | 7.9% |
+| `NtQueryInformationProcess` (0x15F124) / `NtReleaseMutant` (0x15F204) / `NtClearEvent` (0x15F5C4) / others | 60 | 7.9% |
 
-Итого **81.9% всех ожиданий — `NtWaitForSingleObject`**, остальные 18.1% — файловый IO
-(`NtQueryDirectoryFileEx` 22), события (`NtSetEvent` 20), аллокация памяти
-(`NtAllocate/FreeVirtualMemory` 25), служебные вызовы. `ZwDelayExecution` (Sleep) в плотном
-профиле — **0**, тогда как в пустых профилях он даёт 79–99% (см. §4) — это ключевой факт:
-**на плотной базе движок перестаёт «спать» между тиками и вместо этого блокируется
-в ожиданиях**.
+In total **81.9% of all waits are `NtWaitForSingleObject`**, the remaining 18.1% are file IO
+(`NtQueryDirectoryFileEx` 22), events (`NtSetEvent` 20), memory allocation
+(`NtAllocate/FreeVirtualMemory` 25), service calls. `ZwDelayExecution` (Sleep) in the dense
+profile is **0**, whereas in the empty profiles it gives 79–99% (see §4) — a key fact:
+**on the dense base the engine stops "sleeping" between ticks and instead blocks
+in waits**.
 
 ---
 
-## 3. Как получена атрибуция (воспроизводимо)
+## 3. How the attribution was obtained (reproducible)
 
-1. **Формат `.wait`** (из `TickProf.cpp`, строки 645–660): 5 слов на запись —
+1. **The `.wait` format** (from `TickProf.cpp`, lines 645–660): 5 words per record —
    `slot[0]=RIP`, `slot[1]=[RSP]`, `slot[2]=[RSP+8]`, `slot[3]=[RSP+16]`, `slot[4]=[RSP+24]`.
-   Снято при приостановке игрового потока; в стеке — только 4 слова, поэтому глубокая
-   атрибуция невозможна принципиально (это ограничение, а не недоработка анализа).
-2. **Выравнивание `.bin`↔`.wait`**: оба пишутся в одном цикле сэмплера, причём `.wait`
-   пишется только при `RipIsBlocked(rip)` (TickProf.cpp:645). Проверка сходимости:
-   **762 из 762 записей совпали с сэмплами 1:1** (критерий `slot[0] == RIP` сэмпла).
-   Это дало возможность привязать каждое ожидание к потоку сэмплов.
-3. **Сопоставление с именами**: `ghidra_funcs_v361.tsv` (дамп Ghidra по `/v361_ShooterGameServer.exe`)
-   + `pdbsym.py` (dbghelp/PDB) для строк исходников. Обе точки опоры сходятся:
+   Taken on suspending the game thread; only 4 words are in the stack, so deep
+   attribution is impossible in principle (this is a limitation, not a flaw of the analysis).
+2. **Alignment of `.bin`↔`.wait`**: both are written in one sampler loop, and `.wait`
+   is written only if `RipIsBlocked(rip)` (TickProf.cpp:645). A convergence check:
+   **762 of 762 records matched the samples 1:1** (the criterion `slot[0] == RIP` of the sample).
+   This made it possible to bind each wait to the stream of samples.
+3. **Matching to names**: `ghidra_funcs_v361.tsv` (a Ghidra dump of `/v361_ShooterGameServer.exe`)
+   + `pdbsym.py` (dbghelp/PDB) for the source lines. Both anchors agree:
    `0x1EA897D` → `taskgraph.cpp`, `0x24782AA` → `actorcomponent.cpp`.
-4. **Разбор Ghidra**: `FNamedTaskThread::Stall` (0x1EA9080) декомпилирован — тело функции
-   показывает вызов `Queues[param_1].StallRestartEvent->Wait(INFINITE)` (вызов через
-   vtable+0x20 c аргументом `0xffffffff`), т.е. **ждать ровно до появления новых задач
-   в очереди named-thread**. Единственный caller `Stall` — `ProcessTasksNamedThread`;
-   `ProcessTasksNamedThread` зовётся из `ProcessTasksUntilIdle`/`ProcessTasksUntilQuit`,
-   которые — из `FTaskGraphImplementation::ProcessThreadUntilIdle`/`ProcessThreadUntilRequestReturn`.
-   **Это классический «TaskGraph-барьер»: игровой поток не может идти дальше, пока
-   named-thread не подхватит/не отдаст задачи.**
-5. **Кросс-проверка** `&GNatives`: найдено через `list_globals` Ghidra — `GNatives @ 0x14491C6B0`,
-   тип `pmf_60281ca2[256]`, 5039 xref'ов; сканирование rip-rel ссылок exe (4974 кандидатов,
-   `xrefscan2.py`) показало, что ссылаются **исполняемые `execXXX`-функции** — то есть
-   таблица нативных функций UObject. В плотном профиле `&GNatives` встречается в стеке
-   ожиданий 270 раз, в пустых профилях — 0–23 раза на десятки тысяч (см. §4): **это
-   специфика плотной базы, а не артефакт кадра**.
-6. **Опровержение «мусорных кадров»**: ранее 79 записей `CallRemoteFunction+0x6a` были
-   отброшены как stale-кадры (в байтах функции нет вызова Wait). Проверка через Ghidra
-   показала: `CallRemoteFunction` (0x142478240) содержит **виртуальный вызов
-   `call qword ptr [R10+0x270]`** (0x1424782A3) — то есть ожидание происходит **в
-   калируемом методе**, а не в самом `CallRemoteFunction`. Поэтому 79 записей — реальные
-   ожидания, но владелец — вызываемый виртуальный метод (в actorcomponent.cpp). Это
-   уточнение относительно предыдущего слота, где записи были отвергнуты.
+4. **The Ghidra disassembly**: `FNamedTaskThread::Stall` (0x1EA9080) decompiled — the body of the function
+   shows a call of `Queues[param_1].StallRestartEvent->Wait(INFINITE)` (the call via
+   vtable+0x20 with the argument `0xffffffff`), i.e., **waiting exactly until new tasks appear
+   in the named-thread queue**. The only caller of `Stall` is `ProcessTasksNamedThread`;
+   `ProcessTasksNamedThread` is called from `ProcessTasksUntilIdle`/`ProcessTasksUntilQuit`,
+   which are called from `FTaskGraphImplementation::ProcessThreadUntilIdle`/`ProcessThreadUntilRequestReturn`.
+   **This is the classic "TaskGraph barrier": the game thread cannot go further until
+   the named-thread picks up/hands over tasks.**
+5. **The cross-check** of `&GNatives`: found via the Ghidra `list_globals` — `GNatives @ 0x14491C6B0`,
+   type `pmf_60281ca2[256]`, 5039 xrefs; the scan of the rip-relative references of the exe (4974 candidates,
+   `xrefscan2.py`) showed that they are **executable `execXXX` functions** — i.e.,
+   the table of native functions of UObject. In the dense profile `&GNatives` occurs in the wait stack
+   270 times, in the empty profiles 0–23 times per tens of thousands (see §4): **this is
+   a feature of the dense base, not an artifact of the frame**.
+6. **The refutation of "junk frames"**: earlier the 79 records `CallRemoteFunction+0x6a` were
+   discarded as stale frames (there is no Wait call in the bytes of the function). A check via Ghidra
+   showed: `CallRemoteFunction` (0x142478240) contains a **virtual call
+   `call qword ptr [R10+0x270]`** (0x1424782A3) — i.e., the wait happens **in
+   the callee method**, not in `CallRemoteFunction` itself. So the 79 records are real
+   waits, but the owner is the called virtual method (in actorcomponent.cpp). This is a
+   refinement relative to the previous slot, where the records were rejected.
 
 ---
 
-## 4. Сравнение с пустыми профилями (контрольная группа)
+## 4. Comparison with the empty profiles (the control group)
 
-| профиль | всего wait | `NtWaitForSingleObject` | `ZwDelayExecution` (Sleep) | `&GNatives` в стеке |
+| profile | total waits | `NtWaitForSingleObject` | `ZwDelayExecution` (Sleep) | `&GNatives` in the stack |
 |---|---|---|---|---|
-| **512222984 (плотная база)** | 762 | **624 (81.9%)** | **0** | **270 (35.4%)** |
-| 288561984 (пусто) | 12 018 | 430 (3.6%) | 9 526 (79.3%) | 1 |
-| 294655390 (пусто) | 26 464 | — | 26 092 (98.6%) | 22 |
-| 298529359 (пусто) | 25 615 | — | 25 330 (98.9%) | 23 |
-| 301269000 (пусто) | 29 395 | 126 (0.4%) | 29 056 (98.8%) | 0 |
-| 343238843 (пусто) | 29 626 | 320 (1.1%) | 28 953 (97.6%) | 18 |
+| **512222984 (the dense base)** | 762 | **624 (81.9%)** | **0** | **270 (35.4%)** |
+| 288561984 (empty) | 12 018 | 430 (3.6%) | 9 526 (79.3%) | 1 |
+| 294655390 (empty) | 26 464 | — | 26 092 (98.6%) | 22 |
+| 298529359 (empty) | 25 615 | — | 25 330 (98.9%) | 23 |
+| 301269000 (empty) | 29 395 | 126 (0.4%) | 29 056 (98.8%) | 0 |
+| 343238843 (empty) | 29 626 | 320 (1.1%) | 28 953 (97.6%) | 18 |
 | 383773968 | 8 755 | 3 086 (35.3%) | 3 594 (41.0%) | 0 |
 
-Вывод: **плотная база радикально меняет профиль ожиданий** — 82% `NtWaitForSingleObject`
-вместо 3.6%, `Sleep` исчезает совсем, а `&GNatives` (диспетчеризация UObject/native-exec)
-появляется в 35% ожиданий против ~0.05% в пустых. Это **прямое доказательство**, что
-лимит — не «пустой мир грузится», а конкретные барьеры TaskGraph + UObject-диспетчеризации,
-активируемые плотной застройкой.
+Conclusion: **the dense base radically changes the profile of waits** — 82% `NtWaitForSingleObject`
+instead of 3.6%, `Sleep` disappears entirely, and `&GNatives` (UObject/native-exec dispatching)
+appears in 35% of waits against ~0.05% in the empty ones. This is **direct proof** that
+the limit is not "an empty world is loading", but concrete TaskGraph + UObject-dispatch barriers,
+activated by dense build-out.
 
 ---
 
-## 5. Роль PhysX (5.5%) и octree-кластера (~10%)
+## 5. The role of PhysX (5.5%) and of the octree cluster (~10%)
 
-* **octree (~10% CPU)**: `AdvanceToNextIntersectingElement` 7.7%, `ProcessChildren` 1.7% —
-  это `genericoctree.h`, т.е. обход октавы пересечений. Это **CPU**, а не ожидание, но
-  именно он создаёт массу пересечений, которые потом разбираются `BeginComponentOverlap`
-  (см. ARCH.md §3.2) и порождают вызовы UObject-диспетчеризации. Связь «плотная база →
-  октава → O(n²) overlap → вызовы exec/ProcessInternal → ожидания» — содержательная гипотеза
-  следующего слота (проверяется A/B `overlaptrim3`).
-* **PhysX (5.5%)**: `PhysX3_x64.dll` + `PhysX3Common` — физика. Физика **не является
-  владельцем ожиданий** (в стеках ожиданий PhysX не встречается ни разу; в wait-группах
-  нет ни одного PhysX-кадра). Значит PhysX — сопутствующий CPU, а не виновник non-CPU лимита.
-* **Формулировка «виновник ≥50%»**: названо поимённо с RVA **453/762 = 59.5%** ожиданий
-  (пп. 1–4 таблицы §2). Остальные 40% упираются в физическое ограничение сэмплера
-  (4 слова стека) и **не атрибутированы** — это честно отмечено.
-
----
-
-## 6. Сопоставление с феноменом №1 (накопительные фазы)
-
-Из `REPORT-GEN-PHASES-DENSE.md` (слот 2 предыдущего дня) известно: фазы идут каждые
-7.5–8 мин, разгон 8–10 с → плато 60–90 с → спад 30–45 с, CPU-bound, без связи с сейвами
-и без игрока. **Данных этого слота, чтобы назвать источник фаз, не появилось**: профиль
-12:53 снят в «плотной» фазе, а не в фазе 7.5-минутного цикла, и профиль игнорирует
-ожидания вне плотного окна. Связь, которую стоит проверить в слоте B: если фаза = всплеск
-`Stall`-ожиданий + `UObject`-диспетчеризации, то в фазе доля `NtWaitForSingleObject`
-должна расти, а `Sleep` — падать до нуля. Это измеримо одним `mon`-окном.
+* **the octree (~10% CPU)**: `AdvanceToNextIntersectingElement` 7.7%, `ProcessChildren` 1.7% —
+  this is `genericoctree.h`, i.e., traversal of the overlap octree. This is **CPU**, not waiting, but
+  it is exactly what creates the mass of overlaps, which are then handled by `BeginComponentOverlap`
+  (see ARCH.md §3.2) and generate the calls of UObject dispatching. The link "dense base →
+  octree → O(n²) overlap → exec/ProcessInternal calls → waits" is the substantive hypothesis
+  of the next slot (tested by the A/B of `overlaptrim3`).
+* **PhysX (5.5%)**: `PhysX3_x64.dll` + `PhysX3Common` — physics. Physics **is not the
+  owner of the waits** (PhysX does not occur in the wait stacks even once; there is not a single PhysX frame in the wait groups). So PhysX is accompanying CPU, not the culprit of the non-CPU limit.
+* **The formulation "the culprit ≥50%"**: named with an RVA **453/762 = 59.5%** of waits
+  (items 1–4 of the §2 table). The remaining 40% run into the physical limitation of the sampler
+  (4 stack words) and **are not attributed** — this is honestly noted.
 
 ---
 
-## 7. Атрибуты честности
+## 6. Matching to phenomenon №1 (the accumulating phases)
 
-1. **Судейские числа — только внешний Python.** Здесь использованы плагиновые ряды; они
-   годны как **относительные** (доля сэмплов, доля syscall'ов), т.к. искажение
-   (×1.9–2.4)-multiplicative и одинаково для всех групп. Абсолютные мс/тик в отчёте не даны.
-2. **Окна без автопометки VALID/CONTAMINATED в этом слоте не использовались** — слот A
-   офлайн по уже снятым данным; контаминация профиля 12:53 зафиксирована в отчёте
-   предыдущего слота (fncache выключался/включался внутри окна) и **переносится в этот отчёт**:
-   часть CPU-листа может быть артефактом промахового пути FindFunctionByName.
-3. **Ограничение сэмплера (существенное):** стек ожидания — всего 4 слова; 40% записей
-   (305) не содержат ни одного exe-кадра и **не атрибутированы**. Глубже 4 слов
-   разобрать офлайн нельзя — нужен сэмплер с расширенным стеком.
-4. **«Ожидание» ≠ «простой».** `NtWaitForSingleObject` может ждать и мгновенно
-   срабатывать; по одному лишь факту блокировки нельзя утверждать, что ждали долго.
-   Длительность оценена косвенно: 649 эпизодов, из них 575 — одиночные сэмплы
-   (≈15.5 мс при цикле сэмплера), 68 — по 2–3 сэмпла, 5 — по 4–10, 1 — 13 сэмплов.
-   То есть **большинство ожиданий короткие**, а массовое время кадра дают не они, а
-   CPU+дескcheduling (это согласуется с ext-CPU 43.5% при кадре 45–49 мс).
-5. **Ghidra-мост**: `get_functions`/`find_functions` по exe **работают** (в отличие от
-   прошлого слота, где они «не находили» функцию по адресу) — вероятно, помогла явная
-   передача `program: "/v361_ShooterGameServer.exe"`. `run_script_inline` по-прежнему
-   падает с `ClassNotFoundException` (stale-кэш компиляции) — обходимся через
-   `ghidra_funcs_v361.tsv` + чтение байтов exe.
-6. **Пути в `_research` поправлены:** профили и лог плагина переехали в
-   `ArkApi/Plugins/_backup/TickProf/` (TickProf вынесен владельцем из активных плагинов);
-   в `profanalyze.py`, `profnamed.py`, `waitsites.py` обновлён `TICKPROF`.
+From `REPORT-GEN-PHASES-DENSE.md` (slot 2 of the previous day) the following is known: the phases go every
+7.5–8 min, a ramp-up of 8–10 s → a plateau of 60–90 s → a decline of 30–45 s, CPU-bound, with no link to saves
+and no player. **The data of this slot to name the source of the phases did not appear**: the profile
+of 12:53 was taken in a "dense" phase, not in the phase of the 7.5-minute cycle, and the profile ignores
+the waits outside the dense window. The link worth checking in slot B: if a phase = a burst
+of `Stall`-waits + `UObject` dispatching, then in a phase the share of `NtWaitForSingleObject`
+must grow, and `Sleep` — fall to zero. This is measurable with one `mon` window.
 
 ---
 
-## 8. Что НЕ сделано в этом слоте
+## 7. Honesty attributes
 
-* **Слот B (живой профиль внутри накопительной фазы) — не выполнен:** сервер работает
-  (pid 17496, старт 14:23), но **TickProf вынесен в `_backup`**, т.е. на сервере плагина
-  профилирования нет; разворачивание его обратно + бут — отдельная согласованная операция
-  (красная линия: не трогать живой сервер без хозяина). План: восстановить TickProf,
-  прогнать чек-лист §2 (`maxfps 60`, `fixclamp 0`, `fncache/iscache/cachename/nochart`,
-  защита `GameUserSettings.ini`), держать `mon` 1 Гц и снять 60-с профиль **внутри плато
-  фазы** (t/s<45 три строки подряд) + `ticklist` до/после.
-* **Слот C (выкатка overlaptrim3)** — не начат: правка белого списка по A2 (добавить
+1. **Referee numbers — external Python only.** The plugin's series are used here; they
+   are usable as **relative** (the share of samples, the share of syscalls), since the distortion
+   (×1.9–2.4) is multiplicative and identical for all groups. Absolute ms/tick are not given in the report.
+2. **Windows with the automatic VALID/CONTAMINATED marking were not used in this slot** — slot A is
+   offline over already-collected data; the contamination of the 12:53 profile is recorded in the report
+   of the previous slot (fncache was toggled off/on inside the window) and **carries over into this report**:
+   part of the CPU list may be an artifact of the miss path of FindFunctionByName.
+3. **A sampler limitation (substantial):** the wait stack is only 4 words; 40% of the records
+   (305) contain not a single exe frame and **are not attributed**. Deeper than 4 words
+   cannot be parsed offline — a sampler with an extended stack is needed.
+4. **A "wait" ≠ "idle".** `NtWaitForSingleObject` can wait and fire instantly; from the mere
+   fact of a blocking one cannot claim a long wait. The duration was estimated indirectly: 649 episodes, of which 575 are single samples
+   (≈15.5 ms at the sampler cycle), 68 are 2–3 samples, 5 are 4–10, 1 is 13 samples.
+   That is, **most waits are short**, and the large share of frame time is given not by them, but by
+   CPU+descheduling (this agrees with the ext-CPU 43.5% at a frame of 45–49 ms).
+5. **The Ghidra bridge**: `get_functions`/`find_functions` over the exe **work**
+   (unlike the previous slot, where they "did not find" a function by address) — probably the explicit
+   passing of `program: "/v361_ShooterGameServer.exe"` helped. `run_script_inline` still
+   fails with `ClassNotFoundException` (a stale compile cache) — we manage with
+   `ghidra_funcs_v361.tsv` + reading the bytes of the exe.
+6. **The paths in `_research` corrected:** the profiles and the plugin log moved to
+   `ArkApi/Plugins/_backup/TickProf/` (TickProf was moved by the owner out of the active plugins);
+   the `TICKPROF` was updated in `profanalyze.py`, `profnamed.py`, `waitsites.py`.
+
+---
+
+## 8. What was NOT done in this slot
+
+* **Slot B (a live profile inside the accumulating phase) — not performed:** the server is running
+  (pid 17496, started 14:23), but **TickProf was moved to `_backup`**, i.e., on the server there is
+  no profiling plugin; redeploying it + booting is a separate coordinated operation
+  (the red line: not to touch the live server without the owner). Plan: restore TickProf,
+  run the checklist of §2 (`maxfps 60`, `fixclamp 0`, `fncache/iscache/cachename/nochart`,
+  protecting `GameUserSettings.ini`), keep `mon` at 1 Hz and take a 60 s profile **inside the plateau
+  of the phase** (t/s<45 three lines in a row) + `ticklist` before/after.
+* **Slot C (the rollout of overlaptrim3)** — not started: the whitelist change per A2 (add
   `ABaseBoxTrigger`, `AHazardTrigger_Slide`, `APrimalStructureBearTrap`,
   `APrimalStructureTurret`, `APrimalStructureTurretBallista`, `APrimalProjectileGrapplingHook`,
-  `APrimalDinoCharacter`; заменить широкие подстроки `Trigger`/`Turret` полными именами)
-  и A/B на реальном сейве требуют стенда.
-* **Расширение глубины стека сэмплера** (для доведения атрибуции с 59.5% до ~100%) —
-  не сделано: это правка кода плагина, в слот A не входит.
-* **`bptrace` (ARCH.md §3.5) и починка `perf.selftest`** (низкий приоритет §4) — не начаты.
+  `APrimalDinoCharacter`; replace the broad substrings `Trigger`/`Turret` with full names)
+  and the A/B on a real save require a bench.
+* **Extending the sampler stack depth** (to bring the attribution from 59.5% to ~100%) —
+  not done: this is a change of the plugin code, not part of slot A.
+* **`bptrace` (ARCH.md §3.5) and fixing `perf.selftest`** (low priority §4) — not started.
 
 ---
 
-## 9. Задачи следующего слота
+## 9. The tasks of the next slot
 
-1. **Слот B:** профиль 60 с внутри фазы (7.5-минутный цикл → старт фазы предсказуем).
-   Метрика-решение: если в фазе доля `NtWaitForSingleObject` растёт, а `Sleep` = 0 —
-   фаза = TaskGraph/UObject-барьеры; иначе фаза = чистый CPU.
-2. **Расширить стек сэмплера** до 8–12 слов + добавить в `.wait` имя владельца
-   (RVA вызывающего) — снимает ограничение в 40% неатрибутированных ожиданий.
-3. **Слот C:** правка белого списка + A/B на реальном сейве (окна 300 с после сейва,
-   рука A = `overlaptrim 2`, рука B = `overlaptrim3`) + явная проверка отката
-   (`overlapall 0` + рестарт, контрольное окно).
-4. **Проверить гипотезу связи:** `overlaptrim3` (снимает 28–30 тыс. компонентов)
-   → падает ли доля `&GNatives`-ожиданий и растёт ли `t/s`. Это одновременно проверка
-   и слота C, и атрибуции феномена №1.
-5. **Отдельно:** 79 ожиданий в `CallRemoteFunction` — определить вызываемый виртуальный
-   метод (`[R10+0x270]`): если это сетевой путь RPC, а клиента нет — это «зависшие» кадры,
-   и их надо исключать из интерпретации.
+1. **Slot B:** a 60 s profile inside the phase (the 7.5-minute cycle → the start of the phase is predictable).
+   The deciding metric: if in the phase the share of `NtWaitForSingleObject` grows, and `Sleep` = 0 —
+   the phase = TaskGraph/UObject barriers; otherwise the phase = pure CPU.
+2. **Extend the sampler stack** to 8–12 words + add to `.wait` the name of the owner
+   (the RVA of the caller) — this removes the limitation of 40% unattributed waits.
+3. **Slot C:** the whitelist change + the A/B on a real save (300 s windows after a save,
+   arm A = `overlaptrim 2`, arm B = `overlaptrim3`) + an explicit rollback check
+   (`overlapall 0` + restart, a control window).
+4. **Test the hypothesis of the link:** `overlaptrim3` (removes 28–30 thousand components)
+   → does the share of `&GNatives`-waits fall, and does `t/s` grow. This is simultaneously a test
+   of slot C and of the attribution of phenomenon №1.
+5. **Separately:** the 79 waits in `CallRemoteFunction` — identify the called virtual
+   method (`[R10+0x270]`): if this is the network path of an RPC, and there is no client — these are "stalled" frames,
+   and they must be excluded from the interpretation.

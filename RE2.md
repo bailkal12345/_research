@@ -1,31 +1,31 @@
-# RE2.md — результаты этапа A (офлайн RE, стенд не трогался)
+# RE2.md — results of stage A (offline RE, the bench was not touched)
 
-Образ: `ShooterGameServer.exe` v361.7 (ARK: Survival Evolved), Win64 x64,
-image base `0x140000000`. Символы — `C:\Dev\_research\v361.sqlite` (PDB v361.7).
-Декомпиляция и xref — Ghidra, программа `/v361_ShooterGameServer.exe`.
+Image: `ShooterGameServer.exe` v361.7 (ARK: Survival Evolved), Win64 x64,
+image base `0x140000000`. Symbols — `C:\Dev\_research\v361.sqlite` (PDB v361.7).
+Decompilation and xref — Ghidra, program `/v361_ShooterGameServer.exe`.
 
-Каждый тезис снабжён RVA или именем символа. Что не удалось выяснить —
-перечислено явно в каждом разделе. Ничего не домысливается.
+Every claim is annotated with an RVA or symbol name. Whatever could not be determined
+is listed explicitly in each section. Nothing is speculated.
 
-## Сводка: что изменилось в понимании задач
+## Summary: what changed in the understanding of the tasks
 
-| Задача директивы | Итог |
+| Directive task | Outcome |
 |---|---|
-| A1 IsA | хук покрывает **только 73%** мест: 1360 вызовов + 510 инлайн-копий. `iscache` **не покрывает ни одного** места `IsA` — нулевое пересечение |
-| A2 VictoryCore | **гипотеза об O(n²) в `ServerOctreeOverlapActors` ОПРОВЕРГНУТА**. Настоящий O(n²) — в `BeginComponentOverlap` |
-| A3 Инвентарь | `GetItemTemplateQuantity` = O(N) без кэша, но per-tick путей всего 5 и все узкие |
-| A4 SaveWorld | **фриз — это сериализация в память, а не сброс на диск**. Диск уже асинхронный, на TaskGraph-воркере |
-| A5 BP-машина | точка зацепа трассировщика определена: `ProcessInternal` |
-| A6 Гигиена отчётов | выполнена; **посылка ревьюера про стартовый сейв опровергнута данными** |
-| A7 ARCH | `ARCH.md` создан |
+| A1 IsA | the hook covers **only 73%** of sites: 1360 calls + 510 inlined copies. `iscache` covers **not a single** `IsA` site — zero overlap |
+| A2 VictoryCore | **the O(n²) hypothesis about `ServerOctreeOverlapActors` is REFUTED**. The real O(n²) is in `BeginComponentOverlap` |
+| A3 Inventory | `GetItemTemplateQuantity` is O(N) with no cache, but there are only 5 per-tick paths and they are all narrow |
+| A4 SaveWorld | **the freeze is serialization into memory, not a flush to disk**. Disk writes are already asynchronous, on a TaskGraph worker |
+| A5 BP machine | the tracer's hook point is determined: `ProcessInternal` |
+| A6 Report hygiene | done; **the reviewer's claim about the starting save is refuted by the data** |
+| A7 ARCH | `ARCH.md` created |
 
 ---
 
 ## A1. UObjectBaseUtility::IsA
 
-### Символы
+### Symbols
 
-| Символ | RVA | Размер |
+| Symbol | RVA | Size |
 |---|---|---|
 | `UObjectBaseUtility::IsA` | `0x01FCDAB0` | 36 |
 | `UStruct::IsChildOf` | `0x001DCC80` | 25 |
@@ -33,11 +33,11 @@ image base `0x140000000`. Символы — `C:\Dev\_research\v361.sqlite` (PDB
 | `UStruct::SetSuperStruct` | `0x01F811D0` | 5 |
 | `UClass::ImplementsInterface` | `0x01F85530` | — |
 
-`IsA_Static` и `IsA_InContainer` в образе **отсутствуют** — такого API в UE4.5 нет.
+`IsA_Static` and `IsA_InContainer` are **absent** from the image — no such API exists in UE4.5.
 
-### Реализация
+### Implementation
 
-Обход цепочки `SuperStruct`, поле `+0x30`. Полное тело — 13 инструкций:
+A walk of the `SuperStruct` chain, field `+0x30`. Full body — 13 instructions:
 
 ```asm
 01FCDAB0  mov  rax,[rcx+0x10]      ; rax = this->Class
@@ -50,66 +50,73 @@ image base `0x140000000`. Символы — `C:\Dev\_research\v361.sqlite` (PDB
 01FCDACC  jnz  loop
 ```
 
-Свойств по указателю нет. **Ранний выход один** — на `Class == nullptr`;
-на `TargetClass == nullptr` раннего выхода нет (цикл пройдёт цепочку целиком).
+No property access by pointer. **There is a single early exit** — on `Class == nullptr`;
+on `TargetClass == nullptr` there is no early exit (the loop will walk the whole chain).
 
-Глубина иерархии по 1587 нативным классам: **максимум 8 уровней**, для реальных
-ARK-классов 5–6. То есть 25–40 циклов на вызов, с зависимыми загрузками.
+Hierarchy depth across 1587 native classes: **maximum 8 levels**, 5–6 for real
+ARK classes. That is 25–40 loops per call, with dependent loads.
 
-### Call-site и главный вывод
+### Call sites and the main conclusion
 
-| Цель | Ghidra xref | байт-скан `E8 rel32` |
+| Target | Ghidra xref | byte scan `E8 rel32` |
 |---|---|---|
 | `IsA` `0x01FCDAB0` | 1360 | 1360 |
 | `IsChildOf` `0x001DCC80` | 3411 | 3411 |
 
-**Но компилятор встроил цикл в тела функций.** Регексп по сигнатуре цикла даёт
-906 инлайн-копий: 510 копий `IsA` (с загрузкой `Class`) и 394 копии `IsChildOf`.
+**But the compiler inlined the loop into function bodies.** A regex on the loop signature
+gives 906 inlined copies: 510 copies of `IsA` (with the `Class` load) and 394 copies of
+`IsChildOf`.
 
-**Итог: реальных мест `IsA` = 1360 + 510 = 1870.** Хук на функцию накрывает 73%.
-Оставшиеся 27% уйдут в обход.
+**Outcome: the real number of `IsA` sites = 1360 + 510 = 1870.** A function hook covers 73%.
+The remaining 27% will bypass it.
 
-**`IsChildOf` внутри `IsA` не вызывается** — доказано на уровне машинного кода:
-тело `IsA` содержит ноль инструкций `CALL`. Это две независимые копии одного цикла.
-Следовательно, **кэш `iscache` не покрывает ни одного места `IsA`**.
+**`IsChildOf` is not called inside `IsA`** — proven at the machine-code level:
+the body of `IsA` contains zero `CALL` instructions. These are two independent copies of
+the same loop. Consequently, **the `iscache` cache covers not a single `IsA` site**.
 
-### Эскиз iscache2
+### iscache2 sketch
 
-| Аспект | Решение |
+| Aspect | Decision |
 |---|---|
-| Ключ | `(UClass* Source, UClass* Target)`, 16 Б; Source = `Obj->Class` (`+0x10`) |
-| Структура | открытая адресация `2^16` слотов × 24 Б = 1.5 МБ в `.data`, без аллокаций в рантайме |
-| Хэш | `(src>>4)*0x9E3779B1 ^ (tgt>>4)*0x85EBCA77`, индекс `& 0xFFFF` |
-| **Инвалидация** | хук `UClass::SetSuperStruct` (`0x01F84F30`) поднимает epoch. Это **единственное** место, меняющее цепочку |
-| Отрицательный результат | **безопасен в этой сборке**: интерфейсы лежат в отдельном массиве (`ImplementsInterface`, `GetInterfaceAddress`), в `SuperChain` **не входят** — проверено в коде, а не по документации |
-| Потоки | запись 24 Б атомарно (иначе torn read → **тихая неверная классификация объектов**); чтение без блокировок |
-| Висячие указатели после GC | средний риск; лечится либо хуком `~UObjectBase`, либо хранением индекса `GUObjectArray` вместо указателя |
-| Горячая перегрузка | на сервере **невозможна**: `SupportsDynamicReloading` — заглушки `0x001B5330` (3 байта), BP-компилятора в образе нет |
-| **Риск-класс** | **НИЗКИЙ–СРЕДНИЙ** |
+| Key | `(UClass* Source, UClass* Target)`, 16 B; Source = `Obj->Class` (`+0x10`) |
+| Structure | open addressing `2^16` slots × 24 B = 1.5 MB in `.data`, no runtime allocations |
+| Hash | `(src>>4)*0x9E3779B1 ^ (tgt>>4)*0x85EBCA77`, index `& 0xFFFF` |
+| **Invalidation** | the hook on `UClass::SetSuperStruct` (`0x01F84F30`) bumps the epoch. This is the **only** place that changes the chain |
+| Negative result | **safe in this build**: interfaces live in a separate array (`ImplementsInterface`, `GetInterfaceAddress`) and are **not part** of `SuperChain` — verified in code, not from documentation |
+| Threads | write 24 B atomically (otherwise torn reads → **silent misclassification of objects**); reads without locks |
+| Dangling pointers after GC | medium risk; treated either with a `~UObjectBase` hook or by storing a `GUObjectArray` index instead of a pointer |
+| Hot reload | **impossible** on the server: `SupportsDynamicReloading` — stubs `0x001B5330` (3 bytes), no BP compiler in the image |
+| **Risk class** | **LOW–MEDIUM** |
 
-**Рекомендация A1: хук на `0x01FCDAB0` даёт 73% покрытия и почти наверняка меньше
-73% выигрыша.** Полное покрытие требует патча самого цикла, а это запись кода в
-горячие пути `.text`. Ожидаемый выигрыш низкий по обеим причинам.
+**Recommendation A1: a hook on `0x01FCDAB0` gives 73% coverage and almost certainly
+less than 73% of the win.** Full coverage requires patching the loop itself, which means
+writing code into hot `.text` paths. Expected gain is low for both reasons.
 
-### Не найдено
+### Not found
 
-1. Механизм правки `iscache` не проверен — исходников плагина не найдено, утверждение взято из старого `REPORT.md`.
-2. **Цифра «−13%» от iscache не подтверждается.** В `REPORT.md:709` указан совокупный эффект трёх кэшей «−7%», разбивки по iscache нет.
-3. Фактическая частота вызовов `IsA` в рантайме не измерена — 1870 мест это статика, не профиль.
-4. Не проверено, вызывается ли `IsA` из воркер-потоков TaskGraph (510 инлайн-копий по потокам не атрибутированы).
-5. Не проверено, добавляются ли интерфейсы в SuperChain при загрузке BP-классов из pak в рантайме.
-6. Глубина иерархии BP-классов не посчитана — их нет в exe.
-7. 424 класса не восстановлены из-за `_NoRegister`-декоев (на максимум глубины не влияет).
-8. Косвенные вызовы `IsA` через указатель не детектировались (сканировались только `E8`/`E9`).
-9. Стоимость таблицы кэша не оценена замером: размер `2^16` выбран теоретически.
+1. The `iscache` modification mechanism was not verified — the plugin's sources were not
+   found; the claim comes from the old `REPORT.md`.
+2. **The "−13%" figure from iscache is not confirmed.** In `REPORT.md:709` the combined
+   effect of three caches is given as "−7%", with no breakdown per iscache.
+3. The actual runtime call frequency of `IsA` was not measured — 1870 sites is static data,
+   not a profile.
+4. Not verified whether `IsA` is called from TaskGraph worker threads (the 510 inlined
+   copies are not attributed per thread).
+5. Not verified whether interfaces are added to the SuperChain when BP classes are loaded
+   from pak at runtime.
+6. The hierarchy depth of BP classes was not counted — they are not in the exe.
+7. 424 classes were not recovered because of `_NoRegister`-decls (does not affect the
+   maximum depth).
+8. Indirect `IsA` calls through a function pointer were not detected (only `E8`/`E9` were scanned).
+9. The cost of the cache table was not measured: the size `2^16` was chosen theoretically.
 
 ---
 
 ## A2. UVictoryCore::ServerOctreeOverlapActors
 
-### Символы
+### Symbols
 
-| Символ | RVA | Размер |
+| Symbol | RVA | Size |
 |---|---|---|
 | `UVictoryCore::ServerOctreeOverlapActors` | `0x012871E0` | 1945 |
 | `...ServerOctreeOverlapActorsBitMask` | `0x01287980` | 1706 |
@@ -120,57 +127,60 @@ ARK-классов 5–6. То есть 25–40 циклов на вызов, с
 | `TArray<FOverlapInfo>::AddUniqueImpl` | `0x024E3050` | 138 |
 | `UPrimitiveComponent::BeginComponentOverlap` | `0x02644000` | 719 |
 
-### ГЛАВНЫЙ РЕЗУЛЬТАТ: гипотеза об O(n²) ОПРОВЕРГНУТА
+### MAIN RESULT: the O(n²) hypothesis is REFUTED
 
-`AddUniqueImpl` (`0x024E3050`) **не вызывается ни из одной** из четырёх функций
-`ServerOctreeOverlapActors*`. Внутри только `Emplace` (`0x001CFE60`) — амортизированный
-O(1). Проверено тремя способами: список callees всех четырёх функций, полная
-декомпиляция `0x012871E0`, и `get_xrefs_to(0x024E3050)` — **единственный** вызов во всём
-образе, адрес `0x0264418D`.
+`AddUniqueImpl` (`0x024E3050`) is **not called from any** of the four
+`ServerOctreeOverlapActors*` functions. Inside there is only `Emplace` (`0x001CFE60`) —
+amortized O(1). Verified in three ways: the callee list of all four functions, full
+decompilation of `0x012871E0`, and `get_xrefs_to(0x024E3050)` — the **only** call in
+the entire image, at address `0x0264418D`.
 
-**Настоящий O(n²)** — в `UPrimitiveComponent::BeginComponentOverlap` (`0x02644000`):
+**The real O(n²)** is in `UPrimitiveComponent::BeginComponentOverlap` (`0x02644000`):
 
 ```c
-TArray<FOverlapInfo>::Emplace<FOverlapInfo>(&this->OverlappingComponents, p1);   // асимметрия
+TArray<FOverlapInfo>::Emplace<FOverlapInfo>(&this->OverlappingComponents, p1);   // asymmetry
 FOverlapInfo Tmp(&local_b8, this, -1);
 TArray<FOverlapInfo>::AddUniqueImpl<FOverlapInfo>(&OtherComp->OverlappingComponents, &Tmp);  // 0x0264418D
 ```
 
-`AddUniqueImpl` — линейный скан со **шагом 0x98** (152 байта на `FOverlapInfo`).
-Обратите внимание на асимметрию: в свою сторону `Emplace` (дубликаты допускаются),
-в сторону партнёра `AddUnique` (скан). Именно эта связка раздувает O(n²).
+`AddUniqueImpl` is a linear scan with **stride 0x98** (152 bytes per `FOverlapInfo`).
+Note the asymmetry: toward itself `Emplace` (duplicates allowed), toward the partner
+`AddUnique` (a scan). It is exactly this pairing that bloats O(n²).
 
-### Периодичность вызовов
+### Call periodicity
 
-`APrimalStructureTurret::Tick` → `GetAmmoNearby` (`0x00A3A129`) — **каждый тик**,
-таймера между проверкой флага и вызовом нет. Внутри `OctreeType=0xF`, `bForce=true`.
+`APrimalStructureTurret::Tick` → `GetAmmoNearby` (`0x00A3A129`) — **every tick**,
+there is no timer between the flag check and the call. Inside `OctreeType=0xF`,
+`bForce=true`.
 
-Полный список call-site `ServerOctreeOverlapActors` — 21, из них значимые:
+Full call-site list of `ServerOctreeOverlapActors` — 21, the significant ones:
 `CountCharactersResolvingGroundLocationInSphere` `0x012B0185`, `GetAmmoNearby`
 `0x00A2AE89`, `Ballista::GetAmmoNearby` `0x00A58FAB`, `APrimalCharacter::TakeDamage`
-`0x009454FE` (на каждый урон), `PingNearbyPlayers` `0x00EC789B`, `ServerDownloadDino`
-`0x00E700B7`, остальные — 10 вызовов AOE-чит-команд.
+`0x009454FE` (on every damage event), `PingNearbyPlayers` `0x00EC789B`,
+`ServerDownloadDino` `0x00E700B7`, the rest — 10 AOE cheat-command calls.
 
-### Результат не сохраняется в поле актора
+### The result is not stored in an actor field
 
-Это локальный `TArray<AActor*>` (sret), потребляемый вызывающим на месте:
-`GetAmmoNearby` делает линейный проход по возврату; `TakeDamage` — проход в радиусе
-точки удара; `ServerDownloadDino` — проверку количества (`CMP EAX,0x3`).
+It is a local `TArray<AActor*>` (sret), consumed by the caller in place:
+`GetAmmoNearby` does a linear pass over the return value; `TakeDamage` — a pass
+within the radius of the hit point; `ServerDownloadDino` — a count check
+(`CMP EAX,0x3`).
 
-### Эскиз оптимизации
+### Optimization sketch
 
-| Вариант | Точка | Риск |
+| Option | Point | Risk |
 |---|---|---|
-| дедупликация на выходе октавы | хук call-site `0x00A3A129` | **средний** — промах по цели на 1 тик |
-| **патч `BeginComponentOverlap`** | `0x0264418D`, заменить скан на `TSet`-сайд-структуру по `(CachedCompPtr, Item)` | **средний → высокий**: нужна синхронная правка `EndComponentOverlap` `0x026442D0`, иначе «прилипшие» пересечения |
-| патч `ServerOctreeOverlapActors` | `0x012871E0` | **низкий**, но выигрыш близок к нулю |
+| deduplication on the octree output | hook the call site `0x00A3A129` | **medium** — a one-tick miss on the target |
+| **patch `BeginComponentOverlap`** | `0x0264418D`, replace the scan with a `TSet`-side structure keyed on `(CachedCompPtr, Item)` | **medium → high**: requires a synchronized change of `EndComponentOverlap` `0x026442D0`, otherwise "stuck" overlaps |
+| patch `ServerOctreeOverlapActors` | `0x012871E0` | **low**, but the gain is close to zero |
 
-**Итоговый риск-класс: СРЕДНИЙ**, если трогать только горячий путь `GetAmmoNearby`
-и/или `BeginComponentOverlap`. Пути `TakeDamage` и `exec*` не трогать — там ВЫСОКИЙ.
+**Final risk class: MEDIUM**, if only the hot path `GetAmmoNearby`
+and/or `BeginComponentOverlap` is touched. Do not touch the `TakeDamage` and `exec*`
+paths — there the risk is HIGH.
 
-### Обязательный белый список (RVА подтверждены в PDB)
+### Mandatory whitelist (RVAs confirmed in the PDB)
 
-| Что | RVA | Размер |
+| What | RVA | Size |
 |---|---|---|
 | `ABaseBoxTrigger::BPOnTriggerBeginOverlap` | `0x01368850` | 199 |
 | `ABaseBoxTrigger::BPOnTriggerEndOverlap` | `0x01368920` | 111 |
@@ -186,28 +196,28 @@ TArray<FOverlapInfo>::AddUniqueImpl<FOverlapInfo>(&OtherComp->OverlappingCompone
 | `UPrimitiveComponent::BeginComponentOverlap` | `0x02644000` | 719 |
 | `UPrimitiveComponent::EndComponentOverlap` | `0x026442D0` | 682 |
 
-Текущий `tickprof_overlap_keep.txt` недостаточен: `Trigger` и `Turret` как подстроки
-слишком широки, `ABaseBoxTrigger`/`AHazardTrigger_Slide`/`APrimalStructureBearTrap`
-не покрыты явно.
+The current `tickprof_overlap_keep.txt` is insufficient: `Trigger` and `Turret` as
+substrings are too broad; `ABaseBoxTrigger`/`AHazardTrigger_Slide`/`APrimalStructureBearTrap`
+are not covered explicitly.
 
-### Не найдено
+### Not found
 
-1. `AddUnique` внутри `ServerOctreeOverlapActors*` — **не найдено** (это и есть опровержение).
-2. Вызовов `ServerOctreeOverlapActorsClassBitMask` из C++ — нет, только exec-thunk `0x0168A199`.
-3. Прямых C++-вызовов `UpdateOverlaps` — нет: 39 xref, все DATA (таблицы exec-thunk'ов).
-4. Таймера между флагом и `GetAmmoNearby` — нет, частота = каждый тик.
-5. `APrimalStructureTrap::*` — 0 совпадений по PDB; реальные классы ловушек перечислены выше.
-6. Поле актора для результата — не найдено; результат только стековый `TArray` + out-парам Blueprint.
-7. Хуков на `ServerOctreeOverlapActors*` в установленных ArkApi-плагинах — 0 совпадений.
-8. Порядок `EServerOctreeGroup` ↔ индекс в таблице масок — достоверно установлены только **значения масок**, не имена.
+1. `AddUnique` inside `ServerOctreeOverlapActors*` — **not found** (this is the refutation).
+2. Calls of `ServerOctreeOverlapActorsClassBitMask` from C++ — none, only the exec-thunk `0x0168A199`.
+3. Direct C++ calls of `UpdateOverlaps` — none: 39 xrefs, all DATA (exec-thunk tables).
+4. No timer between the flag and `GetAmmoNearby` — the frequency is every tick.
+5. `APrimalStructureTrap::*` — 0 PDB matches; the real trap classes are listed above.
+6. An actor field for the result — not found; the result is only a stack `TArray` + an out-parameter in Blueprint.
+7. Hooks on `ServerOctreeOverlapActors*` in the installed ArkApi plugins — 0 matches.
+8. The order of `EServerOctreeGroup` ↔ index in the mask table — only the **mask values** are reliably established, not the names.
 
 ---
 
-## A3. Инвентарь: GetItemTemplateQuantity / IsValidForCrafting
+## A3. Inventory: GetItemTemplateQuantity / IsValidForCrafting
 
-### Символы
+### Symbols
 
-| Символ | RVA | Размер |
+| Symbol | RVA | Size |
 |---|---|---|
 | `UPrimalInventoryComponent::GetItemTemplateQuantity` | `0x777E70` | 1305 |
 | `UPrimalInventoryComponent::TickComponent` | `0x77B3C0` | 794 |
@@ -220,78 +230,82 @@ TArray<FOverlapInfo>::AddUniqueImpl<FOverlapInfo>(&OtherComp->OverlappingCompone
 | `UPrimalItem::SetQuantity` | `0x80D4C0` | 8562 |
 | `UPrimalItem::IncrementItemQuantity` | `0x7F4D60` | 8631 |
 
-### Что сканируется
+### What is scanned
 
-`GetItemTemplateQuantity` — **O(N)** линейный проход по `InventoryItems`
-(`TArray` по смещению `+0x118` **в компоненте**, не в акторе). Кэша и мемоизации
-нет: ни глобальных обращений, ни полей состояния.
+`GetItemTemplateQuantity` is an **O(N)** linear pass over `InventoryItems`
+(a `TArray` at offset `+0x118` **in the component**, not in the actor). There is no cache
+or memoization: no global accesses, no state fields.
 
-Вложенных циклов внутри нет — вложенность появляется у вызывающих:
+There are no nested loops inside — the nesting appears at the callers:
 `MeetBlueprintCraftingRequirements`, `MeetRepairingRequirements`, `HasResources`,
-`TestMeetsCraftingRequirementsPercent` — все **O(R·N)**.
+`TestMeetsCraftingRequirementsPercent` — all **O(R·N)**.
 
-Узкое место — не проход, а **стоимость фильтрации одного элемента**: на элемент
-приходится 1–2× `StaticClass()`, 1× `IsChildOf()`, 1× `IsA()` и опционально
-виртуальный `IsValidForCrafting` (1665 Б, внутри до 2 входов в Blueprint-VM).
+The bottleneck is not the pass but **the cost of filtering one item**: per item
+it is 1–2× `StaticClass()`, 1× `IsChildOf()`, 1× `IsA()` and optionally the
+virtual `IsValidForCrafting` (1665 B, containing up to 2 entries into the Blueprint VM).
 
-### Per-tick или по событию — КРИТИЧНО
+### Per-tick or per-event — CRITICAL
 
-**Не «для каждого актора каждый тик».** Per-tick путей ровно пять, все узкие:
+**Not "for every actor every tick".** There are exactly five per-tick paths, all narrow:
 
 1. `TickComponent` → `TickCraftQueue` → `MeetRepairingRequirements` → 2× `GetItemTemplateQuantity`.
-   Гейт: активная очередь ремонта.
-2. `TickComponent` → `TickCraftingItem` (virtual `0x338`) → до 3× `MeetBlueprintCraftingRequirements`.
-   Гейт: на каждый **активно крафтящийся** blueprint — каждый тик.
-3. `APrimalStructureTurret::Tick` → `GetAmmoNearby` → 2× `GetItemTemplateQuantity` — каждая турель каждый тик.
-4. `APrimalStructureTurretBallista::Tick` → `CanFire`/`CanReload` → `GetAmmoAmount` — каждая баллиста каждый тик.
-5. `APrimalStructurePlacer::Tick` — только пока игрок тянет призрак постройки.
+   Gate: an active repair queue.
+2. `TickComponent` → `TickCraftingItem` (virtual `0x338`) → up to 3× `MeetBlueprintCraftingRequirements`.
+   Gate: for every **actively crafting** blueprint — every tick.
+3. `APrimalStructureTurret::Tick` → `GetAmmoNearby` → 2× `GetItemTemplateQuantity` — every turret every tick.
+4. `APrimalStructureTurretBallista::Tick` → `CanFire`/`CanReload` → `GetAmmoAmount` — every ballista every tick.
+5. `APrimalStructurePlacer::Tick` — only while the player drags a placement ghost.
 
-Остальные 69 call-site — по событию (добавление/удаление, открытие инвентаря, RPC).
+The remaining 69 call sites are per-event (add/remove, inventory opening, RPC).
 
-`IsValidForCrafting` вызывается только при `bCheckValidForCrafting == true`; его
-передаёт лишь `MeetBlueprintCraftingRequirements`. Остальные передают `false`.
+`IsValidForCrafting` is called only when `bCheckValidForCrafting == true`; only
+`MeetBlueprintCraftingRequirements` passes that. The rest pass `false`.
 
-### Эскиз индекса
+### Index sketch
 
-| Аспект | Решение |
+| Aspect | Decision |
 |---|---|
-| Где хранить | side-map **`UPrimalInventoryComponent*` → индекс** (не актор, не глобально) |
-| Структура | `ByClass: TMap<UClass*, FInvBucket>` по **точному** классу + `MatchCache` (производный) |
-| Почему корзины, а не одна сумма | иначе нельзя корректно посчитать `bRequireExactClassMatch` (`bOverrideExactClassCraftingRequirement`) и `bIgnoreBlueprints` (`bIsBlueprint` — инстанс-флаги) |
-| **Точки инвалидации** | ровно **4**: `AddToInventory` `0x7AC9A0`, `RemoveItemFromInventory` `0x7AFCA0`, `SetQuantity` `0x80D4C0`, `IncrementItemQuantity` `0x7F4D60` + rebuild при `LoadedFromSaveGame` `0x781330` |
-| Что можно кэшировать | корзины **без** учёта `IsValidForCrafting`; предикаты применяются к конкретным предметам на месте |
-| Что **нельзя** | сумму «только валидных для крафта»: она зависит от прочности, `IsBroken`, `OwnerInventory`, родительской структуры и Blueprint — **ни одно из этого не мутирует `InventoryItems`** |
+| Where to store | a side-map **`UPrimalInventoryComponent*` → index** (not per actor, not global) |
+| Structure | `ByClass: TMap<UClass*, FInvBucket>` keyed on **exact** class + `MatchCache` (derived) |
+| Why buckets, not one sum | otherwise `bRequireExactClassMatch` (`bOverrideExactClassCraftingRequirement`) and `bIgnoreBlueprints` (`bIsBlueprint` — instance flags) cannot be counted correctly |
+| **Invalidation points** | exactly **4**: `AddToInventory` `0x7AC9A0`, `RemoveItemFromInventory` `0x7AFCA0`, `SetQuantity` `0x80D4C0`, `IncrementItemQuantity` `0x7F4D60` + rebuild at `LoadedFromSaveGame` `0x781330` |
+| What can be cached | buckets **without** accounting for `IsValidForCrafting`; predicates are applied to specific items on the spot |
+| What **must not** be cached | a sum "only valid for crafting": it depends on durability, `IsBroken`, `OwnerInventory`, the parent structure and the Blueprint — **none of these mutate `InventoryItems`** |
 
-**Риск-класс: НИЗКИЙ** для варианта с корзинами без `IsValidForCrafting`;
-**ВЫСОКИЙ** при попытке агрегировать «сумму только валидных».
+**Risk class: LOW** for the buckets-without-`IsValidForCrafting` variant;
+**HIGH** when attempting to aggregate "the sum of only valid ones".
 
-Что сломается при устаревшем кэше: занижено → `MeetRepairingRequirements()==false` →
-запись **удаляется из `ItemCraftQueueEntries`** — тихая потеря очереди ремонта;
-завышено → `ServerCraftItem` спишет ресурсы, которых нет → дюп/рассинхрон.
+What breaks with a stale cache: understated → `MeetRepairingRequirements()==false` →
+the entry is **removed from `ItemCraftQueueEntries`** — a silent loss of the repair queue;
+overstated → `ServerCraftItem` will consume resources that do not exist → dupe/desync.
 
-### Оценка выигрыша
+### Gain estimate
 
-Полный кластер A3 = **275 сэмплов = 6.45% исполняемого кода** Genesis.
-При 80% сокращении — около **0.72% wall**. Реально, но не главный резерв:
-Blueprint-VM (22.8%) и `IsA` (6.66%) больше.
+The full A3 cluster = **275 samples = 6.45% of executed code** of Genesis.
+With an 80% reduction — about **0.72% wall**. Real, but not the main reserve:
+Blueprint VM (22.8%) and `IsA` (6.66%) are larger.
 
-### Не найдено
+### Not found
 
-1. `UPrimalInventoryComponent::HasItem`, `GetInventoryItems`, `GetItemQuantity`, `GetCraftingCost` — символов нет.
-2. Прямых вызовов `IsValidForCrafting` — **0**; только vtable-слот `0x3A8` и exec-thunk.
-3. Распределение вызовов по 74 call-site не измерено (профиллер даёт self-time по функции).
-4. Фактические N и R на Genesis не измерены офлайн.
-5. Какие Blueprint-графы вызывают `execGetItemTemplateQuantity` `0x179BFD0` — байткод в `.uasset` офлайн не читается.
-6. Значение `bUseCraftQueue` в CDO не проверено.
-7. Вклад `IsA`, приходящийся именно на `GetItemTemplateQuantity`, офлайн не выделен (2 call-site из 1360).
+1. `UPrimalInventoryComponent::HasItem`, `GetInventoryItems`, `GetItemQuantity`,
+   `GetCraftingCost` — no symbols.
+2. Direct calls of `IsValidForCrafting` — **0**; only vtable slot `0x3A8` and the exec-thunk.
+3. The distribution of calls across the 74 call sites was not measured (the profiler
+   gives self-time per function).
+4. The actual N and R on Genesis were not measured offline.
+5. Which Blueprint graphs call `execGetItemTemplateQuantity` `0x179BFD0` — bytecode in
+   `.uasset` cannot be read offline.
+6. The value of `bUseCraftQueue` in the CDO was not checked.
+7. The share of `IsA` attributable specifically to `GetItemTemplateQuantity` was not
+   isolated offline (2 call sites out of 1360).
 
 ---
 
-## A4. SaveWorld: где уходят 3.9–4.3 с
+## A4. SaveWorld: where the 3.9–4.3 s go
 
-### ГЛАВНЫЙ РЕЗУЛЬТАТ: это СЕРИАЛИЗАЦИЯ, а не сброс на диск
+### MAIN RESULT: this is SERIALIZATION, not a disk flush
 
-| Символ | RVA | Размер |
+| Symbol | RVA | Size |
 |---|---|---|
 | `UShooterCheatManager::execSaveWorld` | `0x016CDF70` | 26 |
 | `UShooterCheatManager::SaveWorld` | `0x00BC95F0` | 183 |
@@ -301,73 +315,81 @@ Blueprint-VM (22.8%) и `IsA` (6.66%) больше.
 | `WorldSerializedObject::SerializeObjectData` | `0x01FD8FA0` | 380 |
 | `UStruct::SerializeTaggedProperties` | `0x01F7E900` | 8666 |
 | `UProperty::ShouldSerializeValue` | `0x01FB2000` | 444 |
-| `UWorld::SaveToFile`: вызов `AllowSaving` | `0x0275738F` | — |
+| `UWorld::SaveToFile`: `AllowSaving` call | `0x0275738F` | — |
 | **`FWriteFileTask::GetDesiredThread`** | `0x00D66650` | 6 |
 | `FWriteFileTask::DoTask` | `0x02746940` | 614 |
 | `FFileHelper::SaveArraysToFile` | `0x01F1E200` | 159 |
 
-**Дисковая запись уже вынесена в отдельный поток TaskGraph.**
-`FWriteFileTask::GetDesiredThread()` декомпилируется в `{ return AnyNormalThreadNormalTask; }`.
-Файловый дескриптор открывается **только** в `FWriteFileTask::DoTask`, то есть в воркере.
-`FlushFileBuffers` в PDB **отсутствует**; `FArchiveFileWriterGeneric::Flush` `0x01EBD280`
-имеет 0 вызывающих — это flush пользовательского буфера, не диска.
+**Disk writing is already offloaded to a separate TaskGraph thread.**
+`FWriteFileTask::GetDesiredThread()` decompiles to `{ return AnyNormalThreadNormalTask; }`.
+The file handle is opened **only** in `FWriteFileTask::DoTask`, i.e. in the worker.
+`FlushFileBuffers` is **absent** from the PDB; `FArchiveFileWriterGeneric::Flush`
+`0x01EBD280` has 0 callers — it is a user-buffer flush, not a disk flush.
 
-RCON `saveworld` передаёт `bForceWaitOnSaveToComplete = 0`, LocalPlayer'ов на
-выделенном сервере нет → функция возвращается сразу после диспатча задачи.
-Значит замеренные 3.9–4.3 с = ровно сериализация объектов в память.
+RCON `saveworld` passes `bForceWaitOnSaveToComplete = 0`, and there are no
+LocalPlayers on a dedicated server → the function returns right after dispatching the task.
+So the measured 3.9–4.3 s is exactly the serialization of objects into memory.
 
-**Оговорка:** при `bForceWaitOnSaveToComplete = true` (шутдаун) или при наличии
-LocalPlayer выполняется цикл ожидания `FGraphEvent::IsComplete` `0x00CDD195` +
-`Sleep(0.01)` `0x00CDD1C2`, и тогда измеренное время **включает** запись на диск.
-Для этой ветки нужен отдельный замер.
+**Caveat:** with `bForceWaitOnSaveToComplete = true` (shutdown) or when a
+LocalPlayer is present, the wait loop `FGraphEvent::IsComplete` `0x00CDD195` +
+`Sleep(0.01)` `0x00CDD1C2` executes, and then the measured time **includes**
+the disk write. This branch needs a separate measurement.
 
-### Инкрементального сохранения в ARK НЕТ
+### ARK has NO incremental saving
 
-Цепочка `UPackage::SavePackage` / `FSavePackage` / `FArchiveState` в PDB **отсутствует
-полностью**. Глобалы `GSavePackageFileName` `0x04937D08` и `SavePackageState` `0x0491C6A8`
-имеют 0 живых xref. Сейв мира использует **самописный формат ARK**, не UE-пакетный.
+The chain `UPackage::SavePackage` / `FSavePackage` / `FArchiveState` is **entirely absent**
+from the PDB. The globals `GSavePackageFileName` `0x04937D08` and `SavePackageState`
+`0x0491C6A8` have 0 live xrefs. The world save uses **ARK's own format**, not UE packaging.
 
-Ключ `-newsaveformat` → `GCurrentWorldSaveVersion` `0x048B2AE4`: 9 по умолчанию,
-11 при флаге. Это **смена версии, не дельта**.
+The switch `-newsaveformat` → `GCurrentWorldSaveVersion` `0x048B2AE4`: 9 by default,
+11 with the flag. This is **a version change, not a delta**.
 
-### Точки зацепа
+### Hook points
 
-| Вариант | Точка | Выигрыш | Риск | Вердикт |
+| Option | Point | Gain | Risk | Verdict |
 |---|---|---|---|---|
-| порционное сохранение по акторам | `0x00CDC220` | ~0 | **высокий** | **нет** |
-| асинхронная запись | `0x02746940`, диспатч `0x02757DFF` | **уже есть в штате** | низкий | только полировка |
-| кэш байтов по акторам | фильтр `AllowSaving`, вызов `0x0275738F` | до ~50% | **высокий** | только с fallback |
+| batched saving by actors | `0x00CDC220` | ~0 | **high** | **no** |
+| asynchronous writing | `0x02746940`, dispatch `0x02757DFF` | **already in stock** | low | polishing only |
+| byte cache per actors | the `AllowSaving` filter, call `0x0275738F` | up to ~50% | **high** | only with a fallback |
 
-**Красная линия (порционное):** `WorldSerializedObject::SerializedObjectsStack` —
-глобальный, строится в проходе 1 и потребляется в проходе 2; между кадрами геймплей
-его мутирует. Формат плоский, заголовки связаны `DataOffset`; загрузчик
-`UObjectSerializer::DeSerializeObject` `0x003C2C90` идёт по этому смещению.
-Порча = **нечитаемый `.ark` после рестарта**. Пропуск актора в `.ark` **молча**
-теряет объекты — без падения, что хуже всего.
+**Red line (batched):** `WorldSerializedObject::SerializedObjectsStack` — global,
+built in pass 1 and consumed in pass 2; gameplay mutates it between frames. The format is
+flat, headers are linked by `DataOffset`; the loader
+`UObjectSerializer::DeSerializeObject` `0x003C2C90` walks that offset.
+Corruption = **an unreadable `.ark` after a restart**. Skipping an actor in `.ark`
+**silently** loses objects — without a crash, which is the worst outcome.
 
-**Красная линия (кэш байтов):** `SerializeObjectData` `0x01FD8FA0` уже имеет внутренний
-дедуп, но только в пределах **одного** файла. Формата «ссылка на предыдущий файл» нет.
-Корректный dirty-tracking невозможен: мутации идут из натива, Blueprint, инвентаря и физики.
+**Red line (byte cache):** `SerializeObjectData` `0x01FD8FA0` already has an internal
+dedup, but only within **one** file. There is no "reference to previous file" format.
+Correct dirty-tracking is impossible: mutations come from native code, Blueprint,
+inventory and physics.
 
-### Не найдено
+### Not found
 
-1. `UWorld::SaveWorld`, `UPackage::SavePackage`, `FSavePackage`, `FMemoryWriter`, `FlushFileBuffers` — символов нет.
-2. RCON/cvar/GameUserSettings для инкрементального сейва — не найдено (строк в бинарнике нет).
-3. Виртуальный `vtable+0x9F8`, вызываемый в `0x027573AB` — имя не определено; во **всех** 208 vtable слотов значение одинаково `0x01401BCBB0` (3 байта, `ret`), перекрытий нет — пустая точка расширения.
-4. `UPrimalItem::IsValidForCrafting` — 0 прямых вызывающих. `GetItemTemplateQuantity` — 51 прямой вызывающий, **ни один не в сейв-пути**. Значит 2.86%+2.52% профиля приходят из Blueprint-хука (вероятно `SHOOTERGAME_BPPreSerializeSaveGame` `0x04934050`) через `ProcessEvent`. Нативный владелец **не идентифицирован**.
-5. Что именно пишется в каждый из 5–6 буферов `FWriteFileTaskInfo` — поимённо не верифицировано.
-6. Какой вызов инициирует автосейв — у `SaveWorld` 0 нативных xref; триггер Blueprint.
-7. Сколько времени занимает сама дисковая запись — прямого замера не было.
+1. `UWorld::SaveWorld`, `UPackage::SavePackage`, `FSavePackage`, `FMemoryWriter`,
+   `FlushFileBuffers` — no symbols.
+2. RCON/cvar/GameUserSettings for an incremental save — not found (no strings in the binary).
+3. The virtual `vtable+0x9F8`, called at `0x027573AB` — name undetermined; in **all** 208
+   vtable slots the value is the same `0x01401BCBB0` (3 bytes, `ret`), no overlaps — an empty
+   extension point.
+4. `UPrimalItem::IsValidForCrafting` — 0 direct callers. `GetItemTemplateQuantity` — 51
+   direct callers, **none in the save path**. So the 2.86%+2.52% of the profile come from a
+   Blueprint hook (probably `SHOOTERGAME_BPPreSerializeSaveGame` `0x04934050`) via
+   `ProcessEvent`. The native owner is **not identified**.
+5. What exactly is written into each of the 5–6 `FWriteFileTaskInfo` buffers — not verified
+   by name.
+6. Which call initiates the autosave — `SaveWorld` has 0 native xrefs; the trigger is Blueprint.
+7. How long the disk write itself takes — no direct measurement.
 
 ---
 
-## A5. BP-машина и трассировщик
+## A5. BP machine and tracer
 
-### Символы и раскладка
+### Symbols and layout
 
-| Что | RVA |
+| What | RVA |
 |---|---|
-| `UObject::ProcessInternal` | `0x01FC0270` (344 Б) |
+| `UObject::ProcessInternal` | `0x01FC0270` (344 B) |
 | `UObject::ProcessContextOpcode` | `0x01FC1FA0` |
 | `UObject::CallFunction` | `0x01FBFEF0` |
 | `UFunction::Invoke` | `0x01F867C0` |
@@ -376,15 +398,15 @@ LocalPlayer выполняется цикл ожидания `FGraphEvent::IsCom
 | `GScriptStack` | `0x04937F00` |
 | `NamePoolData` | `0x0498A1C8` |
 
-**Раскладка `FFrame`:** `Node +0x10`, `Object +0x18`, `Code +0x20`, `Locals +0x28`,
+**`FFrame` layout:** `Node +0x10`, `Object +0x18`, `Code +0x20`, `Locals +0x28`,
 `MostRecentProperty +0x30`, `MostRecentPropertyAddress +0x38`, `OutParms +0x78`.
-`Locals` — **не** `TArray<uint8*>`, а плоский буфер; адресация `Locals[Prop->Offset_Internal]`,
-`UProperty+0x4C = Offset_Internal`.
+`Locals` is **not** a `TArray<uint8*>`, but a flat buffer; addressing is
+`Locals[Prop->Offset_Internal]`, `UProperty+0x4C = Offset_Internal`.
 
-**Раскладка `UFunction`:** `Name +0x18`, `Outer +0x20`, `ParmsSize +0x40`,
+**`UFunction` layout:** `Name +0x18`, `Outer +0x20`, `ParmsSize +0x40`,
 `Script +0x48`, `FunctionFlags +0x90`, `Func +0xA8`.
 
-### Ключевой факт
+### Key fact
 
 ```asm
 ; UFunction::Bind, 0x141F86D6D
@@ -394,80 +416,87 @@ LEA   RAX,[0x141FC0270]           ; &UObject::ProcessInternal
 MOV   qword ptr [R9+0xA8],RAX    ; UFunction->Func
 ```
 
-**Для любой скриптовой `UFunction` поле `Func == &ProcessInternal`.**
+**For any scripted `UFunction`, field `Func == &ProcessInternal`.**
 
-### Диспетчер
+### Dispatcher
 
-`GNatives[256]` (2048 байт), индекс = байт опкода, `CALL [RDI+RAX*8]`.
-Заполняется 63 статик-инициализаторами, которые сначала забивают все 256 слотов
-значением `execUndefined`. Переход к следующей инструкции делает сам диспетчер
-(`Code++` **до** вызова). 68 символов `exec*` лежат блоком `0x01FC1050…0x01FC36B6`.
+`GNatives[256]` (2048 bytes), index = opcode byte, `CALL [RDI+RAX*8]`.
+Populated by 63 static initializers, which first fill all 256 slots with
+`execUndefined`. The jump to the next instruction is made by the dispatcher itself
+(`Code++` **before** the call). 68 `exec*` symbols lie in one block
+`0x01FC1050…0x01FC36B6`.
 
-**Арифметических опкодов в этом билде нет вообще** — слоты `0x45,0x46,0x47,0x49` пусты.
+**There are no arithmetic opcodes in this build at all** — slots `0x45,0x46,0x47,0x49`
+are empty.
 
-### Точка зацепа трассировщика
+### Tracer hook point
 
-| Критерий | `ProcessInternal` | `Invoke` |
+| Criterion | `ProcessInternal` | `Invoke` |
 |---|---|---|
-| Частота | 1 раз на вход в скриптовую UFunction | 1 раз на **любой** вызов, включая native |
-| Покрытие | **надмножество** | не видит прямой `CallFunction→ProcessInternal` |
-| Данные | `RDX = FFrame*`, известен `FFrame->Node` | `RCX = UFunction` |
-| Call-site | **нет** (косвенный вызов через `Func`) | есть (2 шт.) |
+| Frequency | once per entry into a scripted UFunction | once per **any** call, including native |
+| Coverage | a **superset** | does not see the direct `CallFunction→ProcessInternal` |
+| Data | `RDX = FFrame*`, `FFrame->Node` known | `RCX = UFunction` |
+| Call sites | **none** (indirect call via `Func`) | present (2) |
 
-**Выбор: хук тела `ProcessInternal` (`0x01FC0270`).** Это ровно нужная гранулярность
-при минимальной частоте. Встраивать в `GNatives` или каждый `exec*` нельзя —
-частота на порядок выше.
+**Choice: hook the body of `ProcessInternal` (`0x01FC0270`).** This is exactly the needed
+granularity at minimal frequency. Hooking into `GNatives` or each `exec*` is impossible —
+the frequency is an order of magnitude higher.
 
-### Эскиз трассировщика
+### Tracer sketch
 
-| Аспект | Решение |
+| Aspect | Decision |
 |---|---|
-| Точка | detour первых 12 байт `ProcessInternal` |
-| Что логируем | **только** полное имя `UFunction` (`+0x18`, FName) и счётчик. Аргументы не пишем |
-| Хот-путь | 10–12 инструкций, ~5–7 циклов; `FName→str` **никогда** в хот-пути, резолв при сбросе |
-| Буферизация | фиксированный кольцевой буфер в `.data`; индекс записи `__declspec(thread)` — без атомик; счётчики — отдельная таблица |
-| Сброс | отдельный поток раз в N сек; сырые записи + резолв строк |
-| Потоки | хот-путь только читает; cold path (промах) — `SRWLOCK`; TLS статический, не `TlsAlloc` |
-| Реентерабельность | хук **не зовёт ни одного API UE** — нет риска рекурсии из лога |
-| Выключатель | `bptrace 0|1`, по умолчанию **0**; в выключенном состоянии байты патча **не ставятся вообще** (буквальный ноль влияния) |
-| Оценка накладных | +0.07…0.33% кадра — **в 3…15 раз дешевле бюджета 1.1%**. Расчётная, не измеренная |
-| **Риск-класс** | **СРЕДНИЙ** — вход в самую горячую функцию; ошибка проявляется немедленно |
+| Point | detour of the first 12 bytes of `ProcessInternal` |
+| What we log | **only** the full `UFunction` name (`+0x18`, FName) and a counter. No arguments logged |
+| Hot path | 10–12 instructions, ~5–7 cycles; `FName→str` **never** in the hot path, resolution at flush |
+| Buffering | fixed ring buffer in `.data`; write index `__declspec(thread)` — no atomics; counters — a separate table |
+| Flush | a separate thread every N seconds; raw records + string resolution |
+| Threads | the hot path only reads; cold path (miss) — `SRWLOCK`; TLS static, not `TlsAlloc` |
+| Reentrancy | the hook **calls no UE API** — no recursion risk from the log |
+| Kill switch | `bptrace 0|1`, default **0**; when off, patch bytes are **not installed at all** (literally zero influence) |
+| Overhead estimate | +0.07…0.33% of frame — **3…15 times cheaper than the 1.1% budget**. Calculated, not measured |
+| **Risk class** | **MEDIUM** — entry into the hottest function; an error manifests immediately |
 
-**Пункт обязательной проверки перед выкаткой:** `ENDBR64` в первых инструкциях
-`ProcessInternal` **отсутствует**. При включённом CET нужен CET-совместимый
-trampoline `mov r11, imm64; jmp r11` (12 байт, стек не трогает).
+**Mandatory pre-deployment check:** `ENDBR64` is **absent** from the first instructions
+of `ProcessInternal`. With CET enabled, a CET-compatible
+trampoline `mov r11, imm64; jmp r11` is needed (12 bytes, does not touch the stack).
 
-### Не найдено
+### Not found
 
-1. Фактическое число вызовов `ProcessInternal`/`Invoke` в секунду **не измерено** — проценты накладных расчётные.
-2. Состояние `GFullStackTrace` и цена `GScriptStack` не проверены.
-3. Размер `FFrame` целиком не подтверждён (предположительно `0x90`).
-4. `UFunction+0x20 = Outer` — **вывод** из обхода Super-цепочки, не тип из PDB.
-5. Содержимое `GNatives` в рантайме не проверено — карта восстановлена из статик-инициализаторов.
-6. Поведение под CET/shadow stack не проверено.
-7. Причина отсутствия арифметических опкодов **не выяснена**; вывод «арифметика не поддерживается» делать нельзя.
+1. The actual per-second call count of `ProcessInternal`/`Invoke` was **not measured** —
+   the overhead percentages are calculated.
+2. The state of `GFullStackTrace` and the cost of `GScriptStack` were not checked.
+3. The full size of `FFrame` is not confirmed (assumed `0x90`).
+4. `UFunction+0x20 = Outer` — an **inference** from the Super-chain walk, not a type from
+   the PDB.
+5. The runtime contents of `GNatives` were not checked — the map was recovered from static
+   initializers.
+6. Behavior under CET/shadow stack not checked.
+7. The reason for the absence of arithmetic opcodes is **unknown**; the conclusion
+   "arithmetic is not supported" cannot be drawn.
 
 ---
 
-## A6. Гигиена отчётов
+## A6. Report hygiene
 
-Выполнено, все правки внесены в `REPORT-Genesis.md`, `REPORT-TheIsland.md`,
-`REPORT-Fjordur.md`. Отдельный раздел A6 в каждом файле.
+Done; all edits applied to `REPORT-Genesis.md`, `REPORT-TheIsland.md`,
+`REPORT-Fjordur.md`. A separate section A6 in each file.
 
-**Ключевой результат проверки:** завершённого стартового сохранения перед П0/П1
-**не было ни на одной карте**. Свидетельство — `*_AntiCorruptionBackup.bak` создаётся
-**во время загрузки мира**, а сам `.ark` переписывается только при реальном сохранении:
+**Key result of the check:** a completed initial save before P0/P1 **existed on none
+of the maps**. Evidence — `*_AntiCorruptionBackup.bak` is created **during world
+loading**, while the `.ark` itself is rewritten only on an actual save:
 
-| Карта | запуск | `.bak` | `.ark` переписан впервые |
+| Map | start | `.bak` | `.ark` first rewritten |
 |---|---|---|---|
-| Genesis | 00:32:48 | 00:37:54 (в загрузке) | 01:21:38 |
-| TheIsland | 01:33:43 | 01:37:56 (в загрузке) | 02:07 |
-| Fjordur | 02:19:19 | 02:23:59 (в загрузке) | 02:38 |
+| Genesis | 00:32:48 | 00:37:54 (during loading) | 01:21:38 |
+| TheIsland | 01:33:43 | 01:37:56 (during loading) | 02:07 |
+| Fjordur | 02:19:19 | 02:23:59 (during loading) | 02:38 |
 
-**Посылка ревьюера «Genesis ждал конца стартового сейва» не подтверждается данными.**
+**The reviewer's claim that "Genesis waited for the end of the initial save" is not
+confirmed by the data.**
 
 ## A7. ARCH.md
 
-Создан отдельный документ: 5 действующих оптимизаций, 4 новых патча с риск-классами,
-конфигурация, встроенный мониторинг с признаком `CONTAMINATED`, спецификация
-команды `perf.selftest` и порядок выкатки.
+A separate document created: 5 active optimizations, 4 new patches with risk classes,
+configuration, built-in monitoring with the `CONTAMINATED` flag, the specification of
+the `perf.selftest` command and the deployment order.

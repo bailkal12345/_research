@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Слот C (doit6 §3): A/B overlaptrim2 vs overlaptrim3 на РЕАЛЬНОМ СЕЙВЕ + откат.
+# Slot C (doit6 §3): A/B overlaptrim2 vs overlaptrim3 on the REAL SAVE + rollback.
 #
-# Протокол (ARCH.md §7):
-#  1) рука применяется ЗАРАНЕЕ (в памяти), затем ждём завершения автосейва -
-#     это общий якорь для обоих окон: окно измерения = 300 с ПОСЛЕ сейва;
-#  2) рука A = overlaptrim 2, рука B = overlaptrim3 (белый список A2);
-#  3) метрика окна: t/s (mon 1 Гц) + ms/тик; окно помечается VALID/CONTAMINATED
-#     по признаку save != idle в строках окна;
-#  4) откат: overlapall 0 + РЕСТАРТ сервера, затем контрольное окно 300 с.
+# Protocol (ARCH.md §7):
+#  1) the arm is applied IN ADVANCE (in memory), then we wait for the autosave to finish -
+#     this is a common anchor for both windows: measurement window = 300 s AFTER the save;
+#  2) arm A = overlaptrim 2, arm B = overlaptrim3 (whitelist A2);
+#  3) window metric: t/s (mon 1 Hz) + ms/tick; the window is marked VALID/CONTAMINATED
+#     by the save != idle flag in the window lines;
+#  4) rollback: overlapall 0 + SERVER RESTART, then a control window of 300 s.
 import os, re, sys, time, json, subprocess
 sys.path.insert(0, r'C:\Dev\_research')
 os.environ.setdefault('RCON_HOST', '192.168.8.218')
@@ -19,8 +19,8 @@ LOG = os.path.join(PLUG, 'TickProf.log')
 OUT = r'C:\Dev\_research\slotC'
 os.makedirs(OUT, exist_ok=True)
 re_mon = re.compile(r'mon: t/s=(\d+)(?: ms/tick=(\d+) frame_ms=(\d+) busy=(\d+)% save=(\w+))?')
-re_save_end = re.compile(r'save: запись \.ark завершилась, длительность (\d+) мс')
-re_trim = re.compile(r'overlaptrim3?: порог=(\d+) отключено компонентов=(\d+) освобождено записей=(\d+)')
+re_save_end = re.compile(r'save: \.ark write finished, duration (\d+) ms')
+re_trim = re.compile(r'overlaptrim3?: threshold=(\d+) .*?disabled=(\d+).*?entries freed=(\d+)')
 re_overall = re.compile(r'overlapall:.*')
 
 
@@ -47,7 +47,7 @@ def log_lines():
 
 
 def wait_save_end(max_wait=2400, since=0):
-    """Ждём завершения автосейва. since = индекс строки лога, с которого ищем."""
+    """Wait for the autosave to finish. since = log line index to start searching from."""
     t0 = time.time()
     while time.time() - t0 < max_wait:
         for l in log_lines()[since:]:
@@ -58,15 +58,15 @@ def wait_save_end(max_wait=2400, since=0):
 
 
 def measure(tag, arm_cmd, arm_desc, seconds=300):
-    """Рука: сброс базы (overlapall 0) -> арм -> ждём сейв -> окно 300 с -> разбор.
+    """Arm: reset the base (overlapall 0) -> arm -> wait for save -> 300 s window -> parse.
 
-    ВАЖНО: перед каждой рукой состояние приводится к ОДНОМУ базовому
-    (bGenerateOverlapEvents возвращён у всех) - иначе рука B считалась бы
-    поверх уже обрезанного рукой A состояния и сравнение было бы нечистым.
+    IMPORTANT: before each arm the state is brought to ONE base state
+    (bGenerateOverlapEvents re-enabled for all) - otherwise arm B would be measured
+    on top of the state already trimmed by arm A and the comparison would be impure.
     """
-    say('--- РУКА %s: %s ---' % (tag, arm_desc))
+    say('--- ARM %s: %s ---' % (tag, arm_desc))
     base = len(log_lines())
-    say('    сброс базы: overlapall 0 (возврат bGenerateOverlapEvents у всех)')
+    say('    base reset: overlapall 0 (re-enabling bGenerateOverlapEvents for all)')
     r0 = rcon('TickProf.overlapall 0')
     time.sleep(3)
     for l in log_lines()[base:]:
@@ -74,20 +74,20 @@ def measure(tag, arm_cmd, arm_desc, seconds=300):
             say('    LOG: %s' % l)
     base = len(log_lines())
     r = rcon(arm_cmd)
-    say('    арм %s -> %s' % (arm_cmd, (r or '').strip()[:50]))
+    say('    arm %s -> %s' % (arm_cmd, (r or '').strip()[:50]))
     time.sleep(2)
     for l in log_lines()[base:]:
         if re_trim.search(l) or re_overall.search(l):
             say('    LOG: %s' % l)
-    # якорь: ждём завершения автосейва
+    # anchor: wait for the autosave to finish
     t, dur, mark = wait_save_end(since=base)
     if t is None:
-        say('    сейв не дождались - рука пропущена')
+        say('    save never came - arm skipped')
         return None
-    say('    якорь: сейв завершён в %s (%d мс) -> окно %d с' % (t, dur, seconds))
+    say('    anchor: save finished at %s (%d ms) -> window %d s' % (t, dur, seconds))
     rcon('TickProf.mon %d' % seconds)
     time.sleep(2)
-    # окно = ровно 300 с после сейва
+    # window = exactly 300 s after the save
     time.sleep(seconds + 12)
     rows = []
     for l in log_lines()[mark:]:
@@ -109,49 +109,49 @@ def measure(tag, arm_cmd, arm_desc, seconds=300):
                busy_mean=round(sum(busy) / len(busy), 1) if busy else None,
                save_nonidle_rows=contam,
                verdict='CONTAMINATED' if contam else 'VALID')
-    say('    РЕЗУЛЬТАТ %s: %s' % (tag, json.dumps(res, ensure_ascii=False)))
+    say('    RESULT %s: %s' % (tag, json.dumps(res, ensure_ascii=False)))
     with open(os.path.join(OUT, 'window_%s.json' % tag), 'w', encoding='utf-8') as f:
         json.dump(dict(result=res, rows=rows), f, ensure_ascii=False, indent=1)
     return res
 
 
 def restart_server():
-    """Рестарт сервера = явная проверка отката (проверка §7.5)."""
-    say('    РЕСТАРТ сервера (проверка отката)...')
+    """Server restart = explicit rollback check (check §7.5)."""
+    say('    SERVER RESTART (rollback check)...')
     subprocess.run([sys.executable, r'C:\Dev\_research\stop_server.py'],
                    capture_output=True, text=True, timeout=300)
     time.sleep(5)
     subprocess.Popen([sys.executable, r'C:\Dev\_research\stand_start.py', 'Genesis'],
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    say('    сервер запускается, ждём RCON...')
+    say('    server starting, waiting for RCON...')
     t0 = time.time()
     while time.time() - t0 < 1200:
         r = rcon('TickProf.status', timeout=4)
         if r and 'Keep Alive' in str(r):
-            say('    RCON отвечает через %.0f c' % (time.time() - t0))
+            say('    RCON responding after %.0f s' % (time.time() - t0))
             return True
         time.sleep(10)
-    say('    RCON не поднялся')
+    say('    RCON did not come up')
     return False
 
 
 if __name__ == '__main__':
-    say('== СЛОТ C: A/B overlaptrim2 vs overlaptrim3 на реальном сейве ==')
-    rA = measure('A_trim2', 'TickProf.overlaptrim 2', 'overlaptrim 2 (прод-конфиг v1)', 300)
-    rB = measure('B_trim3', 'TickProf.overlaptrim3 2', 'overlaptrim3 (белый список A2)', 300)
-    say('== СРАВНЕНИЕ ==')
+    say('== SLOT C: A/B overlaptrim2 vs overlaptrim3 on the real save ==')
+    rA = measure('A_trim2', 'TickProf.overlaptrim 2', 'overlaptrim 2 (prod config v1)', 300)
+    rB = measure('B_trim3', 'TickProf.overlaptrim3 2', 'overlaptrim3 (whitelist A2)', 300)
+    say('== COMPARISON ==')
     say('   A: %s' % json.dumps(rA, ensure_ascii=False))
     say('   B: %s' % json.dumps(rB, ensure_ascii=False))
     if rA and rB and rA['verdict'] == 'VALID' and rB['verdict'] == 'VALID':
         d_ts = rB['ts_mean'] - rA['ts_mean']
         d_ms = rB['ms_mean'] - rA['ms_mean']
-        say('   ДЕЛЬТА B-A: t/s %+0.2f, мс/тик %+0.2f' % (d_ts, d_ms))
-        say('   ВЕРДИКТ: %s' % ('trim3 не хуже trim2' if d_ts >= 0 and d_ms <= 0
-                                  else 'trim3 хуже trim2 - в прод не выкатывать'))
+        say('   DELTA B-A: t/s %+0.2f, ms/tick %+0.2f' % (d_ts, d_ms))
+        say('   VERDICT: %s' % ('trim3 is not worse than trim2' if d_ts >= 0 and d_ms <= 0
+                                  else 'trim3 is worse than trim2 - do not roll out to prod'))
     else:
-        say('   ВЕРДИКТ: окна неполны/контаминированы - решение не принимается')
-    # --- явная проверка отката: overlapall 0 + рестарт + контрольное окно
-    say('== ОТКАТ: overlapall 0 + рестарт сервера ==')
+        say('   VERDICT: windows incomplete/contaminated - no decision is made')
+    # --- explicit rollback check: overlapall 0 + restart + control window
+    say('== ROLLBACK: overlapall 0 + server restart ==')
     base = len(log_lines())
     rcon('TickProf.overlapall 0')
     time.sleep(3)
@@ -162,5 +162,5 @@ if __name__ == '__main__':
         time.sleep(30)
         rcon('TickProf.mon 300')
         time.sleep(320)
-        say('== контрольное окно после отката снято ==')
-    say('== СЛОТ C: ГОТОВО ==')
+        say('== control window after rollback captured ==')
+    say('== SLOT C: DONE ==')

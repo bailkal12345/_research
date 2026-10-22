@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Слот E, П2: матрица сейвов (одна карта за прогон).
+# Slot E, stage 2: save matrix (one map per run).
 #    py -3 slotE_matrix.py TheIsland
-# Остановка -> бут карты -> RCON -> прогрев 10 мин -> bptrace 1 ->
-# окно 240 с (до первого автосейва) -> отчёт -> census -> bptrace 0.
+# Stop -> map boot -> RCON -> 10 min warmup -> bptrace 1 ->
+# 240 s window (before the first autosave) -> report -> census -> bptrace 0.
 import re
 import subprocess
 import sys
@@ -37,12 +37,12 @@ def wait_rcon(max_s=900):
     t0 = time.time()
     while time.time() - t0 < max_s:
         out = rcon('TickProf.bptrace 2', timeout=25)
-        if 'пouch' not in out and ('скриптовых' in out or 'Server received' in out):
-            # смотрим фактический отклик в логе
+        if 'enumeration' in out or 'Server received' in out:
+            # check the actual response in the log
             time.sleep(2)
             for l in log_tail(8):
-                if 'bptrace: перечисление' in l:
-                    print('   RCON занял %d с, %s' % (int(time.time() - t0), l), flush=True)
+                if 'bptrace: enumeration' in l:
+                    print('   RCON took %d s, %s' % (int(time.time() - t0), l), flush=True)
                     return True
         time.sleep(15)
     return False
@@ -52,7 +52,7 @@ def wait_window_line(before, extra_s=90):
     t0 = time.time()
     while time.time() - t0 < WIN_S + extra_s:
         for l in log_tail(10):
-            if 'window окно:' in l and l not in before:
+            if 'window result:' in l and l not in before:
                 return l
         time.sleep(8)
     return None
@@ -68,42 +68,42 @@ def wait_report(needle, before_lines, max_s=60):
     return None
 
 
-print('=== стоп сервера ===', flush=True)
+print('=== stopping the server ===', flush=True)
 p = subprocess.run([sys.executable, R + r'\stop_server.py'], capture_output=True, text=True,
                    cwd=R, timeout=180)
 print('   ' + (p.stdout.strip().splitlines() or [''])[ -1], flush=True)
 time.sleep(5)
 
-print('=== бут %s ===' % MAP, flush=True)
+print('=== boot %s ===' % MAP, flush=True)
 subprocess.Popen(['py', '-3', R + r'\stand_start.py', MAP], cwd=R,
                  stdout=open(R + r'\stand_start.out', 'w'),
                  stderr=subprocess.STDOUT)
 if not wait_rcon():
-    print('RCON не поднялся', flush=True)
+    print('RCON did not come up', flush=True)
     sys.exit(1)
 
-print('=== прогрев %d с ===' % WARMUP_S, flush=True)
+print('=== warmup %d s ===' % WARMUP_S, flush=True)
 time.sleep(WARMUP_S)
 
 before = log_tail(40)
 rcon('TickProf.bptrace 1')
 time.sleep(3)
-ready = wait_report('bptrace: включён', before)
-print('   ' + (ready or 'включение НЕ подтверждено'), flush=True)
+ready = wait_report('bptrace: v2 enabled', before)
+print('   ' + (ready or 'enable NOT confirmed'), flush=True)
 
 rcon('TickProf.window %d' % WIN_S)
-wl_before = [l for l in before if 'window окно:' in l]
+wl_before = [l for l in before if 'window result:' in l]
 wl = wait_window_line(wl_before)
-print('   окно: ' + (wl or 'нет строки окна'), flush=True)
+print('   window: ' + (wl or 'no window line'), flush=True)
 m = re.search(r't/s=([\d.]+).*ms/tick=([\d.]+).*save=(\w+) (VALID|CONTAMINATED)', wl or '')
 if m:
-    print('   ДоКНОПКА: t/s=%s ms/tick=%s save=%s %s' % (m.group(1), m.group(2), m.group(3), m.group(4)), flush=True)
+    print('   PRE-BUTTON: t/s=%s ms/tick=%s save=%s %s' % (m.group(1), m.group(2), m.group(3), m.group(4)), flush=True)
 
 rcon('TickProf.bptrace.report')
 time.sleep(3)
 rep = log_tail(50)
-top_self = [l for l in rep if 'ПО SELF-ВРЕМЕНИ' in l or ('self=' in l and 'bptrace.caller' not in l)]
-print('=== отчёт (top-5 self) ===', flush=True)
+top_self = [l for l in rep if 'TOP-20 BY SELF TIME' in l or ('self=' in l and 'bptrace.caller' not in l)]
+print('=== report (top-5 self) ===', flush=True)
 k = 0
 for l in rep:
     if 'self=' in l and 'bptrace.caller' not in l:
@@ -111,17 +111,17 @@ for l in rep:
         if k <= 5:
             print('   ' + l[:170], flush=True)
 first = rep[0] if rep else ''
-print('   сумма: ' + (first if 'сумма' in first else 'см. лог'), flush=True)
+print('   sum: ' + (first if 'self sum' in first else 'see log'), flush=True)
 
 rcon('TickProf.overlaps 20')
 time.sleep(40)
-census = [l for l in log_tail(80) if re.search(r'actors?=\d+|компонент|components?', l)]
+census = [l for l in log_tail(80) if re.search(r'owners=|components=', l)]
 for l in census[:6]:
     print('   census: ' + l[:170], flush=True)
 
 rcon('TickProf.bptrace 0')
 time.sleep(5)
-off = wait_report('bptrace: выключен', before + rep, 30)
-print('   откат: ' + (off or 'не отмечен'), flush=True)
+off = wait_report('bptrace: disabled', before + rep, 30)
+print('   rollback: ' + (off or 'not seen'), flush=True)
 alive = rcon('TickProf.status', timeout=15)
-print('   живость: ' + ('есть отклик' + ('' if 'received' not in alive else ' (received)') if alive else 'НЕТ ОТКЛИКА'), flush=True)
+print('   liveness: ' + ('responding' + ('' if 'received' not in alive else ' (received)') if alive else 'NO RESPONSE'), flush=True)

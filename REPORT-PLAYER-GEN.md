@@ -1,106 +1,174 @@
-# REPORT-PLAYER-GEN.md — итоговый отчёт слота DOIT-5 «Genesis с одним игроком @ 60 т/с»
+# REPORT-PLAYER-GEN.md — final report of slot DOIT-5 «Genesis with one player @ 60 t/s»
 
-Слот: 19.10.2026 23:46 — 20.10.2026 12:55 (окончание: самосмерть сервера после профиля).
-Регламент: doit5.txt (+§0–§6 doit4.txt). Правило отчёта: только фактически снятые числа; «мс/тик» в таблице — только внешний Python; плагиновые значения приводятся отдельно как дефектные (см. §6.4).
+Slot: 19.10.2026 23:46 — 20.10.2026 12:55 (ending: server self-death after the profile).
+Rules: doit5.txt (+§0–§6 of doit4.txt). Report rule: only actually captured numbers; "ms/tick"
+in the table is the external Python only; plugin values are listed separately as defective (see §6.4).
 
 ---
 
-## 1. ГЛАВНЫЙ ОТВЕТ (§4.3, один абзац)
+## 1. MAIN ANSWER (§4.3, one paragraph)
 
-**Держит ли Genesis 60 т/с с одним игроком: НЕТ в наблюдаемых конфигурациях.** Пустой мир на цели 60 держит 59 т/с устойчивыми отрезками (кадр 16 мс, ms/tick по CPU-схеме ~8–12), но мир периодически входит в «накопительные фазы» (ms/tick растёт 36→93, t/s падает до 10–17, busy 98–101% по плагину, затем спад 1–5.5 минут; с игроком однажды фаза дожала до t/s=2 при ms/tick 240), поэтому непрерывного чистого 240-с окна пустого мира не существует даже без игроков; лучшее окно G02v5 дало среднее 54.8 т/с. Статичный игрок у спавна (читы gcm+leavemealone) устанавливает режим ~56.9 т/с; по чистому префиксу 86 с плагиновый ms/tick 9.8 при busy 58%. **Цена голого игрока по внешней CPU-rate: +0.0836 ядра (≈ +1.5 мс/тик при 56.9 т/с)** — кратно дешевле, чем на TheIsland (+12 мс/тик там). **На большой базе темп падает до 20.9 т/с (7–27)**: внешний ms/tick за окно 20.8 при внешней занятости ядра лишь 43.5%; **база добавляет +0.1653 ядра внешней CPU-rate (≈ +7.9 мс/тик при наблюдаемом темпе 20.9)**. Наблюдаемый лимит на базе лучше всего описывается «wall-временем тика»: плагиновый ms/tick 42.4 и фактический кадр 49.2 мс дают потолок ~21 т/с, то есть примерно половина времени тика — не CPU ядра, а ожидания/синхронизации (в профиле syscall-ожидание 19%). Дефицит до бюджета 16.6 мс/тик: по чистому CPU пустой+игрок+база ≈ 3.1+1.5+2.8 = 7.3 мс/тик при 60 т/с — влезал бы в бюджет, но фактически база не пускает выше ~21 т/с из-за non-CPU ограничений; причину расхождения слот не атрибутировал (кандидаты — блокировки/IO/стриминг; профиль снят). Прогноз для выделенной машины: на dedicated ожидаем не хуже; CPU-запас 16.6−7.3 ≈ 9.3 мс/тик при 60 т/с — верхняя граница при условии решения non-CPU лимита.
+**Does Genesis hold 60 t/s with one player: NO in the observed configurations.** An empty world
+at the target of 60 holds 59 t/s in stable stretches (frame 16 ms, ms/tick by the CPU scheme
+~8–12), but the world periodically enters "accumulation phases" (ms/tick grows 36→93, t/s falls
+to 10–17, busy 98–101% per the plugin, then decay for 1–5.5 minutes; with a player one phase
+once pushed t/s down to 2 at ms/tick 240), so a continuous clean 240-s window of an empty world
+does not exist even without players; the best window G02v5 gave an average of 54.8 t/s. A static
+player near spawn (cheats gcm+leavemealone) establishes a regime of ~56.9 t/s; over the clean
+86-s prefix the plugin ms/tick is 9.8 at busy 58%. **The cost of a bare player by the external
+CPU-rate: +0.0836 core (≈ +1.5 ms/tick at 56.9 t/s)** — several times cheaper than on TheIsland
+(+12 ms/tick there). **On a large base the rate falls to 20.9 t/s (7–27)**: the external ms/tick
+over the window is 20.8 at an external core occupancy of only 43.5%; **the base adds +0.1653
+core of external CPU-rate (≈ +7.9 ms/tick at the observed rate of 20.9)**. The observed limit on
+the base is best described by the "wall time of a tick": the plugin ms/tick 42.4 and the actual
+frame 49.2 ms give a ceiling of ~21 t/s, i.e. about half the tick time is not core CPU but
+waiting/synchronization (in the profile, syscall wait is 19%). Deficit against the 16.6 ms/tick
+budget: by pure CPU, empty+player+base ≈ 3.1+1.5+2.8 = 7.3 ms/tick at 60 t/s — that would fit
+the budget, but in fact the base does not let you go above ~21 t/s due to non-CPU constraints;
+the slot did not attribute the cause of the discrepancy (candidates — locks/IO/streaming;
+profile captured). Forecast for a dedicated machine: on a dedicated box we expect no worse;
+CPU headroom 16.6−7.3 ≈ 9.3 ms/tick at 60 t/s — an upper bound, conditional on solving the
+non-CPU limit.
 
-## 2. Хронология слота
+## 2. Slot timeline
 
-| Время | Факт |
+| Time | Fact |
 |---|---|
-| 19.10 23:29 | движок перезаписал GameUserSettings.ini Server1; из RCON-ключей остался только RCONPort — RCONEnabled=True и ServerAdminPassword потеряны (корень всех отказов RCON) |
-| 19.10 23:46 – 20.10 07:15 | пять бутов с отказавшим RCON; ini перешёл в UTF-16 при правках владельца; я дважды перезапустил Server1 впустую, пока чинил вставку ключей (зафиксировано честно) |
-| 07:17 | Server1 поднят: Genesis (деплой 19.10), pid 6260; разнос ядер §1.1 пост-стартом SetProcessAffinityMask: сервер 0x000FFF (ядра 0–11), клиент 0xFFF000 (12–23) |
-| 07:24:53 | RCON на 32330 отвечает (ключи возвращены в ini) |
-| 07:26 | §2 применено: fixclamp 0 (плагин вернул свой потолок 100000→120), fncache 1, iscache 1, cachename 1, nochart 1, overlaptrim 2 (компонентов 4905, маркеров 43724); arkstate ДО (17 .ark-файлов; Genesis.ark 101.7 МБ) |
-| 07:38 | автосейв №1 3000 мс; далее каждые 15 мин (детектор иногда пропускает: цикл 08:53 не был зафиксирован) |
-| 07:47:55 | TickProf.maxfps 60 — в логе плагина «NetServerMaxTickRate 30 → 60»: значение NetServerMaxTickRate=60 из ini к runtime не применилось (runtime был 30 т/с, кадр 33 мс) |
-| 07:48–08:56 | гейт: 59–60 т/с большими отрезками; открыто явление накопительных фаз: 07:49:07→50:36, 07:56:38→58:17, 08:11:46→08:17:05 (5.3 мин), 08:19:33→20:39, 08:34:12→53 (пик 93), 08:40-41, 08:49:2x, 08:56:31+; снято шесть попыток окна G0.2, принято G02v5 |
-| 08:59 | команда connect боту на клиенте (по санкции владельца); connectPending=true, session2 ищет сессии |
-| 09:32–09:35 | первый признак входа игрока: детектор видит 18-й .ark-файл в 09:32:57; game-log SetPlayerPos isquzee1 в 09:33:02 — ботовский connect, вероятно, довёл клиента до загрузки Genesis; после этого клиент умер (процесс отсутствует по проверке 09:35:40; дамп не снимался) |
-| 09:35:52 | клиент перезапущен владельцем (pid 7000); вход вручную |
-| 09:49:40 | маркер PLAYER-IN: listplayers → «0. isquzee1, 76561199331214868»; владелец ввёл читы gcm и leavemealone |
-| 09:53–11:23 | первые восемь сейвов с игроком: 8375 / 15766 / 7437 / 3015 / 9156 / 7859 / 8563 / 3563 мс (пустые были 2016–3016); с 11:53 вернулись к 2016–3016 |
-| 09:57–10:07 | окно G0.4: попытка 09:57:25–10:01:31 забракована (накопительная фаза 09:57:29–10:00:12, ~2.7 мин, ms/tick до 240, t/s до 2); попытка G04b 10:03:22–10:07:28 забракована (фаза 10:04:22) |
-| 10:30–10:35 | окно G04c принято (владелец стоит на месте у спавна) |
-| 12:44–12:49 | окно G06 принято (владелец стоит на большой базе; режим базы устойчиво насыщен по кадру) |
-| 12:52 | перепись G0.9 на плотной базе: 142 уровня, 106 534 актора (зарегистрированы в тик 1485), 404 117 компонентов (тикающих 3374); ticksets: AllEnabled=1 264 433, FastPath=7 478 592 801, FastPathTickAfter=14 028 876 021, AllDisabled=12 929 146 766, NewlySpawned=16 103 559 480; overlapsizes: 270 538 компонентов, из них с bGenerateOverlapEvents 6527, всего пересечений 199 422 |
-| 12:53:17 | arkhash ДО: Genesis.ark 101 794 264 байта, sha256 86936d47… (и TheIsland/Fjordur — см. worklog) |
-| 12:53:23–12:54:23 | профиль G0.10 (строго последний измерительный шаг): prof_512222984.bin, 3866 сэмплов, tid 18080 (game thread), syscall-ожидание 762/3866 = 19%; сервер жив в момент записи результата |
-| 12:54:23–12:55:15 | сервер умер сам: последняя запись плагина 12:54:23; в 12:54:56 arkstate ПОСЛЕ вернул None; в 12:55:15–19 процесса нет, RCON отклоняет соединение. Crashstack/дамп отсутствуют — известный паттерн «смерть после профиля» (по регламенту не считать аварией) |
-| 12:58 | отчёт и worklog закончены; парковка слота |
+| 19.10 23:29 | the engine rewrote GameUserSettings.ini Server1; of the RCON keys only RCONPort survived — RCONEnabled=True and ServerAdminPassword lost (root of all RCON failures) |
+| 19.10 23:46 – 20.10 07:15 | five boots with failed RCON; ini went to UTF-16 during the owner's edits; I restarted Server1 twice in vain while fixing the key insertion (recorded honestly) |
+| 07:17 | Server1 up: Genesis (deploy of 19.10), pid 6260; core split §1.1 post-start via SetProcessAffinityMask: server 0x000FFF (cores 0–11), client 0xFFF000 (12–23) |
+| 07:24:53 | RCON on 32330 responds (keys returned to the ini) |
+| 07:26 | §2 applied: fixclamp 0 (the plugin returned its own ceiling of 100000→120), fncache 1, iscache 1, cachename 1, nochart 1, overlaptrim 2 (4905 components, 43724 markers); arkstate BEFORE (17 .ark files; Genesis.ark 101.7 MB) |
+| 07:38 | autosave №1 3000 ms; then every 15 min (the detector sometimes misses: the 08:53 cycle was not captured) |
+| 07:47:55 | TickProf.maxfps 60 — the plugin log says «NetServerMaxTickRate 30 → 60»: the NetServerMaxTickRate=60 value from the ini did not apply at runtime (runtime was 30 t/s, frame 33 ms) |
+| 07:48–08:56 | gate: 59–60 t/s in large stretches; the accumulation-phase phenomenon observed: 07:49:07→50:36, 07:56:38→58:17, 08:11:46→08:17:05 (5.3 min), 08:19:33→20:39, 08:34:12→53 (peak 93), 08:40-41, 08:49:2x, 08:56:31+; six attempts of window G0.2 captured, G02v5 accepted |
+| 08:59 | connect command issued to the bot's client (by the owner's sanction); connectPending=true, session2 is looking for sessions |
+| 09:32–09:35 | first sign of player entry: the detector sees the 18th .ark file at 09:32:57; game-log SetPlayerPos isquzee1 at 09:33:02 — the bot's connect apparently got the client to loading Genesis; after that the client died (process absent per the 09:35:40 check; no dump taken) |
+| 09:35:52 | client restarted by the owner (pid 7000); manual join |
+| 09:49:40 | PLAYER-IN marker: listplayers → «0. isquzee1, 76561199331214868»; the owner entered the cheats gcm and leavemealone |
+| 09:53–11:23 | first eight saves with the player: 8375 / 15766 / 7437 / 3015 / 9156 / 7859 / 8563 / 3563 ms (empty ones were 2016–3016); from 11:53 back to 2016–3016 |
+| 09:57–10:07 | window G0.4: attempt 09:57:25–10:01:31 rejected (accumulation phase 09:57:29–10:00:12, ~2.7 min, ms/tick up to 240, t/s down to 2); attempt G04b 10:03:22–10:07:28 rejected (phase 10:04:22) |
+| 10:30–10:35 | window G04c accepted (owner standing still at spawn) |
+| 12:44–12:49 | window G06 accepted (owner standing on a large base; the base regime is steadily saturated on frame) |
+| 12:52 | G0.9 census on the dense base: 142 levels, 106 534 actors (registered in tick 1485), 404 117 components (3374 ticking); ticksets: AllEnabled=1 264 433, FastPath=7 478 592 801, FastPathTickAfter=14 028 876 021, AllDisabled=12 929 146 766, NewlySpawned=16 103 559 480; overlapsizes: 270 538 components, of them with bGenerateOverlapEvents 6527, total overlaps 199 422 |
+| 12:53:17 | arkhash BEFORE: Genesis.ark 101 794 264 bytes, sha256 86936d47… (and TheIsland/Fjordur — see worklog) |
+| 12:53:23–12:54:23 | profile G0.10 (strictly the last measurement step): prof_512222984.bin, 3866 samples, tid 18080 (game thread), syscall wait 762/3866 = 19%; the server was alive at the time the result was written |
+| 12:54:23–12:55:15 | the server died on its own: last plugin record 12:54:23; at 12:54:56 arkstate AFTER returned None; at 12:55:15–19 there is no process, RCON refuses the connection. No crashstack/dump — a known "death after profile" pattern (per the rules, not to be counted as a crash) |
+| 12:58 | report and worklog finished; slot parked |
 
-## 3. Главная таблица (§4.2)
+## 3. Main table (§4.2)
 
-Обозначения: t/s avg — среднее по 240 строкам mon-плагина (одна строка = 1 с); ext rate — CPU-секунды game thread (tid 18080) за 240 с (threadcpu, внешний Python); ext ms/tick = ext rate / t/s-avg × 1000; ext busy = ext rate / 240 с × 100%. Плагиновые значения — отдельный столбец для сравнения. CONT — задокументированная «грязь» окна.
+Notation: t/s avg — average over 240 rows of the mon-plugin (one row = 1 s); ext rate — CPU
+seconds of the game thread (tid 18080) over 240 s (threadcpu, external Python); ext ms/tick =
+ext rate / t/s-avg × 1000; ext busy = ext rate / 240 s × 100%. Plugin values are a separate
+column for comparison. CONT — documented "dirt" of the window.
 
-| Окно | Режим | Время окна | t/s avg (min–max) | busy плаг → ext | ext rate, CPU-с/240 с (доля ядра) | ms/tick ext | ms/tick плаг | CONT — грязь окна |
+| Window | Regime | Window time | t/s avg (min–max) | busy plugin → ext | ext rate, CPU-s/240 s (core share) | ms/tick ext | ms/tick plugin | CONT — window dirt |
 |---|---|---|---|---|---|---|---|---|
-| G0.2 пустой @60 | мир без игроков, §2 активен, maxfps 60 | 08:45:38–08:49:44 (G02v5) | 54.8 (21–60) | 44% → 18.6% (0.186 ядра) | 44.67 | 3.4 | 10.1 | 38 из 240 строк t/s<55 — в основном «вялый пейсинг» (ms/tick 2–4, busy<45); накопительная фаза началась в самом хвосте окна (08:49:2x). Автосейвов нет (№5 в 08:38) |
-| G0.4 игрок вне базы (спавн), статичен | читы gcm+leavemealone | 10:30:56–10:35:01 (G04c) | 44.6 (25–59) | 54% → 27.0% (0.270 ядра) | 64.73 | 6.0 | 12.3 | чистый префикс 10:30:57–10:32:24 (86 с): t/s 56.9 (54–59), плагиновый ms/tick 9.8, busy 58%; накопительная фаза 10:34:47–10:34:59 (12 с, ms/tick 20→38); остальное — «вялый пейсинг» (t/s 32–47, busy 15–47%) без насыщения. Автосейвов нет (№13 в 10:38) |
-| G0.6 игрок на большой базе, статичен | режим базы | 12:44:53–12:48:59 (G06) | 20.9 (7–27) | 84% → 43.5% (0.435 ядра) | 104.41 | 20.8 | 42.4 | без накопительных фаз: режим сам по себе насыщен кадром (frame avg 49.2 мс). Автосейвов нет (№21 в 12:38) |
+| G0.2 empty @60 | world without players, §2 active, maxfps 60 | 08:45:38–08:49:44 (G02v5) | 54.8 (21–60) | 44% → 18.6% (0.186 core) | 44.67 | 3.4 | 10.1 | 38 of 240 rows t/s<55 — mostly "sluggish pacing" (ms/tick 2–4, busy<45); an accumulation phase started in the very tail of the window (08:49:2x). No autosaves (№5 at 08:38) |
+| G0.4 player off base (spawn), static | cheats gcm+leavemealone | 10:30:56–10:35:01 (G04c) | 44.6 (25–59) | 54% → 27.0% (0.270 core) | 64.73 | 6.0 | 12.3 | clean prefix 10:30:57–10:32:24 (86 s): t/s 56.9 (54–59), plugin ms/tick 9.8, busy 58%; accumulation phase 10:34:47–10:34:59 (12 s, ms/tick 20→38); the rest — "sluggish pacing" (t/s 32–47, busy 15–47%) without saturation. No autosaves (№13 at 10:38) |
+| G0.6 player on a large base, static | base regime | 12:44:53–12:48:59 (G06) | 20.9 (7–27) | 84% → 43.5% (0.435 core) | 104.41 | 20.8 | 42.4 | no accumulation phases: the regime itself is saturated on frame (frame avg 49.2 ms). No autosaves (№21 at 12:38) |
 
-Расклад по §4.3 (внешние дельты CPU-rate; не зависят от пейсинга):
-- голый игрок (G0.4 минус G0.2) = +0.0836 ядра ≈ +1.5 мс/тик при 56.9 т/с;
-- плотная база (G0.6 минус G0.4) = +0.1653 ядра ≈ +7.9 мс/тик при 20.9 т/с;
-- суммарно мир+игрок+база = 0.435 ядра против пустого 0.186 (в 2.34 раза больше).
+Breakdown per §4.3 (external CPU-rate deltas; independent of pacing):
+- bare player (G0.4 minus G0.2) = +0.0836 core ≈ +1.5 ms/tick at 56.9 t/s;
+- dense base (G0.6 minus G0.4) = +0.1653 core ≈ +7.9 ms/tick at 20.9 t/s;
+- total world+player+base = 0.435 core versus empty 0.186 (2.34 times more).
 
-Интерпретация «дефицита до 16.6»: по чистому CPU пустой мир стоит 3.1 мс/тик при 60 т/с (0.186×1000/60); игрок добавляет ~+1.4, база ~+2.8 — суммарно ≈ 7.3 мс/тик против бюджета 16.6, то есть по чистому CPU всё влезает. Но фактический потолок на базе (~21 т/с) описывается wall-временем тика ≈ 42–49 мс (см. плагиновый ms/tick 42.4 и frame 49.2), то есть около половины тика — не CPU ядра; причину этого лимита слот не атрибутировал. Дефицит в двух системах счисления: CPU-версия на базе 20.8 мс/тик (при темпе 20.9) превышает бюджет на 4.2 мс/тик; wall-версия ~42–49 мс/тик превышает бюджет примерно на 26–32 мс/тик. Итог: удержание 60 т/с с такой базой недостижимо ни по одной из обеих интерпретаций.
+Interpretation of the "deficit against 16.6": by pure CPU the empty world costs 3.1 ms/tick at
+60 t/s (0.186×1000/60); the player adds ~+1.4, the base ~+2.8 — total ≈ 7.3 ms/tick against a
+budget of 16.6, i.e. by pure CPU everything fits. But the actual ceiling on the base (~21 t/s)
+is described by the tick's wall time ≈ 42–49 ms (see plugin ms/tick 42.4 and frame 49.2), i.e.
+about half of the tick is not core CPU; the slot did not attribute the cause of this limit.
+Deficit in the two ways of counting: the CPU version on the base at 20.8 ms/tick (at the rate
+of 20.9) exceeds the budget by 4.2 ms/tick; the wall version ~42–49 ms/tick exceeds the budget
+by roughly 26–32 ms/tick. Outcome: holding 60 t/s with such a base is unreachable under both
+interpretations.
 
-## 4. Сравнение с TheIsland (§4.4)
+## 4. Comparison with TheIsland (§4.4)
 
-| Метрика | TheIsland (REPORT-PLAYER, 19.10) | Genesis (этот слот) |
+| Metric | TheIsland (REPORT-PLAYER, 19.10) | Genesis (this slot) |
 |---|---|---|
-| Пустой мир @60 | 5–6 мс/тик (CPU-схема), устойчиво 59–60 | 8–12 мс/тик (CPU-схема), 59–60 отрезками; периодические фазы (ms/tick 36–93) |
-| Голый игрок | 17.7 мс/тик (16.8–18.4) при пустых 5–6 → +12 | внешняя CPU-rate: +0.0836 ядра ≈ +1.5 мс/тик при 56.9 т/с; оговорки: включены God/Invis/InfiniteStats, локация — спавн, игрок статичен |
-| Плотная база | не измерялась | +0.165 ядра ≈ +7.9 мс/тик при 20.9 т/с; wall-версия ~42–49 мс/тик |
-| Сейв-фриз | 3000 мс без игроков | пустые 2016–3016; первые восемь с игроком 3563–15766 (пик 15766 в 10:08); после 11:53 нормализация 2016–3016 |
+| Empty world @60 | 5–6 ms/tick (CPU scheme), steadily 59–60 | 8–12 ms/tick (CPU scheme), 59–60 in stretches; periodic phases (ms/tick 36–93) |
+| Bare player | 17.7 ms/tick (16.8–18.4) over empty 5–6 → +12 | external CPU-rate: +0.0836 core ≈ +1.5 ms/tick at 56.9 t/s; caveats: God/Invis/InfiniteStats enabled, location is spawn, player is static |
+| Dense base | not measured | +0.165 core ≈ +7.9 ms/tick at 20.9 t/s; wall version ~42–49 ms/tick |
+| Save freeze | 3000 ms without players | empty 2016–3016; the first eight with the player 3563–15766 (peak 15766 at 10:08); after 11:53 normalized to 2016–3016 |
 
-Переносимость цены игрока между картами в абсолютных мс/тик: НЕТ. На Genesis стационарный игрок по внешней CPU-rate стоит +45% к пустому (0.186 → 0.270 ядра); на TheIsland соотношение пустой/игрок было втрое по мс/тик. Сравнение не чистое (учитывать читы, локацию, статичность; метод измерения между слотами менялся) — обязательная оговорка. Плотная база — доминирующий член для прогноза N игроков: один игрок на большой базе ≈ минус 39 т/с к достижимому 60; перекрёстная репликация (квадратичный член) — предмет следующего слота.
+Portability of the player cost across maps in absolute ms/tick: NO. On Genesis a stationary
+player costs +45% over empty by external CPU-rate (0.186 → 0.270 core); on TheIsland the
+empty/player ratio was triple in ms/tick. The comparison is not clean (factor in cheats,
+location, stativeness; the measurement method changed between slots) — mandatory caveat.
+The dense base is the dominant term for N-player forecasts: one player on a large base
+≈ minus 39 t/s from the achievable 60; cross-replication (the quadratic term) is the subject
+of a future slot.
 
-## 5. Прогноз для выделенной машины (§4.5)
+## 5. Forecast for a dedicated machine (§4.5)
 
-На dedicated ожидаем не хуже текущих цифр: общий LLC/память на этой машине мог только ухудшать результаты. По чистому CPU пустой мир с игроком влезает в бюджет (запас ~9–10 мс/тик при 60 т/с); на базе наблюдаемый потолок 21 т/с лимитируется non-CPU фактором (ожидания; syscall-доля 19% в профиле), который на dedicated может измениться (диск, латентность) — направление возможного улучшения без гарантии.
+On a dedicated box we expect no worse than the current figures: shared LLC/memory on this
+machine could only worsen results. By pure CPU an empty world with a player fits the budget
+(headroom ~9–10 ms/tick at 60 t/s); on the base the observed ceiling of 21 t/s is limited by a
+non-CPU factor (waits; syscall share 19% in the profile), which may change on dedicated
+(disk, latency) — a possible improvement direction, without guarantees.
 
-## 6. Атрибуты честности
+## 6. Honesty attributes
 
-6.1 Разнос по ядрам §1.1: применён пост-стартом SetProcessAffinityMask (не start /affinity — клиент нельзя было перезапускать); сервер 0x000FFF (ядра 0–11), клиент 0xFFF000 (12–23); LLC/память общие — искажение возможно только в сторону ухудшения.
-6.2 Ручной вход: владелец; первый признак входа ~09:32–09:33 (18-й .ark-файл, SetPlayerPos в журнале); клиент умер после этого; перезапущен владельцем 09:35:52; вход завершён вручную; мои первые наблюдения listplayers — 09:49:40. Заявленный бюджет ~10 минут соблюдён.
-6.3 NetServerMaxTickRate: ini=60, но runtime 60 даёт только команда TickProf.maxfps 60 после каждого бута; без неё сервер стартует на 30 т/с. Обязательно фиксировать в будущих чек-листах.
-6.4 Кросс-чек чисел: плагиновые busy/ms/tick систематически завышены (44%→18.6%; 54%→27.0%; 84%→43.5%; 10.1→3.4; 12.3→6.0; 42.4→20.8) — ранее задокументированный дефект; для судейских чисел годится только внешний Python.
-6.5 Грязь окон: ни одно окно не идеально чистое (причина — накопительные фазы мира, они есть и у пустого мира); окна приводятся с послойным разбором. Вторжений автосейва в окна нет.
-6.6 Бот и клиент: connect запущен по санкции; вход, похоже, состоялся (сейв-метка 09:33), затем клиент умер; после перезапуска ботовский API (8082/8083) не поднялся; состояние Active не достигнуто (не критично для §4.1 — вход был ручным).
-6.7 Server2: процесс отсутствовал к 08:44 (я его не трогал и не останавливал); на замеры не влияет.
-6.8 Смерть после профиля: 12:54:23–12:55:15, без crashstack/дампа; по регламенту не авария; артефакты сохранены.
-6.9 arkstate ПОСЛЕ не снят (сервер умер; в 12:54:56 ответ None); arkstate ДО снят 07:26:53. Сверка хешей ограничена профилем-окном (12:53:17 и 12:55:01 идентичны — мир в этом окне не перезаписывался).
-6.10 BattlEye: никогда не включался (−NoBattlEye всегда).
-6.11 Server1 без NoDinos: полный живой мир Genesis (106 534 актора по переписи).
-6.12 Детектор сейвов: отмечены пропуски циклов (08:53); при чтении числового ряда это учитывать.
+6.1 Core split §1.1: applied post-start via SetProcessAffinityMask (not start /affinity —
+the client could not be restarted); server 0x000FFF (cores 0–11), client 0xFFF000 (12–23);
+LLC/memory shared — distortion is possible only in the worsening direction.
+6.2 Manual join: the owner; first sign of join ~09:32–09:33 (18th .ark file, SetPlayerPos in
+the log); the client died after that; restarted by the owner 09:35:52; join completed manually;
+my first listplayers observations — 09:49:40. The stated ~10-minute budget was kept.
+6.3 NetServerMaxTickRate: ini=60, but runtime 60 is only achieved by the command
+TickProf.maxfps 60 after each boot; without it the server starts at 30 t/s. Must be
+included in future checklists.
+6.4 Cross-check of numbers: plugin busy/ms/tick are systematically inflated (44%→18.6%;
+54%→27.0%; 84%→43.5%; 10.1→3.4; 12.3→6.0; 42.4→20.8) — a previously documented defect; only
+the external Python is fit for judging numbers.
+6.5 Window dirt: no window is perfectly clean (the cause is the world's accumulation phases,
+present even in an empty world); windows are given with a layer-by-layer breakdown.
+No autosave intrusions into the windows.
+6.6 Bot and client: connect was launched by sanction; the join seemingly happened
+(save marker 09:33), then the client died; after the restart the bot API (8082/8083) did not
+come up; state Active not reached (not critical for §4.1 — the join was manual).
+6.7 Server2: the process was absent by 08:44 (I did not touch or stop it); it does not affect
+the measurements.
+6.8 Death after the profile: 12:54:23–12:55:15, without crashstack/dump; per the rules not a
+crash; artifacts preserved.
+6.9 arkstate AFTER not captured (the server died; at 12:54:56 the answer was None); arkstate
+BEFORE captured 07:26:53. Hash verification is limited to the profile window (12:53:17 and
+12:55:01 identical — the world was not rewritten in this window).
+6.10 BattlEye: never enabled (−NoBattlEye always).
+6.11 Server1 without NoDinos: full live Genesis world (106 534 actors per the census).
+6.12 Save detector: missed cycles noted (08:53); take into account when reading the numeric series.
 
-## 7. Парковка и артефакты
+## 7. Parking and artifacts
 
-- Server1 сам умер 12:54–12:55; перезапусков не было; слот завершён по G0.11.
-- Клиент жив (pid 7000, старт 09:35:52); ботовский API не поднялся.
-- Server2: processus отсутствует с ~08:44 (не моя остановка).
-- Артефакты в C:\Dev\_research\: threadcpu_g02*.txt, threadcpu_g04*.txt, threadcpu_g06.txt, plugin_tail_after_death_20261020.txt, serverlog_tail_after_death_20261020.txt; в директории плагина Server1 — prof_512222984.{bin,csv,ret,wait,modules.txt}; worklog.md (append-only) полон.
-- Push: код в этом слоте я не менял — нечего пушить.
-- G0.7/G0.8 и окно @120 — опциональные, не снимались.
+- Server1 died on its own 12:54–12:55; no restarts; slot closed per G0.11.
+- The client is alive (pid 7000, started 09:35:52); the bot API did not come up.
+- Server2: process absent since ~08:44 (not my stop).
+- Artifacts in C:\Dev\_research\: threadcpu_g02*.txt, threadcpu_g04*.txt, threadcpu_g06.txt,
+  plugin_tail_after_death_20261020.txt, serverlog_tail_after_death_20261020.txt; in the Server1
+  plugin directory — prof_512222984.{bin,csv,ret,wait,modules.txt}; worklog.md (append-only) is complete.
+- Push: I did not change code in this slot — nothing to push.
+- G0.7/G0.8 and the @120 window — optional, not captured.
 
-## 8. Не сделано / отступления
+## 8. Not done / deviations
 
-1. Полностью чистого 240-с окна нет — строгая буква §4.1 не выполнена ни одним окном; главный запрос к следующему слоту — атрибуция накопительного феномена.
-2. Бот-подключение не доведено до состояния Active (клиент умер; после перезапуска API не поднялся).
-3. arkstate ПОСЛЕ не снят (смерть раньше); хеш-сверка ограничена профильным окном.
-4. Причины смерти после профиля (как и в прошлые слоты) не атрибутированы.
-5. Сравнение по игроку между картами — не чистое (читы/локация/статичность; несопоставимые контексты), заявлено с оговоркой.
+1. There is no fully clean 240-s window — the strict letter of §4.1 is not satisfied by a
+   single window; the main request for the next slot is attribution of the accumulation phenomenon.
+2. Bot connection not brought to state Active (the client died; after the restart the API did
+   not come up).
+3. arkstate AFTER not captured (death happened first); hash verification is limited to the
+   profile window.
+4. Causes of death after profile (as in previous slots) not attributed.
+5. Cross-map player comparison is not clean (cheats/location/stativeness; incomparable
+   contexts), stated with the caveat.
 
-## 9. Задачи следующего слота
+## 9. Tasks for the next slot
 
-1. Атрибуция накопительного феномена (кандидат №1): рост ms/tick 36→93, спад; чаще и сильнее с игроком; данные уже в наличии (профиль, syscall-стопки, переписи) — основная цель следующего слота.
-2. Атрибуция non-CPU лимита базы (ожидания/IO/стриминг) — цель: объяснить потолок ~21 т/с при занятости ядра 43.5%.
-3. Возобновить полный гейт пустого мира @60 на свежем буте с обязательным TickProf.maxfps 60 и §2.
+1. Attribution of the accumulation phenomenon (candidate №1): ms/tick growth 36→93, decay;
+   more frequent and stronger with a player; the data is already available (profile, syscall
+   stacks, censuses) — the main goal of the next slot.
+2. Attribution of the base's non-CPU limit (waits/IO/streaming) — goal: explain the ceiling of
+   ~21 t/s at 43.5% core occupancy.
+3. Resume the full gate of the empty world @60 on a fresh boot with mandatory
+   TickProf.maxfps 60 and §2.

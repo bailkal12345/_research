@@ -1,28 +1,29 @@
-# RE-SESSION.md — путь подключения в сервер-браузере ARK v361
+# RE-SESSION.md — the join path in the ARK v361 server browser
 
-Разобрано в Ghidra по `v361_ShooterGame.exe` (клиент), 2026-10-19.
+Disassembled in Ghidra on `v361_ShooterGame.exe` (client), 2026-10-19.
 
-## Вывод в одном абзаце
+## Conclusion in one paragraph
 
-Рабочий вход идёт **не через прямой `Browse`**, а через онлайн-сессию. Бот
-воспроизводил только последний шаг и поэтому упирался в таймаут: сервер —
-Steam-сервер, а токен авторизации выдаёт сессионный слой. Прямой travel
-уходит с запросом без валидного токена, и сервер не завершает handshake.
+The working join goes **not through a direct `Browse`**, but through the online session.
+The bot reproduced only the last step and therefore kept hitting a timeout: the server is
+a Steam server, and the authorization token is issued by the session layer. A direct travel
+departs with the request carrying no valid token, and the server never completes
+the handshake.
 
-## Цепочка (класс `UUI_ListSessions`)
+## Chain (class `UUI_ListSessions`)
 
-| Функция | Адрес | Роль |
+| Function | Address | Role |
 |---|---|---|
-| `SlotButtonSelected` | `141560d70` | только включает кнопку Join |
-| `JoinSelectedSession` | `14154fcf0` | берёт выбранную запись списка, `local_1a8._40_8_ = &JoiningSessionOwnerName` |
-| `DoJoinSession` | `141551220` | **вызов JoinSession** |
-| `QueueJoinSession` | `14154dda0` | очередь подключения |
-| `JoinFromQueue` | `14154f5f0` | выход из очереди |
-| `RetryJoin` | `14154bc60` | повтор |
-| `OnJoinSessionComplete` | `14154c9a0` | результат; `SaveJoiningSessionName`, FName `SESSIONNAME` |
-| `OnJoinTimedOut` | `14154c0b0` | таймаут |
+| `SlotButtonSelected` | `141560d70` | only enables the Join button |
+| `JoinSelectedSession` | `14154fcf0` | takes the selected list entry, `local_1a8._40_8_ = &JoiningSessionOwnerName` |
+| `DoJoinSession` | `141551220` | **the JoinSession call** |
+| `QueueJoinSession` | `14154dda0` | join queue |
+| `JoinFromQueue` | `14154f5f0` | leaving the queue |
+| `RetryJoin` | `14154bc60` | retry |
+| `OnJoinSessionComplete` | `14154c9a0` | result; `SaveJoiningSessionName`, FName `SESSIONNAME` |
+| `OnJoinTimedOut` | `14154c0b0` | timeout |
 
-### `DoJoinSession` — точка входа
+### `DoJoinSession` — entry point
 
 ```cpp
 UWorld*  w   = <widget world>;
@@ -32,16 +33,16 @@ ULocalPlayer* lp  = gi->GetFirstGamePlayer();
 TSharedPtr<FUniqueNetId> pid;
 lp->GetPreferredUniqueNetId(pid);
 
-// имя сессии = владелец; для Steam-сервера это SteamID64-строка.
-// при пустом JoiningSessionOwnerName подставляется строка 0x14473fcc8,
-// которая в бинарнике оказывается путём из PDB - то есть мусор,
-// нормальное имя всегда приходит из записи списка.
+// session name = owner; for a Steam server this is the SteamID64 string.
+// when JoiningSessionOwnerName is empty, the string 0x14473fcc8 is substituted,
+// which in the binary turns out to be a path from the PDB - i.e. garbage;
+// the proper name always comes from the list entry.
 FName name(this->JoiningSessionOwnerName);
 
 gs->JoinSession(pid, name, &this->JoiningSessionSearchResult);
 ```
 
-## Требования к `JoinSession` (ARK SDK, GameState.h:344)
+## Requirements for `JoinSession` (ARK SDK, GameState.h:344)
 
 ```cpp
 bool JoinSession(TSharedPtr<FUniqueNetId,0> UserId, FName SessionName,
@@ -51,12 +52,12 @@ bool JoinSession(TSharedPtr<FUniqueNetId,0> UserId, FName SessionName,
 bool TravelToSession(int ControllerId, FName SessionName);
 ```
 
-Реализация (`14102b160`) требует:
-* `IOnlineSubsystem::Get()` — непустой;
-* интерфейс сессий (vtable `+0x198`) — непустой;
-* `UserId->Object != nullptr` — валидный `FUniqueNetId` локального игрока.
+The implementation (`14102b160`) requires:
+* `IOnlineSubsystem::Get()` — non-null;
+* the session interface (vtable `+0x198`) — non-null;
+* `UserId->Object != nullptr` — a valid local player `FUniqueNetId`.
 
-## Переход после джойна
+## The step after the join
 
 `AGameSession::TravelToSession` (`142acfe60`):
 
@@ -64,12 +65,12 @@ bool TravelToSession(int ControllerId, FName SessionName);
 2. `FindSession(SessionName, &HostAddress)` — vtable `+800`
 3. `APlayerController::ClientTravelInternal(HostAddress)`
 
-URL берётся из `HostAddress` самой сессии, а не из строки, которую набрал игрок.
+The URL is taken from the session's own `HostAddress`, not from the string the player typed.
 
-## Что уже совпадает у бота
+## What the bot already matches
 
-Команда `ctx` после ручного входа показала FURL, который бот теперь строит
-поле в поле:
+The `ctx` command after manual join showed a FURL that the bot now builds
+field by field:
 
 ```
 proto=unreal host=192.168.8.218 port=7777 valid=1
@@ -78,32 +79,32 @@ Op[0]=ModId=0
 Op[1]=game=/Game/PrimalEarth/CoreBlueprints/TestGameMode.TestGameMode_C
 ```
 
-Движок такой URL принимает (`valid=1`), но handshake не завершается —
-потому что отсутствует сессионный слой.
+The engine accepts such a URL (`valid=1`), but the handshake never completes —
+because the session layer is missing.
 
-## Чего не хватает для автоматики
+## What is missing for full automation
 
-| Что | Статус в ArkApi SDK |
+| What | Status in the ArkApi SDK |
 |---|---|
-| `UShooterGameInstance::GetGameSession()` | **есть** (GameMode.h:387) |
-| `AShooterGameSession::JoinSession(...)` | **есть** (GameState.h) |
-| валидный `TSharedPtr<FUniqueNetId>` игрока | **нет** — `GetPreferredUniqueNetId` не объявлен |
-| `FOnlineSessionSearchResult` | **нет** — объявлен только как пустой forward-decl |
-| `IOnlineSubsystem` | **пустая структура** (Base.h:184), методы только через vtable |
-| `IOnlineSubsystem::GetSessionInterface` (vtable +0x198) | нет, но известен из дизассемблера |
+| `UShooterGameInstance::GetGameSession()` | **present** (GameMode.h:387) |
+| `AShooterGameSession::JoinSession(...)` | **present** (GameState.h) |
+| a valid player `TSharedPtr<FUniqueNetId>` | **absent** — `GetPreferredUniqueNetId` is not declared |
+| `FOnlineSessionSearchResult` | **absent** — declared only as an empty forward-decl |
+| `IOnlineSubsystem` | **empty struct** (Base.h:184), methods only via the vtable |
+| `IOnlineSubsystem::GetSessionInterface` (vtable +0x198) | not declared, but known from the disassembler |
 
-## Варианты реализации
+## Implementation options
 
-1. **Через UI-класс.** Найти/создать `UUI_ListSessions`, заполнить
-   `EntryWidgets`/`SearchSettings`, вызвать `JoinSelectedSession()`. Не требует
-   отсутствующих типов, но нужна точка входа к виджету и наполнение списка.
-2. **Через сессионный слой напрямую.** Взять `IOnlineSubsystem` из
-   `AShooterPlayerController::OnlineSubField()` (Actor.h:2405), дёрнуть
-   vtable-метод сессий и реализовать `IOnlineSession::JoinSession` руками.
-   Нужно знать раскладку `FOnlineSessionSearchResult` и `FUniqueNetIdUInt64`.
-3. **Собрать `FOnlineSessionSearchResult` вручную** и вызвать первый
-   `JoinSession`: раскладку структуры взять из PDB (структура в бинарнике есть),
-   `FUniqueNetIdUInt64` описан в UE.h:272. Наиболее прямой путь, но требует
-   аккуратной реконструкции.
+1. **Via the UI class.** Find/create `UUI_ListSessions`, fill in
+   `EntryWidgets`/`SearchSettings`, call `JoinSelectedSession()`. Requires none of the
+   missing types, but needs an entry point to the widget and list population.
+2. **Via the session layer directly.** Take `IOnlineSubsystem` from
+   `AShooterPlayerController::OnlineSubField()` (Actor.h:2405), invoke
+   the sessions vtable method, and implement `IOnlineSession::JoinSession` by hand.
+   Requires knowing the layout of `FOnlineSessionSearchResult` and `FUniqueNetIdUInt64`.
+3. **Assemble `FOnlineSessionSearchResult` manually** and call the first
+   `JoinSession`: take the struct layout from the PDB (the struct is present in the binary),
+   `FUniqueNetIdUInt64` is described in UE.h:272. The most direct path, but requires
+   careful reconstruction.
 
-Любой из вариантов требует RE-работы; на текущий момент выполнен только разбор.
+Any of these options requires RE work; only the analysis has been done so far.

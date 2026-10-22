@@ -1,129 +1,130 @@
-# Отчёт: Genesis — накопительные фазы (#1) и не-CPU лимит плотной базы (#2)
+# Report: Genesis — accumulative phases (#1) and the non-CPU limit of a dense base (#2)
 
-Дата: 20.10.2026. Слот: офлайн-разбор существующих артефактов (без патчей, без живых бутов).
-Инструменты: профильный разбор `.bin/.ret/.wait` TickProf + границы `.pdata` (173 540 функций) + имена из PDB
-(дамп функций Ghidra-программы `/v361_ShooterGameServer.exe` — MD5-путь = наш exe Server1, 222 401 функций,
-проверено якорями: GetMaxTickRate@0x253b1c0, SetActorTickEnabled@0x24696b0, AdvanceToNextIntersectingElement@0x276a0b0, size 537 = PDB-размеру).
-Судейские абсолютные числа — только внешний Python (плагиновые busy/ms/tick завышены ×1.9–2.4); здесь плагиновые
-ряды используются относитель­но (диагно­з «CPU-bound vs blocked» сохраняется, т.к. искажение мультипликативно).
+Date: 20.10.2026. Slot: offline analysis of existing artifacts (no patches, no live boots).
+Tools: profile analysis of the TickProf `.bin/.ret/.wait` + `.pdata` bounds (173 540 functions) + PDB names
+(function dump of the Ghidra program `/v361_ShooterGameServer.exe` — the MD5 path = our Server1 exe, 222 401 functions,
+verified by anchors: GetMaxTickRate@0x253b1c0, SetActorTickEnabled@0x24696b0, AdvanceToNextIntersectingElement@0x276a0b0, size 537 = the PDB size).
+The judge-grade absolute numbers come only from external Python (the plugin busy/ms/tick are inflated ×1.9–2.4); here the plugin
+series are used relatively (the "CPU-bound vs blocked" diagnosis is preserved, since the distortion is multiplicative).
 
 ---
 
-## Феномен №1. Накопительные фазы (ms/tick 36→93 мс, спад 1–5.5 мин, есть без игрока)
+## Phenomenon No. 1. Accumulative phases (ms/tick 36→93 ms, decay 1–5.5 min, present without a player)
 
-Данные: TickProf.log, бут#39 20.10 (07:19:26 — 12:55, Genesis): 5160 mon-строк, 21 save-цикл, 30 детектированных
-фаз (t/s<45 ≥3 строк). Первые 8 фаз — ДО любого подключения игрока (первый вход по SrvDiag 09:34:32).
+Data: TickProf.log, boot #39 of 20.10 (07:19:26 — 12:55, Genesis): 5160 mon lines, 21 save cycles, 30 detected
+phases (t/s<45 for ≥3 lines). The first 8 phases are BEFORE any player connection (first login per SrvDiag 09:34:32).
 
-### Факты
-1. Ряды ключевой фазы 08:49:04–08:50 (полные строки, 1 Гц):
-   - разгон: busy 60→89% и ms/tick 11→16 мс при СВОБОДНОМ кадре 16 мс (t/s ещё 59) за ~8 с;
-   - плато: t/s 21–27, frm≈36–46 мс, busy 96–103% — ~1 мин;
-   - сброс: t/s мгновенно 57–60, но ms/tick остаётся 15–17 мс и ЛИНЕЙНО спадает до 3–4 за ~44 с
-     (busy 101→65→21%). Т.е. «остаточная» нагрузка полосой 15→3 мс/тик при полном таргете 60 т/с.
-   Форма: симметричная (нарастание ~8–10 с, плато 60–90 с, спад 30–45 с) — это не отдельный тик-спайк,
-   а УВЕЛИЧЕНИЕ стоимости КАЖДОГО тика в окне 1.5–2 мин.
-2. Каденция стартов фаз (пустой мир, мон-окна 07:48–08:56): 07:48:59, 07:56:30, 08:11:35, 08:19:12,
-   08:26:59, 08:34:03, 08:41:40, 08:49:09 — интервалы 7.5 / 15 / 7.6 / 7.8 / 7.1 / 7.6 / 7.5 мин.
-   Та же периодика в других пустых бутах того же дня: 15:08:51→15:15:51 (7.0м), 15:31:26→15:38:16 (6.8м),
-   15:59:35→16:06:42 (7.1м)→16:14:14 (7.5м). Пропуски кратны 15 мин → истинный период 7.5–8 мин
-   (каждое второе событие иногда сливается/маскируется).
-3. Сейв-связь отсутствует: из 12 фаз середины сессии — 0 стартов в ±90 с от save-маркеров; сейвы
-   (21 шт в буте, каждые ~15.3 мин, длительность ~3 с стеночного маркера) внутрь 2 фаз попали как
-   случайные совпадения. Save при этом безопасен: мон-строки с save=saving показывают tokовый профиль.
-4. Отдельный подвид — многосекундные остановы ОДНОГО кадра: frame_ms 1177–1687 мс при t/s=0:
-   08:52:59 (busy 99%), 08:53:07 (busy 0% !), 10:05 (1656 мс, busy 93%), 09:58 (344 мс), 12:37:59 (404 мс, busy 96%).
-   Случай «busy=0%» = чистая БЛОКИРОВКА потока (не работа) на 1.7 с.
-5. Ранний бут-прогрев 07:27–07:46: t/s строго 29.8±0.1, кадр ровно 33.0 мс, busy 24–51% — это НЕ фаза,
-   это дефолтный пейсинг maxfps 30 (`TickProf.maxfps 60` применили только в 07:48 → сразу 58–59 т/с).
-   «Раскачка» первых 20 минут — артефакт конфига по умолчанию.
-6. Типология фаз (по плагиновому busy, соответственно ×~2 занижение реального CPU):
-   - CPU-bound фазы: busy 96–103% ⇒ внешний pl. ~(43–50)% одного ядра; ~28 фаз — большинство.
-   - BLOCKED-фазы (busy<60%): до 9 шт коротких (09:59 серия, 10:32:34–10:34:47 2.2 мин busy49%) + пост-фазные окна.
-7. Кросс-данные 240-с perf-окон (процесс целиком): 12:43–12:47 cpu=654/240=**272%**, 12:49:33–12:53:33
-   cpu=712/240=**296%** — процесс ест ~3 ядра, играя по ~10 т/с. Параллельные потоки работают,
-   но игровые тики редкие ⇒ программа ограничена не-CPU ресурсом в первую очередь.
+### Facts
+1. Series of the key phase 08:49:04–08:50 (full lines, 1 Hz):
+   - ramp-up: busy 60→89% and ms/tick 11→16 ms with a FREE frame of 16 ms (t/s still 59) over ~8 s;
+   - plateau: t/s 21–27, frm≈36–46 ms, busy 96–103% — ~1 min;
+   - release: t/s jumps to 57–60 instantly, but ms/tick stays at 15–17 ms and LINEARLY decays to 3–4 over ~44 s
+     (busy 101→65→21%). I.e. a "residual" load of a band 15→3 ms/tick at the full target of 60 t/s.
+   Shape: symmetric (rise ~8–10 s, plateau 60–90 s, decay 30–45 s) — this is not a single tick spike,
+   but an INCREASE in the cost of EVERY tick over a window of 1.5–2 min.
+2. Cadence of phase starts (empty world, mon windows 07:48–08:56): 07:48:59, 07:56:30, 08:11:35, 08:19:12,
+   08:26:59, 08:34:03, 08:41:40, 08:49:09 — intervals 7.5 / 15 / 7.6 / 7.8 / 7.1 / 7.6 / 7.5 min.
+   The same periodicity in other empty boots of the same day: 15:08:51→15:15:51 (7.0m), 15:31:26→15:38:16 (6.8m),
+   15:59:35→16:06:42 (7.1m)→16:14:14 (7.5m). The gaps are multiples of 15 min → the true period is 7.5–8 min
+   (every second event sometimes merges / is masked).
+3. No save linkage: out of 12 mid-session phases — 0 starts within ±90 s of the save markers; the saves
+   (21 in the boot, every ~15.3 min, duration ~3 s per the wall marker) fell inside 2 phases as
+   random coincidences. A save is otherwise safe: mon lines with save=saving show the same profile.
+4. A separate kind — multi-second stalls of a SINGLE frame: frame_ms 1177–1687 ms at t/s=0:
+   08:52:59 (busy 99%), 08:53:07 (busy 0% !), 10:05 (1656 ms, busy 93%), 09:58 (344 ms), 12:37:59 (404 ms, busy 96%).
+   The "busy=0%" case = a pure BLOCK of the thread (not work) for 1.7 s.
+5. The early boot warm-up 07:27–07:46: t/s strictly 29.8±0.1, the frame exactly 33.0 ms, busy 24–51% — this is NOT a phase:
+   it is the default pacing of maxfps 30 (`TickProf.maxfps 60` was applied only at 07:48 → immediately 58–59 t/s).
+   The "shaking" of the first 20 minutes is an artifact of the default config.
+6. Typology of the phases (by the plugin busy, correspondingly ×~2 underestimation of real CPU):
+   - CPU-bound phases: busy 96–103% ⇒ external ~ (43–50)% of one core; ~28 phases — the majority.
+   - BLOCKED phases (busy<60%): up to 9 short ones (the 09:59 series, 10:32:34–10:34:47 2.2 min busy49%) + post-phase windows.
+7. Cross-data of the 240-s perf windows (the whole process): 12:43–12:47 cpu=654/240=**272%**, 12:49:33–12:53:33
+   cpu=712/240=**296%** — the process eats ~3 cores while playing at ~10 t/s. Parallel threads are working,
+   but the game ticks are sparse ⇒ the program is limited by a non-CPU resource first of all.
 
-### Атрибуция (что можно и чего нельзя утверждать)
-- Названная механика фазы: **периодический фоновый источник работы с «накоплением→выработкой»**
-  (окно повышенной стоимости тика, плавные ramp'ы; картина = очередь с периодическим дренажем).
-- НЕ связано: игрок (0 из 8 первых фаз), сейвы (0 из 12 в середине сессии), BattlEye (выключен),
-  наш плагин (модуль TickProf.dll = 0.9% листа, только сам сэмплер).
-- Кандидаты по косвенным данным профилей (создание объектов при обработке накопленного):
+### Attribution (what can and cannot be claimed)
+- The named mechanism of the phase: **a periodic background source of work with "accumulation → consumption"**
+  (a window of elevated tick cost, smooth ramps; the picture = a queue with periodic draining).
+- NOT related: the player (0 of the first 8 phases), the saves (0 of 12 mid-session), BattlEye (disabled),
+  our plugin (the TickProf.dll module = 0.9% of the leaf, only the sampler itself).
+- Candidates by indirect profile data (object creation while processing the accumulated backlog):
   InitInternal_FindOrAddNameEntry (unrealnames.cpp), AllocateSerialNumber (uobjectarray.cpp),
-  octree-вставки/пересечения, PrimalDinoCharacter::Tick — типичная картина SPAWN/обновления NPC+
-  инкрементальных работ. Но ЭТО только кандидаты — точный виновник фазы требует живого профиля
-  ВНУТРИ фазы (сэмплер 60-с в момент старта фазы) + тик-листа до/после.
-- Вердикт по феномену №1 пока не ставится категорично: не «плагин-исправимо» (механизм не назван),
-объясняет ранний бут, но не фазы при 60 т/с); точный вердикт — после фаз-профиля.
+  octree inserts/overlaps, PrimalDinoCharacter::Tick — a typical picture of NPC SPAWN/updating plus
+  incremental work. But THESE are only candidates — the exact culprit of a phase requires a live profile
+  INSIDE the phase (a 60-s sampler at the moment of phase start) + a tick list before/after.
+- No categorical verdict is issued for phenomenon No. 1 yet: it is not "fixable-by-plugin" (the mechanism is unnamed;
+  it explains the early boot, but not the phases at 60 t/s); the exact verdict — after an in-phase profile.
 
 ---
 
-## Феномен №2. Не-CPU лимит плотной базы (кадр 43–49+ мс, экст 43.5% ядра, потолок ~21–24 т/с)
+## Phenomenon No. 2. The non-CPU limit of a dense base (frame 43–49+ ms, external 43.5% of a core, ceiling ~21–24 t/s)
 
-Данные: prof_512222984 (12:53:23–12:54:23, 3866 сэмплов, шаг ~15.5 мс, wait=762=19.7%);
-ticklist/overlapsizes 12:52 (прямо перед сэмплом); perf-окна 12:43–12:53; mon 12:35–12:49.
+Data: prof_512222984 (12:53:23–12:54:23, 3866 samples, step ~15.5 ms, wait=762=19.7%);
+ticklist/overlapsizes of 12:52 (right before the sample); perf windows 12:43–12:53; mon 12:35–12:49.
 
-### Состав мира (ticklist 12:52)
-- уровней=142, акторов=106 556 (зарегистрировано тик=1507), компонентов=404 117 (тикующих=3374).
-- overlapsizes: 270 538 компонентов, из них с bGenerateOverlapEvents=**6527**, суммарно перекрытий
-  (записей OverlappingComponents)=**199 422**; топ-20 пересечений — ВСЕ `/Script/Engine.BrushComponent`
-  (сам большой x5118, далее x5001, x4986, x3785...). После overlaptrim (12:05 отключено 28 842
-  компонентов/526 770 записей; 12:29 ещё 13 783/111 745) база перекрытий остаётся большой и
-  сконцентрирована в Engine-BrushComponent'ах — т.е. разрежение помогло не полностью: висит
-  «жёсткое ядро» пересечений, в основном от brush/volume-геометрии карты вокруг застройки игрока.
+### Composition of the world (ticklist 12:52)
+- levels=142, actors=106 556 (registered tick=1507), components=404 117 (ticking=3374).
+- overlapsizes: 270 538 components, of which with bGenerateOverlapEvents=**6527**, total overlaps
+  (OverlappingComponents records)=**199 422**; the top-20 overlaps are ALL `/Script/Engine.BrushComponent`
+  (the largest x5118, then x5001, x4986, x3785...). After overlaptrim (at 12:05, 28 842
+  components/526 770 records disabled; at 12:29 another 13 783/111 745) the overlap base remains large and
+  concentrated in Engine-BrushComponents — i.e. the thinning did not fully help: a
+  "hard core" of overlaps hangs around, mostly from the brush/volume geometry of the map around the player's building.
 
-### Профиль (именованный)
-- Модули листа: exe 70.8%, ntdll 18.9%, PhysX3+Common 5.5%, MSVCR 2.1%, TickProf.dll 0.9%.
-- горячие функции exe (лист): AdvanceToNextIntersectingElement (genericoctree.h) **7.7%**,
+### Profile (named)
+- Modules of the leaf: exe 70.8%, ntdll 18.9%, PhysX3+Common 5.5%, MSVCR 2.1%, TickProf.dll 0.9%.
+- hot exe functions (leaf): AdvanceToNextIntersectingElement (genericoctree.h) **7.7%**,
   TagFriendlyStructures (primalcharacter.cpp) 3.5%, Tick primaldinocharacter.cpp 2.6%, FindId (set.h) 2.4%,
-  ProcessChildren+0x11c (genericoctree.h) 1.7%, InitInternal_FindOrAddNameEntry 1.4%, далее тики
-  PrimalCharacter, таскграф ExecuteTask, Malloc, IncrementalPurgeGarbage, QueueAllTicks и др.
-- Итого: octree-пересечения (AdvanceToNextIntersectingElement+ProcessChildren+соседи) ≈ 10%+ сэмплов —
-  единственный крупный кластер; PhysX 5.5% — вторичность/collision; плюс FName/хэш-сеты.
-- Wait-блокировки: 762 записей. Доминанта — ZwWaitForSingleObject ← KERNELBASE WaitForSingleObjectEx
-  (624 = 81.9% блокировок = **16.1% времени окна**). Проверено ДИЗАССЕМБЛИРОВАНИЕМ: адрес возврата
+  ProcessChildren+0x11c (genericoctree.h) 1.7%, InitInternal_FindOrAddNameEntry 1.4%, then ticks
+  of PrimalCharacter, the task graph's ExecuteTask, Malloc, IncrementalPurgeGarbage, QueueAllTicks, etc.
+- Total: octree overlaps (AdvanceToNextIntersectingElement+ProcessChildren+neighbors) ≈ 10%+ of samples —
+  the only large cluster; PhysX 5.5% — secondary/collision; plus FName/hash sets.
+- Wait blocks: 762 records. The dominant one is ZwWaitForSingleObject ← KERNELBASE WaitForSingleObjectEx
+  (624 = 81.9% of the blocks = **16.1% of the window's time**). Verified BY DISASSEMBLY: the return address
   0x1EA897D = **ProcessTasksNamedThread+0x32d, call 0x1EA8978 → Stall(0x1EA9080)** (taskgraph.cpp):
-  игровой поток реально стоит вnamed-заложенном Stall (FEvent). Это ожидание ФУТБОЛА ТИКА
-  (синхронизация тик-групп/ожидание задачи worker'ов), а НЕ меж-тиковый Sleep — **ZwDelayExecution в
-  профиле плотной базы отсутствует полностью**, тогда как во всех других (пустых/TheIsland) профилях
-  он 79–99% (обычный Sleep-пейсинг). Оставшиеся wait'ы (533, ~72.8%) глубже 4 записанных слов стека —
-  не атрибутированы; 79 «кандидатов» CallRemoteFunction — стопки-мусор (байт CallRemoteFunction
-  не содержит вызова wait) — отвергнуто.
-- Декомпозиция кадра (грубо, с honesty): плагиновый busy 82–93% ≍ внешний 43.5% ядра (известное ×~2);
-  wait-in-tick ≈ 16% окна ≈ 7–8 мс/тик; остаток «в exe» без CPU — возможный артефакт suspend-сэмплера
-  (готов-но-не-запущен) — НЕ считаем доказанным.
-- Конфаундер профиля (важно для истории): в 12:47:24 fncache был ВЫКЛЮЧЕН, в 12:53:50 — включён
-  ВНУТРИ окна сэмплирования: первые 27 с профиль имеет путь промахов fncache (FindFunctionByName) —
-  часть FindId/хэш-нагрузки может быть артефактом этого переключения.
+  the game thread really stands in the named-task Stall (FEvent). This is waiting for the tick's TURN
+  (tick-group synchronization / waiting on the workers' tasks), NOT an inter-tick Sleep — **ZwDelayExecution is
+  completely absent from the dense-base profile**, whereas in all the other (empty/TheIsland) profiles
+  it is 79–99% (ordinary Sleep pacing). The remaining waits (533, ~72.8%) are deeper than the 4 recorded stack words —
+  not attributed; 79 "candidates" of CallRemoteFunction are junk stacks (the bytes of CallRemoteFunction
+  contain no wait call) — rejected.
+- Frame decomposition (rough, with honesty): the plugin busy 82–93% ≍ external 43.5% of a core (the known ×~2);
+  wait-in-tick ≈ 16% of the window ≈ 7–8 ms/tick; the remainder "in the exe" without CPU — a possible artifact of the suspend sampler
+  (ready-but-not-running) — NOT considered proven.
+- Profile confounder (important for the record): at 12:47:24 fncache was DISABLED, at 12:53:50 it was enabled
+  INSIDE the sampling window: the first 27 s of the profile include the fncache miss path (FindFunctionByName) —
+  part of the FindId/hash load may be an artifact of this toggle.
 
-### Вердикт №2
-- Причина потолка ~21–24 т/с — **НЕ вычислительная**: внешний CPU ядра 43.5% при кадре 45–49 мс;
-  поток стоит в event-wait'ах ВНУТРИ тика (TaskGraph Stall — доказано именем и стеком) и,
-  вероятно, частично вытесняется/контендится с worker'ами (не окончательно).
-- Работы, которую выключит/упростит конфиг — нет (maxfps/fixclamp — уже проверено ранее; фнкэш — уже кэш).
-- плагин-исправимо: ЧАСТИЧНО — существующий overlaptrim/keep-лист повторно снижает перекрытия
-  (проверено: 527k→200k записей на других картах), но «ядро» (BrushComponents карты + сами
-  octree-операции плотной застройки) плагином не убирается.
-- движок: 'fork/join'-синхронизация тик-групп (Stall) и распределение работы на worker'ы — движковая
-  особенность; ускорение возможно только снижением работы на тик.
-- контент: главные управляемые источники — Brush/volume-геометрия карты вокруг базы и число
-  bGenerateOverlapEvents-компонентов парковки/базы (199 422 перекрытий на 6 527 компонентов — 31 на
-  производственного контента вокруг базы. Сокращение структуры/пересечений в этих зонах — единственный
-  lever со стороны контента.
-- Живое продолжение (когда владелец поднимет Server1): план сэмплов напрямую В dense-фазу, ticklist
-  до/после trim, overlapsizes в фазе; и лучше: запуск TickProf.sampler ДВЕ фазы подряд — одна в фазу,
-  одна вне — для формального контраста.
+### Verdict No. 2
+- The cause of the ~21–24 t/s ceiling is **NOT computational**: the external CPU of a core is 43.5% at a frame of 45–49 ms;
+  the thread stands in event-waits INSIDE the tick (a TaskGraph Stall — proven by name and stack) and,
+  probably, is partially preempted / contends with the workers (not final).
+- There is no work that the config would disable/simplify (maxfps/fixclamp — already checked earlier; fncache — already a cache).
+- Fixable by plugin: PARTIALLY — the existing overlaptrim/keep-list repeatedly reduces the overlaps
+  (verified: 527k→200k records on other maps), but the "core" (the map's BrushComponents + the
+  octree operations of dense building themselves) is not removed by the plugin.
+- Engine: the 'fork/join' synchronization of the tick groups (Stall) and the distribution of work to the workers is an engine
+  feature; acceleration is possible only by reducing the work per tick.
+- Content: the main controllable sources are the Brush/volume geometry of the map around the base and the number
+  of bGenerateOverlapEvents components of parking/base structures (199 422 overlaps across 6 527 components — ~31 per
+  one component, on production content around the base). Reducing structure/overlaps in these zones is the only
+  lever from the content side.
+- Live continuation (when the owner brings Server1 up): the plan is to sample directly INTO a dense phase, ticklist
+  before/after the trim, overlapsizes during a phase; and better: run TickProf.sampler for TWO phases in a row — one inside a phase,
+  one outside — for a formal contrast.
 
 ---
 
-## Методические пометки (для судейства)
-- мон-ряды: busy% — плагиновая, ×~1.9–2.4 к внешнему CPU одного ядра (согласуется: 82–93% плагин vs
-  43.5% ext в 12:53). ms/tick плагина — занятая часть тика в мс (кадр отдельно в frame_ms).
-- Сэмплер SuspendThread+GetContext: шаг цикла ~15.5 мс в профиле 12:53; накладные расходы не смещают
-  производительности во время самого профиля не смещают выборку RIP, но цикл сэмплирования сам замедляет
-- Старые профили 15–19.10 (30k сэмплов) в основном окна покоя: ZwDelayExecution 79–99% — пейсинг
-  Sleep в пустых мирах; модульные карты у части профилей не совпадают с exe (60% «вне модулей») —
-  поперёд для сравнения файловых листьев неприменимы.
-- Ghidra: программа v358 = exe Server2, v361 = exe Server1 — путаницы имён внутри Ghidra были;
-  дамп сделан с v361, путь подтверждён печатью getExecutablePath(). Бридж-инструменты get_functions —
-  сломаны; скрипты через ~/ghidra_scripts работают.
+## Methodological notes (for judging)
+- mon series: busy% — plugin, ×~1.9–2.4 relative to the external CPU of one core (it agrees: 82–93% plugin vs
+  43.5% ext at 12:53). The plugin's ms/tick — the busy part of a tick in ms (the frame separately in frame_ms).
+- The SuspendThread+GetContext sampler: the loop step ~15.5 ms in the 12:53 profile; the overheads do not bias
+  performance during the profile and do not skew the RIP sample, but the sampling loop itself is
+  a slowdown
+- The old profiles 15–19.10 (30k samples) are mostly idle windows: ZwDelayExecution 79–99% — Sleep pacing
+  in empty worlds; the module attribution of some profiles does not match the exe (60% "outside modules") —
+  unusable for comparing file leaves.
+- Ghidra: program v358 = the Server2 exe, v361 = the Server1 exe — name confusions inside Ghidra happened;
+  the dump was made from v361, the path confirmed by printing getExecutablePath(). The bridge tool get_functions is
+  broken; the scripts via ~/ghidra_scripts work.

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-"""Мини-клиент Source RCON для сервера ARK + загрузка плагина ArkApi."""
+"""Mini Source RCON client for the ARK server + ArkApi plugin loading."""
 import argparse
 import os
 import socket
 import struct
 import sys
 
-# Сервер может слушать не на localhost, а на адресе сетевого интерфейса
-# (видно в netstat). Хост задаётся переменной окружения RCON_HOST.
+# The server may listen not on localhost but on a network interface address
+# (visible in netstat). The host is set by the RCON_HOST environment variable.
 SERVER = (os.environ.get("RCON_HOST", "127.0.0.1"), int(os.environ.get("RCON_PORT", "32330")))
 PASSWORD = os.environ.get("RCON_PASS", "0ub7OuAD6V68cbzc")
 

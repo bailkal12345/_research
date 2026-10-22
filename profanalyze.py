@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Анализ профилей TickProf: .bin (RIP), .ret ([RSP]), .wait (rip+4 слова RSP).
-# Разрешение имён — через таблицы экспорта PE самих DLL (без的发展 патчей, только чтение).
+# Analysis of TickProf profiles: .bin (RIP), .ret ([RSP]), .wait (rip+4 RSP words).
+# Name resolution - via the PE export tables of the DLLs themselves (no patching, read-only).
 import struct, sys, bisect, collections
 
 TICKPROF = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ArkApi\\Plugins\_backup\\TickProf'
@@ -35,7 +35,7 @@ def mod_of(addr, mods, bases):
     return None, None, False
 
 def parse_export_table(path):
-    """arg: путь к PE. Возвращает [(rva, name)] экспортов или None."""
+    """arg: path to a PE. Returns [(rva, name)] of exports or None."""
     try:
         with open(path, 'rb') as f:
             data = f.read(1 << 20)
@@ -51,13 +51,13 @@ def parse_export_table(path):
         magic = struct.unpack_from('<H', data, opt)[0]
         if magic != 0x20B:
             return None
-        # PE32+: DataDirectory начинается на opt+112
+        # PE32+: DataDirectory starts at opt+112
         dirs = opt + 112
-        exp_dd = dirs + 0  # первый каталог = экспорт
+        exp_dd = dirs + 0  # first directory = export
         exp_rva, exp_size = struct.unpack_from('<II', data, exp_dd)
         if exp_rva == 0:
             return None
-        # секции для RVA->файловое смещение
+        # sections for the RVA->file offset mapping
         sec_off = opt + opt_size
         sections = []
         for i in range(num_sections):
@@ -72,10 +72,10 @@ def parse_export_table(path):
                 if vaddr <= rva < vaddr + vsz:
                     return rawptr + (rva - vaddr)
             return None
-        # ВАЖНО: для больших exe экспорт-таблица может лежать дальше 1МБ — читаем больше
+        # IMPORTANT: for a large exe the export table may lie beyond 1 MB - read more
     except OSError:
         return None
-    # повторно с полностью загруженным файлом
+    # again with the fully loaded file
     with open(path, 'rb') as f:
         data = f.read()
     num_sections = None
@@ -109,7 +109,7 @@ def parse_export_table(path):
         return None
 
 def parse_sections(path):
-    """arg: путь к PE. Возврат [(vaddr, vend, name)] секций."""
+    """arg: path to a PE. Returns [(vaddr, vend, name)] of sections."""
     with open(path, 'rb') as f:
         data = f.read(1 << 12)
     if data[:2] != b'MZ':
@@ -165,7 +165,7 @@ def main():
     name = sys.argv[1] if len(sys.argv) > 1 else '512222984'
     mods, bases = load_modules(TICKPROF + '\\prof_%s.modules.txt' % name)
 
-    # индексы экспортов только для модулей, где они есть (системные DLL + exe)
+    # export indexes only for the modules that have them (system DLLs + exe)
     ex_by_short = {}
     sec_by_short = {}
     seen = set()
@@ -198,9 +198,9 @@ def main():
     rets = struct.unpack_from('<%dQ' % count, ret_data)
 
     out = []
-    out.append('=== prof_%s: сэмплов %d ===' % (name, count))
+    out.append('=== prof_%s: %d samples ===' % (name, count))
 
-    # --- распределение листьев по модулям ---
+    # --- leaf distribution over modules ---
     mod_cnt = collections.Counter()
     leaf_top = collections.Counter()
     ret_cnt = collections.Counter()
@@ -209,13 +209,13 @@ def main():
     leaf_status = collections.Counter()  # in-exe / sys / unknown-dll
     for rip, ret in zip(rips, rets):
         short, off, is_sys = mod_of(rip, mods, bases)
-        key = '%s+0x%X' % (short, off) if short is not None else 'КРУД(вне модулей/ядро)+0x%X' % rip
-        mod_cnt[short if short is not None else '<нет в модулях>'] += 1
+        key = '%s+0x%X' % (short, off) if short is not None else 'CRUD(outside modules/kernel)+0x%X' % rip
+        mod_cnt[short if short is not None else '<not in modules>'] += 1
         leaf_top[key] += 1
         if short is None:
-            leaf_status['вне всех модулей (ядро/аноним)'] += 1
+            leaf_status['outside all modules (kernel/anonymous)'] += 1
         elif is_sys:
-            leaf_status['системная sys-DLL (net)'] += 1
+            leaf_status['system sys-DLL (net)'] += 1
         else:
             leaf_status[short] += 1
         rshort, roff, _ = mod_of(ret, mods, bases)
@@ -225,14 +225,14 @@ def main():
             ret_top[rk] += 1
             pair_top[(key, rk)] += 1
         else:
-            ret_cnt['<нет/нулевой ret>'] += 1
+            ret_cnt['<none/zero ret>'] += 1
 
     out.append('')
-    out.append('--- листья по модулям (RIP):')
+    out.append('--- leaves by module (RIP):')
     for k, v in mod_cnt.most_common():
         out.append('  %-28s %5d  %5.1f%%' % (k, v, 100.0 * v / count))
     out.append('')
-    out.append('--- топ-30 листьев (функции; для exe указана секция):')
+    out.append('--- top-30 leaves (functions; section shown for exe):')
     for k, v in leaf_top.most_common(30):
         short = k.split('+')[0]
         off = int(k.split('+')[1], 16) if '+' in k else None
@@ -243,7 +243,7 @@ def main():
             nm = '[%s]' % sec_kind(short.lower(), off)
         out.append('  %5.1f%% %5d  %-34s %s' % (100.0 * v / count, v, k, nm or ''))
     out.append('')
-    out.append('--- топ-30 адресов возврата ([RSP]):')
+    out.append('--- top-30 return addresses ([RSP]):')
     for k, v in ret_top.most_common(30):
         short = k.split('+')[0]
         off = int(k.split('+')[1], 16)
@@ -254,16 +254,16 @@ def main():
             nm = '[%s]' % sec_kind(short.lower(), off)
         out.append('  %5.1f%% %5d  %-34s %s' % (100.0 * v / count, v, k, nm or ''))
     out.append('')
-    out.append('--- топ-25 пар лист+ret:')
+    out.append('--- top-25 leaf+ret pairs:')
     for (lk, rk), v in pair_top.most_common(25):
         out.append('  %5.1f%% %5d  %s  <-  %s' % (100.0 * v / count, v, lk, rk))
 
-    # --- wait-стопки ---
+    # --- wait stacks ---
     wdata = load_data(name, 'wait')
     wcnt = struct.unpack_from('<Q', wdata, 0)[0]
     words = struct.unpack_from('<%dQ' % (wcnt * 5), wdata, 8)
     out.append('')
-    out.append('--- wait-записей (blocked rip): %d (=%.1f%% сэмплов)' % (wcnt, 100.0 * wcnt / count))
+    out.append('--- wait records (blocked rip): %d (=%.1f%% of samples)' % (wcnt, 100.0 * wcnt / count))
     wait_rip_top = collections.Counter()
     wait_pattern = collections.Counter()
     wait_next_word = collections.Counter()
@@ -271,12 +271,12 @@ def main():
         w = words[i * 5:(i + 1) * 5]
         rip, s0, s1, s2, s3 = w
         short, off, is_sys = mod_of(rip, mods, bases)
-        key = '%s+0x%X' % (short, off) if short is not None else 'ядро+0x%X' % rip
+        key = '%s+0x%X' % (short, off) if short is not None else 'kernel+0x%X' % rip
         nm = ''
         if short in ex_by_short and ex_by_short[short] is not None:
             nm = ex_by_short[short].name_of(off)
         wait_rip_top['%s %s' % (key, nm or '')] += 1
-        # dredge стек: попытка найти в s0..s3 возврат в exe/DLL
+        # dredge the stack: try to find a return into the exe/DLL in s0..s3
         frames = []
         for sv in (s0, s1, s2, s3):
             cls = classify_word(sv, mods, bases, ex_by_short)
@@ -285,33 +285,33 @@ def main():
                 if not fs.startswith('ntdll') and not fs.startswith('KERNEL') and not fs.startswith('kernel') and not fs.startswith('win32u'):
                     sk = '[%s]' % sec_kind(fs.lower(), fo) if fs == 'ShooterGameServer.exe' else ''
                     frames.append('%s+0x%X%s %s%s' % (fs, fo, sk, fnm or '', sk if not fnm else ''))
-        pat = ' | '.join(frames[:3]) if frames else '(в s0..s3 нет возвратов в юзер-модули)'
+        pat = ' | '.join(frames[:3]) if frames else '(no returns into user modules in s0..s3)'
         wait_pattern[pat] += 1
-        # для KERNELBASE waits: что лежит ниже по стеку обычнее всего
+        # for KERNELBASE waits: what most often lies further down the stack
         sshort, soff, sis_sys = mod_of(s0, mods, bases)
         if sshort is not None:
             wait_next_word['%s+0x%X' % (sshort, soff)] += 1
 
     out.append('')
-    out.append('--- топ rip стека ожидания (syscall-сайты):')
+    out.append('--- top wait-stack rips (syscall sites):')
     for k, v in wait_rip_top.most_common(15):
         out.append('  %5.1f%% %5d  %s' % (100.0 * v / wcnt, v, k))
     out.append('')
-    out.append('--- топ паттернов стека (возвраты в exe/плагины из s0..s3):')
+    out.append('--- top stack patterns (returns into exe/plugins from s0..s3):')
     for k, v in wait_pattern.most_common(25):
         out.append('  %5.1f%% %5d  %s' % (100.0 * v / wcnt, v, k[:170]))
     out.append('')
-    out.append('--- распределение s0 (первое слово RSP):')
+    out.append('--- distribution of s0 (first RSP word):')
     for k, v in wait_next_word.most_common(15):
         out.append('  %5.1f%% %5d  %s' % (100.0 * v / wcnt, v, k))
 
-    # --- экспорт exe присутствует? ---
+    # --- exe exports present? ---
     exe_idx = ex_by_short.get('ShooterGameServer.exe')
     n = len(exe_idx.ex) if exe_idx and exe_idx.ex else 0
     out.append('')
-    out.append('ShooterGameServer.exe: экспортов=%d' % n)
+    out.append('ShooterGameServer.exe: exports=%d' % n)
     if n:
-        out.append('  примеры: %s' % ', '.join(nm for _, nm in exe_idx.ex[:15]))
+        out.append('  examples: %s' % ', '.join(nm for _, nm in exe_idx.ex[:15]))
 
     report = '\n'.join(out)
     open(r'C:\Dev\_research\prof_%s_report.txt' % name, 'w', encoding='utf-8').write(report)

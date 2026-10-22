@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Корректная остановка ARK-сервера: RCON-сейв + RCON exit, затем ожидание процесса.
+# Clean ARK server shutdown: RCON save + RCON exit, then wait for the process.
 import socket, struct, sys, time, io, subprocess
 
 PORT = 32330
@@ -51,7 +51,7 @@ def proc_ids():
 
 
 if __name__ == '__main__':
-    print('процессы до:', proc_ids())
+    print('processes before:', proc_ids())
     print('RCON save ->', repr(rcon('save')))
     time.sleep(2)
     print('RCON saveworld ->', repr(rcon('saveworld')))
@@ -60,12 +60,12 @@ if __name__ == '__main__':
     for i in range(60):
         pids = proc_ids()
         if not pids:
-            print('сервер остановлен на итерации', i)
+            print('server stopped on iteration', i)
             break
         time.sleep(2)
     else:
-        print('НЕ остановился, pids=', proc_ids())
+        print('NOT stopped, pids=', proc_ids())
         for p in proc_ids():
             subprocess.run(['taskkill', '/PID', str(p), '/T', '/F'])
-        print('принудительно убит')
-    print('процессы после:', proc_ids())
+        print('force killed')
+    print('processes after:', proc_ids())

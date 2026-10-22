@@ -1,188 +1,187 @@
-# ARCH.md — архитектура целевого плагина TickProf v2
+# ARCH.md — target architecture of the TickProf v2 plugin
 
-Документ описывает целевое состояние плагина: пять действующих оптимизаций,
-новые патчи по результатам RE-2, требования к откату, конфигурацию,
-встроенный мониторинг и команду автопрогона протокола вахты.
+This document describes the target state of the plugin: five active optimizations,
+new patches based on the RE-2 results, rollback requirements, configuration,
+built-in monitoring, and the automated run command for the watch-duty protocol.
 
-Образ: `ShooterGameServer.exe` v361.7, Win64 x64, image base `0x140000000`.
-Все RVA приведены из `v361.sqlite` и подтверждены дизассемблированием Ghidra.
+Image: `ShooterGameServer.exe` v361.7, Win64 x64, image base `0x140000000`.
+All RVAs come from `v361.sqlite` and were confirmed by Ghidra disassembly.
 
-## 1. Принципы
+## 1. Principles
 
-1. **Каждая фича = команда включения + команда отката.** Ни одна оптимизация не
-   применяется на старте плагина без явной команды.
-2. **Патчи байтов ставятся и снимаются попарно.** Откат обязан восстанавливать
-   исходные байты побайтово, а не «перезапуском на всякий случай».
-3. **Поведение сервера не меняется без A/B.** Любая новая фича обязана иметь
-   измеренный выигрыш на реальном сейве из архива.
-4. **Белый список обязателен** для любого патча, влияющего на игровые события.
-5. **Мониторинг встроен в плагин.** Решения принимаются по цифрам плагина,
-   а не по внешним сэмплерам.
-6. **Асинхронный тик запрещён.** `bAllowConcurrentTicks` не трогаем никогда:
-   подтверждённый регресс 33.4 → 42–46 мс/тик.
+1. **Every feature = an enable command + a rollback command.** No optimization is
+   applied at plugin startup without an explicit command.
+2. **Byte patches are installed and removed in pairs.** Rollback must restore the
+   original bytes byte-for-byte, not "restart just in case".
+3. **Server behavior does not change without A/B.** Every new feature must have a
+   measured gain on a real save from the archive.
+4. **A whitelist is mandatory** for any patch that affects gameplay events.
+5. **Monitoring is built into the plugin.** Decisions are made based on the
+   plugin's numbers, not on external samplers.
+6. **Asynchronous ticking is forbidden.** We never touch
+   `bAllowConcurrentTicks`: confirmed regression 33.4 → 42–46 ms/tick.
 
-## 2. Действующие оптимизации (v1)
+## 2. Active optimizations (v1)
 
-| # | Фича | Команда | Откат | Что делает |
+| # | Feature | Command | Rollback | What it does |
 |---|---|---|---|---|
-| 1 | `fncache` | `TickProf.fncache 1` | `TickProf.fncache 0` | кэш `UClass::FindFunctionByName` |
-| 2 | `iscache` | `TickProf.iscache 1` | `TickProf.iscache 0` | кэш `UStruct::IsChildOf` |
-| 3 | `cachename` | `TickProf.cachename 1` | `TickProf.cachename 0` | кэш `DoGetCanvasByName` |
-| 4 | `nochart` | `TickProf.nochart 1` | `TickProf.nochart 0` | отключает `UEngine::TickFPSChart` |
-| 5 | `overlaptrim` | `TickProf.overlaptrim <N>` | `TickProf.overlapall 0` + перезапуск | снимает `bGenerateOverlapEvents` у компонентов с ≥N пересечениями |
+| 1 | `fncache` | `TickProf.fncache 1` | `TickProf.fncache 0` | cache of `UClass::FindFunctionByName` |
+| 2 | `iscache` | `TickProf.iscache 1` | `TickProf.iscache 0` | cache of `UStruct::IsChildOf` |
+| 3 | `cachename` | `TickProf.cachename 1` | `TickProf.cachename 0` | cache of `DoGetCanvasByName` |
+| 4 | `nochart` | `TickProf.nochart 1` | `TickProf.nochart 0` | disables `UEngine::TickFPSChart` |
+| 5 | `overlaptrim` | `TickProf.overlaptrim <N>` | `TickProf.overlapall 0` + restart | removes `bGenerateOverlapEvents` from components with ≥N intersections |
 
-Служебные команды v1: `fixclamp`, `maxfps`, `ticklist`, `ticksets`, `overlapsizes`,
+Utility commands of v1: `fixclamp`, `maxfps`, `ticklist`, `ticksets`, `overlapsizes`,
 `cachestat`, `tickq`, `tickqreport`, `tickflags`, `verify`, `perf`, `start`.
 
-### Известное ограничение v1
+### Known v1 limitation
 
-`overlaptrim` **не обратим без перезапуска**: `TickProf.overlapall 0` возвращает
-флаг `bGenerateOverlapEvents`, но обрезанные списки пересечений не восстанавливает
-(компоненты должны заново наполнить их). Отсюда состояние «восстановленное» в
-переписях первой вахты.
+`overlaptrim` **is not reversible without a restart**: `TickProf.overlapall 0` restores
+the `bGenerateOverlapEvents` flag, but does not restore the trimmed overlap lists
+(components must repopulate them). Hence the "restored" state in the
+censuses of the first watch.
 
-## 3. Новые патчи по результатам RE-2
+## 3. New patches based on the RE-2 results
 
-### 3.1 `overlaptrim3` — обрезка с белым списком (средний риск)
+### 3.1 `overlaptrim3` — trimming with a whitelist (medium risk)
 
-* Уже собран офлайн, не развёрнут.
-* Команда `TickProf.overlaptrim3 <порог>`, белый список из
-  `tickprof_overlap_keep.txt` (подстроки полного имени класса, одна в строке).
-* **Требуемая доработка белого списка по A2.** Текущий файл содержит
+* Already built offline, not deployed.
+* Command `TickProf.overlaptrim3 <threshold>`, whitelist from
+  `tickprof_overlap_keep.txt` (substrings of the full class name, one per line).
+* **Whitelist rework required by A2.** The current file contains
   `ShapeComponent`, `SphereComponent`, `BoxComponent`, `CapsuleComponent`,
-  `Trigger`, `Turret`, `GrapplingHook`. По результатам A2 этого недостаточно и
-  кое-что лишнее:
-  * добавить `ABaseBoxTrigger`, `AHazardTrigger_Slide`, `APrimalStructureBearTrap`,
+  `Trigger`, `Turret`, `GrapplingHook`. Per the A2 results this is insufficient,
+  and some of it is excessive:
+  * add `ABaseBoxTrigger`, `AHazardTrigger_Slide`, `APrimalStructureBearTrap`,
     `APrimalStructureTurret`, `APrimalStructureTurretBallista`,
     `APrimalProjectileGrapplingHook`, `APrimalDinoCharacter`;
-  * `Trigger` и `Turret` как подстроки слишком широки — заменить на полные имена классов.
-* RVA опорных точек: `BeginComponentOverlap` `0x02644000`, `EndComponentOverlap`
+  * `Trigger` and `Turret` as substrings are too broad — replace them with full class names.
+* RVAs of anchor points: `BeginComponentOverlap` `0x02644000`, `EndComponentOverlap`
   `0x026442D0`, `UpdateOverlaps` `0x02644CA0`.
 
-### 3.2 `overlapcache` — устранение квадратичности (средний риск)
+### 3.2 `overlapcache` — eliminating the quadratic behavior (medium risk)
 
-По A2 настоящий O(n²) — не в октаве, а в `UPrimitiveComponent::BeginComponentOverlap`
-(`0x02644000`): на каждое новое пересечение линейный скан `OverlappingComponents`
-со шагом `0x98` (вызов `AddUniqueImpl` `0x024E3050` по адресу `0x0264418D`).
+Per A2 the real O(n²) is not in the octree but in `UPrimitiveComponent::BeginComponentOverlap`
+(`0x02644000`): for every new overlap there is a linear scan of `OverlappingComponents`
+with a stride of `0x98` (the call to `AddUniqueImpl` `0x024E3050` at address `0x0264418D`).
 
-* Точка патча: `0x0264418D` — заменить линейный скан на `TSet`-сайд-структуру
-  по ключу `(CachedCompPtr, Item)` — ровно те два поля, по которым сравнивает
-  `AddUniqueImpl`.
-* Обязательное условие: синхронная правка `EndComponentOverlap` (`0x026442D0`),
-  иначе рассыплется соответствие двух списков пересечений.
-* Откат: восстановление исходного call rel32 + снятие сайд-структуры.
-* **Риск-класс СРЕДНИЙ (до ВЫСОКОГО при ошибке синхронизации).** Признак поломки
-  в поле: «прилипшие» пересечения — ловушка не отпускает жертву, турель стреляет
-  в призраков. Обязателен белый список 3.1.
+* Patch point: `0x0264418D` — replace the linear scan with a `TSet` side structure keyed
+  by `(CachedCompPtr, Item)` — exactly the two fields `AddUniqueImpl` compares by.
+* Mandatory condition: a synchronous change to `EndComponentOverlap` (`0x026442D0`),
+  otherwise the correspondence of the two overlap lists falls apart.
+* Rollback: restoring the original call rel32 + removing the side structure.
+* **Risk class MEDIUM (up to HIGH on a sync error).** Field failure symptom:
+  "stuck" overlaps — the trap does not release the victim, the turret shoots at ghosts.
+  The whitelist of 3.1 is mandatory.
 
-### 3.3 `turrettick` — снятие тиковой переоценки октави турелью (средний риск)
+### 3.3 `turrettick` — removing per-tick octree re-evaluation by the turret (medium risk)
 
-По A2: `APrimalStructureTurret::Tick` (`0x00A3A129`) вызывает
-`APrimalStructureTurret::GetAmmoNearby` (`0x00A2A950`) **каждый тик, без таймера**,
-а тот — `UVictoryCore::ServerOctreeOverlapActors` (`0x012871E0`) с `OctreeType=0xF`.
-Функция уже линейна, но вызывается на каждый тик каждой турели.
+Per A2: `APrimalStructureTurret::Tick` (`0x00A3A129`) calls
+`APrimalStructureTurret::GetAmmoNearby` (`0x00A2A950`) **every tick, with no timer**,
+and the latter calls `UVictoryCore::ServerOctreeOverlapActors` (`0x012871E0`) with
+`OctreeType=0xF`. The function is already linear, but is called on every tick of every turret.
 
-* Вариант: кэш результата на тик по ключу `(SerialNumber компонента, квантованные
-  позиция и радиус, OctreeType, bForce)`. Квантование обязательно — иначе сдвиг на
-  1 см инвалидирует кэш.
-* Хранить не `TArray` (указатель на локальный sret живёт один кадр), а
-  `std::unordered_set<AActor*>` и пересобирать массив при попадании.
-* **Риск-класс СРЕДНИЙ.** Просроченная переоценка = промах по цели на один тик
-  (≈110 мс при 9 т/с). Путь `APrimalCharacter::TakeDamage` (`0x009454FE`) и
-  exec-пути Blueprint **не трогать** — там кэширование недопустимо (риск ВЫСОКИЙ).
+* Option: cache the result per tick keyed by `(component SerialNumber, quantized
+  position and radius, OctreeType, bForce)`. Quantization is mandatory — otherwise a
+  1 cm shift invalidates the cache.
+* Store not a `TArray` (the pointer to a local sret lives one frame), but a
+  `std::unordered_set<AActor*>` and rebuild the array on a cache hit.
+* **Risk class MEDIUM.** An expired re-evaluation = a miss on the target by one
+  tick (≈110 ms at 9 t/s). The `APrimalCharacter::TakeDamage` path (`0x009454FE`) and
+  Blueprint exec paths **must not be touched** — caching there is unacceptable (risk HIGH).
 
-### 3.4 `iscache2` — кэш `UObjectBaseUtility::IsA` (ожидает A1)
+### 3.4 `iscache2` — cache of `UObjectBaseUtility::IsA` (waiting on A1)
 
-* Отдельная структура от `iscache` (тот кэширует `UStruct::IsChildOf`).
-* Основные риски: кэширование отрицательного результата при динамическом добавлении
-  интерфейсов, инвалидация при создании/уничтожении `UClass` и при загрузке пакета.
+* A separate structure from `iscache` (the latter caches `UStruct::IsChildOf`).
+* Main risks: caching a negative result when interfaces are added dynamically,
+  invalidation on `UClass` creation/destruction and on package load.
 
-### 3.5 `bptrace` — трассировщик Blueprint (средний риск)
+### 3.5 `bptrace` — Blueprint tracer (medium risk)
 
-По A5: хук тела `UObject::ProcessInternal` (`0x01FC0270`). Для любой скриптовой
-`UFunction` поле `Func == &ProcessInternal`, поэтому хук накрывает оба пути вызова.
+Per A5: a hook of the body of `UObject::ProcessInternal` (`0x01FC0270`). For any script
+`UFunction` the field `Func == &ProcessInternal`, so the hook covers both call paths.
 
-* Логируем только полное имя `UFunction` и счётчик вызовов. Аргументы не пишем,
-  поведение не меняем.
-* По умолчанию **выключен, байты патча не ставятся вообще** — это буквальный ноль
-  влияния (нет изменённого кода), а не «нулевая ветка».
-* Индекс записи — `__declspec(thread)`, буфер на поток, без блокировок.
-  Холодный путь (промах) — `SRWLOCK`.
-* **Пункт обязательной проверки перед выкаткой:** `ENDBR64` в первых инструкциях
-  `ProcessInternal` отсутствует; при включённом CET нужен CET-совместимый
-  trampoline `mov r11, imm64; jmp r11` (12 байт, стек не трогает).
-* Оценка накладных `+0.07…0.33%` кадра — **расчётная, не измеренная**;
-  подтверждается A/B-окном с трассировщиком и без.
+* Log only the full name of the `UFunction` and the call counter. Arguments are not
+  written, behavior is not changed.
+* By default **disabled, no patch bytes are installed at all** — that is literally zero
+  impact (no modified code), not a "zero branch".
+* The record index is `__declspec(thread)`, a per-thread buffer, no locks.
+  The cold (miss) path is `SRWLOCK`.
+* **Mandatory pre-rollout check:** `ENDBR64` is absent in the first instructions
+  of `ProcessInternal`; with CET enabled a CET-compatible
+  trampoline `mov r11, imm64; jmp r11` is needed (12 bytes, does not touch the stack).
+* The overhead estimate `+0.07…0.33%` of a frame is **calculated, not measured**;
+  it is confirmed by an A/B window with and without the tracer.
 
-### 3.6 Асинхронное/порционное сохранение (ожидает A4)
+### 3.6 Asynchronous/portioned save (waiting on A4)
 
-Направление задачи ТЗ «фриз SaveWorld 3.9–4.3 с». Отдельный документ с целостностью:
-побайтовый откат недопустим, сейв обязан остаться валидным.
+The direction of the ToR task "SaveWorld freeze 3.9–4.3 s". A separate document on
+integrity: a byte-for-byte rollback is unacceptable, the save must remain valid.
 
-## 4. Конфигурация
+## 4. Configuration
 
-| Файл | Назначение |
+| File | Purpose |
 |---|---|
-| `tickprof_overlap_keep.txt` | белый список классов для `overlaptrim3` / `overlapcache` / `turrettick`, по одному полному имени класса в строке, `#` — комментарий |
-| `tickprof_noclamp.txt` | если существует — плагин не поднимает зажим тикрейта при загрузке |
-| `TickProf.log` | журнал: каждая команда, её результат, счётчики |
+| `tickprof_overlap_keep.txt` | whitelist of classes for `overlaptrim3` / `overlapcache` / `turrettick`, one full class name per line, `#` is a comment |
+| `tickprof_noclamp.txt` | if it exists — the plugin does not lift the tick-rate clamp at load |
+| `TickProf.log` | log: every command, its result, counters |
 
-Приоритет конфига: команда по RCON перекрывает файл. Текущее состояние каждой
-фичи публикуется командой `TickProf.status` одной строкой на фичу.
+Config priority: an RCON command overrides the file. The current state of each
+feature is published by the `TickProf.status` command, one line per feature.
 
-## 5. Мониторинг в плагине
+## 5. Monitoring inside the plugin
 
-Команда `TickProf.mon` печатает раз в секунду:
+The command `TickProf.mon` prints once per second:
 
 ```
 t/s=9.99 cpu_tick=9.77ms frame_cpu=98.0ms busy=10% save=idle overlaps=199380 fn=1264462
 ```
 
-| Поле | Источник |
+| Field | Source |
 |---|---|
-| `t/s` | счётчик кадров / окно |
-| `cpu_tick` | CPU GameThread / t/s — **главная метрика ТЗ** |
-| `frame_cpu` | длительность кадра |
-| `busy` | доля занятости GameThread |
-| `save` | `idle` / `saving` / `saved` — состояние автосейва |
-| `overlaps` | суммарное число пересечений |
+| `t/s` | frames counter / window |
+| `cpu_tick` | CPU of GameThread / t/s — **the primary ToR metric** |
+| `frame_cpu` | frame duration |
+| `busy` | GameThread busy fraction |
+| `save` | `idle` / `saving` / `saved` — autosave state |
+| `overlaps` | total number of overlaps |
 | `fn` | `AllEnabledTickFunctions` |
 
-**Правило окна измерения (п.1.2 директивы).** Окно мс/тик публикуется как
-`VALID` только если: плагин не наблюдал автосейв внутри окна **и** флаги `.ark`
-не менялись. Иначе — `CONTAMINATED`. Это снимает главный источник искажений
-прошлой вахты, где треть окон попала на сохранение.
+**Measurement window rule (item 1.2 of the directive).** The ms/tick window is published
+as `VALID` only if: the plugin observed no autosave inside the window **and** the `.ark`
+flags did not change. Otherwise — `CONTAMINATED`. This removes the main source of
+distortion of the previous watch, where a third of the windows landed on a save.
 
-## 6. `perf.selftest` — автопрогон протокола вахты
+## 6. `perf.selftest` — automated run of the watch-duty protocol
 
 ```
-TickProf.perf.selftest <Карта> [--budget-min 45]
+TickProf.perf.selftest <Map> [--budget-min 45]
 ```
 
-Полностью повторяет регламент слота без ручных шагов и печатает итог одной таблицей:
+Fully repeats the slot protocol without manual steps and prints the outcome as one table:
 
-| Фаза | Что делает | Критерий остановки |
+| Phase | What it does | Stop criterion |
 |---|---|---|
-| 1. `wait-world` | ждёт `game thread tid` и ответа RCON | 15 мин, иначе `SKIP` |
-| 2. `apply-prod` | применяет прод-конфиг, сверяет список, печатает фактическое состояние | любой пункт не сошёлся → `FAIL` |
-| 3. `wait-save` | ждёт начала автосейва, затем его конца | лимит 15 мин |
-| 4. `window-base` | окно 240 с, публикует `VALID/CONTAMINATED` | — |
-| 5. `ab-overlap` | `overlapall 0` → окно → `overlaptrim 2` → окно, каждое по протоколу сейва | — |
-| 6. `saveworld x2` | два прогона, замер фриза по недоступности RCON | — |
+| 1. `wait-world` | waits for `game thread tid` and an RCON response | 15 min, otherwise `SKIP` |
+| 2. `apply-prod` | applies the prod config, compares the list, prints the actual state | any item mismatched → `FAIL` |
+| 3. `wait-save` | waits for the start of an autosave, then its end | limit 15 min |
+| 4. `window-base` | a 240 s window, publishes `VALID/CONTAMINATED` | — |
+| 5. `ab-overlap` | `overlapall 0` → window → `overlaptrim 2` → window, each per the save protocol | — |
+| 6. `saveworld x2` | two runs, the freeze measured by RCON unavailability | — |
 | 7. `census` | `ticklist`, `ticksets`, `overlapsizes` | — |
-| 8. `report` | печатает `REPORT-<карта>.md` в каталог плагина | — |
-| 9. `profile` | **последним**, 60 с, если не задан `--no-profile` | — |
+| 8. `report` | prints `REPORT-<map>.md` into the plugin directory | — |
+| 9. `profile` | **last**, 60 s, unless `--no-profile` is given | — |
 
-Формат вывода — Markdown-таблица, готовая к вставке в отчёт без правок.
-Фаза `profile` идёт строго последней: исторически сэмплер поверх автосейва
-дважды ронял сервер без крашстака и дампа.
+The output format is a Markdown table, ready to be inserted into a report without edits.
+The `profile` phase goes strictly last: historically the sampler on top of an autosave
+has twice brought down the server with no crash backtrace and no dump.
 
-## 7. Порядок выкатки новых фич
+## 7. Rollout order for new features
 
-1. Фича собирается офлайн, на стенд не разворачивается.
-2. Белый список проверяется по списку классов из A2.
-3. Стенад: деплой из `c:/saves`, прод-конфиг, опорное окно.
-4. A/B на реальном сейве: рука A — выключено, рука B — включено, окно 300 с
-   после протокола сейва. Критерий приёмки — заявленная дельта, без крашей.
-5. Откат проверяется явно: команда отката, затем контрольное окно.
-6. Фича включается в прод-конфиг только после проверки отката.
+1. A feature is built offline and is not deployed to the bench.
+2. The whitelist is checked against the class list from A2.
+3. Bench: deploy from `c:/saves`, prod config, a reference window.
+4. A/B on a real save: arm A — disabled, arm B — enabled, a 300 s window
+   after the save protocol. The acceptance criterion is the declared delta, no crashes.
+5. Rollback is verified explicitly: the rollback command, then a control window.
+6. A feature is included in the prod config only after the rollback check.

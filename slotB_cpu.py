@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Слот B (v2): кто владеет 64.8% ожиданий фазы (ZwQueryDirectoryFileEx) и
-# чем фаза отличается от плотной базы по составу CPU (Blueprint VM vs октава).
+# Slot B (v2): who owns 64.8% of the phase waits (ZwQueryDirectoryFileEx) and
+# how the phase differs from the dense baseline in CPU composition (Blueprint VM vs octree).
 import struct, collections, sys, os
 sys.path.insert(0, r'C:\Dev\_research')
 sys.stdout.reconfigure(encoding='utf-8')
@@ -58,7 +58,7 @@ def analyse(prof, tag):
                 pairs.append((i, k))
                 k += 1
 
-    # --- владелец ожидания: ближайший СЛЕДУЮЩИЙ exe-сэмпл (leaf) + его ret (caller)
+    # --- owner of the wait: the nearest FOLLOWING exe sample (leaf) + its ret (caller)
     fileio_leaf = collections.Counter()
     fileio_caller = collections.Counter()
     other_leaf = collections.Counter()
@@ -81,7 +81,7 @@ def analyse(prof, tag):
         else:
             other_leaf[lf] += 1
 
-    # --- состав CPU: доля Blueprint VM
+    # --- CPU composition: Blueprint VM share
     leaf_all = collections.Counter()
     bp_cnt = 0
     for r in rips:
@@ -93,19 +93,19 @@ def analyse(prof, tag):
                 bp_cnt += 1
     exe_tot = sum(leaf_all.values())
     print('\n########## %s (prof %s) ##########' % (tag, prof))
-    print('  сэмплов=%d, wait=%d (%.1f%%)' % (ns, wcnt, 100.0 * wcnt / ns))
-    print('  CPU в exe: %d сэмплов; Blueprint-VM функций: %d (%.1f%% от exe-CPU)' % (
+    print('  samples=%d, wait=%d (%.1f%%)' % (ns, wcnt, 100.0 * wcnt / ns))
+    print('  CPU in exe: %d samples; Blueprint-VM functions: %d (%.1f%% of exe CPU)' % (
         exe_tot, bp_cnt, 100.0 * bp_cnt / max(1, exe_tot)))
-    print('  топ-12 exe-листьев:')
+    print('  top-12 exe leaves:')
     for nm, c in leaf_all.most_common(12):
         print('     %5d (%4.1f%%)  %s' % (c, 100.0 * c / max(1, exe_tot), nm))
-    print('  владелец файлового IO (следующий exe-лист после ZwQueryDirectoryFileEx):')
+    print('  file IO owner (next exe leaf after ZwQueryDirectoryFileEx):')
     for nm, c in fileio_leaf.most_common(8):
         print('     %5d  %s' % (c, nm))
-    print('  его caller ([RSP] этого листа):')
+    print('  its caller ([RSP] of that leaf):')
     for nm, c in fileio_caller.most_common(8):
         print('     %5d  %s' % (c, nm))
-    print('  прочие ожидания: топ-5 следующих exe-листьев')
+    print('  other waits: top-5 next exe leaves')
     for nm, c in other_leaf.most_common(5):
         print('     %5d  %s' % (c, nm))
     return dict(prof=prof, samples=ns, waits=wcnt, exe_cpu=exe_tot, bp_pct=100.0 * bp_cnt / max(1, exe_tot),
@@ -116,10 +116,10 @@ def analyse(prof, tag):
 
 if __name__ == '__main__':
     out = []
-    out.append(analyse('631247234', 'СЛОТ B: ФАЗА 21.10 21:57 (t/s 28-33)'))
-    out.append(analyse('512222984', 'СЛОТ A: плотная база 20.10 12:53 (t/s 21)'))
-    out.append(analyse('301269000', 'idle: пустой мир (Sleep-pacing)'))
+    out.append(analyse('631247234', 'SLOT B: PHASE 21.10 21:57 (t/s 28-33)'))
+    out.append(analyse('512222984', 'SLOT A: dense baseline 20.10 12:53 (t/s 21)'))
+    out.append(analyse('301269000', 'idle: empty world (Sleep pacing)'))
     import json
     with open(r'C:\Dev\_research\slotB\compare_cpu.json', 'w', encoding='utf-8') as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
-    print('\nсохранено: slotB/compare_cpu.json')
+    print('\nsaved: slotB/compare_cpu.json')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Разбор окон слота C: сравнение A (overlaptrim 2) и B (overlaptrim3) + контрольное
-# окно после отката. Печатает таблицу и вердикт.
+# Parsing of slot C windows: comparison of A (overlaptrim 2) and B (overlaptrim3) + the control
+# window after rollback. Prints a table and a verdict.
 import json, os, sys, statistics
 sys.stdout.reconfigure(encoding='utf-8')
 OUT = r'C:\Dev\_research\slotC'
@@ -39,11 +39,11 @@ if __name__ == '__main__':
     tags = ['A_trim2', 'B_trim3', 'C_after_rollback']
     res = {}
     print('%-18s %6s %8s %8s %8s %8s %8s %8s %6s  %s' % (
-        'окно', 'строк', 't/s mean', 't/s med', 't/s p10', 't/s p90', 'мс/тик', 'busy%', 'сейв', 'вердикт'))
+        'window', 'rows', 't/s mean', 't/s med', 't/s p10', 't/s p90', 'ms/tick', 'busy%', 'save', 'verdict'))
     for t in tags:
         d = load(t)
         if not d:
-            print('%-18s  (нет файла)' % t)
+            print('%-18s  (no file)' % t)
             continue
         s = stat(d)
         res[t] = s
@@ -53,15 +53,15 @@ if __name__ == '__main__':
     print()
     A, B, C = res.get('A_trim2'), res.get('B_trim3'), res.get('C_after_rollback')
     if A and B:
-        print('ДЕЛЬТА B-A: t/s mean %+0.2f (медиана %+0.2f), мс/тик %+0.2f' % (
+        print('DELTA B-A: t/s mean %+0.2f (median %+0.2f), ms/tick %+0.2f' % (
             B['ts_mean'] - A['ts_mean'], B['ts_med'] - A['ts_med'], B['ms_mean'] - A['ms_mean']))
         if A['verdict'] == 'VALID' and B['verdict'] == 'VALID':
             ok = (B['ts_mean'] >= A['ts_mean'] - 0.5) and (B['ms_mean'] <= A['ms_mean'] + 1.0)
-            print('ВЕРДИКТ A/B: %s' % ('trim3 не хуже trim2' if ok else 'trim3 ХУЖЕ trim2 -> в прод не выкатывать'))
+            print('VERDICT A/B: %s' % ('trim3 is not worse than trim2' if ok else 'trim3 is WORSE than trim2 -> do not roll out to prod'))
         else:
-            print('ВЕРДИКТ A/B: окна неполны или контаминированы - решение не принимается')
+            print('VERDICT A/B: windows incomplete or contaminated - no decision is made')
     if C:
-        print('Контрольное окно после отката: t/s mean %s, мс/тик %s, вердикт %s' % (
+        print('Control window after rollback: t/s mean %s, ms/tick %s, verdict %s' % (
             C['ts_mean'], C['ms_mean'], C['verdict']))
     with open(os.path.join(OUT, 'compare.json'), 'w', encoding='utf-8') as f:
         json.dump(res, f, ensure_ascii=False, indent=1)
