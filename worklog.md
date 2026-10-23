@@ -2538,3 +2538,45 @@ TickProf.cpp bptrace section reworked accordingly:
 Build clean (3 pre-existing C4018, 4 pre-existing C4996 sscanf in S()). DLL 367104 B deployed to
 Plugins_\TickProf\TickProf.dll. NO boot validation yet (paused earlier, "continue later"): on resume
 expect the offsets line to say "resolved" (ArkApi table) and re-run the full marker check.
+
+## 23.10 TickProf: ALL struct offsets now dynamic (BlueprintProf pattern), no tests
+
+Extended the BlueprintProf offset pattern from the bptrace block to the whole plugin.
+Every hardcoded struct-field offset is now a runtime global initialized with the
+PDB-confirmed v361 value (Ghidra/fieldcheck fallbacks kept) and re-resolved at init
+from the ArkApi offsets table (built from ShooterGameServer.pdb by ArkApi itself;
+keys "Struct.Member", bitfields via GetBitField -> storage offset + bit position).
+
+New in TickProf.cpp (only one TU):
+- struct layout block: 27 runtime globals replacing the constexpr table
+- TF_FLAGS/AnyThread/TickEnabled/Registered, TF_GROUP, TF_PREREQ (FTickFunction
+  bitfield dword + masks), ACTOR_TICK, COMPONENT_TICK, LEVEL_ACTORS (probe
+  ULevelBase.Actors, alt ULevel.Actors), TARRAY_NUM (probe TArray.ArrayNum,
+  alt FArray.ArrayNum), OBJ_CLASS (UObjectBase.ClassPrivate, alt Class),
+  SEQ_ALLOWCONC (FTickTaskSequencer.bAllowConcurrentTicks),
+  PRIM_OVERLAPPING (UPrimitiveComponent.OverlappingComponents),
+  PRIM_FLAGS + PRIM_GENERATE_OVERLAP (bGenerateOverlapEvents bitfield), ACTOR_ROOTCOMP
+  (AActor.RootComponent), ROOTCOMP_TRANS (USceneComponent.ComponentToWorld + 16),
+  CTRL_PAWN (AController.Pawn), USSTRUCT_PROPS/FPROP_NEXT/FPROP_FLAGS
+  (UStruct.PropertyLink, FProperty.Next, FProperty.PropertyFlags),
+  TASKLVL_MGR_LVLS + TASKMGR_SEQ (FTickTaskManager.LevelList / TickTaskSequencer),
+  TASKLVL_ENABLED/FAST/FAST_AFTER/DISABLED/NEWLY (FTickTaskLevel tick set arrays).
+- ResolveFieldOffsets() (near struct layout): FdResolve/BfResolve helpers, one init
+  log line "offsets: struct layout: N fields resolved from the table, fallback:[names]".
+  Called in Plugin_Init before BpInit (which keeps its ProcessInternal/UFunction.Func/
+  FFrame resolution). Missed symbols log via ArkApi's own logger (init-only noise).
+- Usage sites switched: ClassOf, VerifyConcurrent (+560, mgr+8), ApplyTickFlags/tickflags
+  walks, overlaptrim/overlapsizes/overlapall (PRIM_*), cull (RootComponent/translation/
+  pawn), fnflags (PropertyLink/Next/PropertyFlags), ticksets (LevelList, TASKLVL_*,
+  SetNum via TARRAY_NUM).
+- NOT resolvable from the table (kept as constants): code patch sites PATCH_RVA
+  0x270B53A, CLAMP_RVA 0x253B26F, BP_PI_RVA 0x01FC0270, property flag BITS
+  0x80/0x100/0x400, FTransform::Translation +16 (part of ROOTCOMP_TRANS).
+
+Build clean (baseline warnings unchanged: 3x C4018, 4x C4996 sscanf in S()).
+DLL 374784 B (was 367104) deployed to Plugins_\TickProf\TickProf.dll.
+Behaviour-preserving: every resolved value is expected to equal the fallback (same
+build), table missing names falls back; NO boot test yet - on resume first check the
+"offsets: struct layout" line and that tickflags/verify/overlaps outputs match the
+previous validated run's numbers (e.g. verify bAllowConcurrentTicks, ticklist actor
+counts) with the OLD constants, since pre/post-patch values differ on the prod side.
