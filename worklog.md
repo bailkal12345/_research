@@ -2663,3 +2663,31 @@ deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66x
 - RCON: Caching.fncache|iscache|cachename <0/1>, Caching.flush, Caching.stat, Caching.list.
   Unload: gates off (detours stay, ArkApi-managed) - same policy as TickProf.
 - Not yet: stand boot validation + deployment into Server1 Plugins (asked-only rule).
+
+## 23.10 > Caching validation boot + A/B measurement (Genesis stand, TickProf window instrument)
+- Deployed Caching.dll to Plugins\Caching; stand boot OK: 3 hooks installed at 14:29:39
+  (fncache/iscache/canvas, ArkApi symbol names), travel flush #1 at 14:35:19 on world load.
+- First boot attempt taught: do NOT stop-process while a previous server still runs (double
+  process broke the first launch). Server logs: console window only; ShooterGame.log empty.
+- RCON quirk reproduced: tputils.rcon returns None even with the port listening;
+  abrcon.py (env RCON_HOST/PORT/PASS, host=192.168.8.218) executes commands; validation via logs.
+- Commands exercised on the live server: Caching.stat/list/flush, fncache/iscache toggles -
+  all produce correct log markers; RCON bodies stay empty (no response body), commands execute.
+- Hit rates (Genesis, post boot, empty):
+  * cold (during load+spawn waves): fncache 18% (16.8M misses), iscache 76% (114M hits);
+  * warm steady (any 2-min open period): 99% both - fncache 19.0M/8.7K, iscache 9.9M/1.9K,
+    then after re-enable 12.9M/1.6K and 6.7M/1.7K within minutes.
+- A/B windows (TickProf.maxfps 60 verified ok; TickProf flush kept OFF to avoid double hooks):
+  * ON1 14:43:25 busy=95% (inside the -forcerespawndinos wave, NOT comparable);
+  * OFF1 14:44:41 busy=52% (decaying tail, not comparable);
+  * OFF2 14:45:11 t/s=57 cpu=4s ms/tick=3 frame_ms=17 busy=22%;
+  * ON2  14:46:28 t/s=58 cpu=3s ms/tick=3 frame_ms=17 busy=18%;
+  * steady delta: -0.25 core-percent of busy (~4 CPU-s per 3 min region), ms/tick and t/s
+    identical (3 ms -> 3 ms, 57 -> 58): the cache cannot raise t/s (native tick is only 3 ms),
+    it REDUCES CPU inside the same tick.
+- Boot-phase extrapolation from counters: ~19M fncache + ~10M iscache warm hits in the first
+  wave phase = the real saving is concentrated in boot/spawn-wave/BP-hot phases; at idle the
+  difference is a few percent of one core, as predicted.
+- Status: stand parked (TickProf back to Plugins_, Caching LEFT deployed in Plugins).
+- Next (ask-only): prod rollout via Plugins folder per server + longer window (60 s) on a
+  populated server for a load-profile measurement.
