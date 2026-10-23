@@ -2502,3 +2502,39 @@ Scripts: tputils.py created (rcon client from rcon3, HOSTS/PORT/PW, PLUGIN_LOG c
 Docs: merges done - REPORT-B.md (B1+B2+B3, -67%), REPORT-MAPS.md (Fjordur+TheIsland, -74%); sources deleted (git keeps history). In flight at test stop: REPORT-PLAYER merge, REPORT-Genesis phases fold, RE.md merge, security/SECURITY.md merge, master+slot reports compression.
 
 Validation status: fresh Genesis boot pid 2156 (22:59), plugin loaded at 23:00:41, game thread tid found 23:07:49; RCON real-payload probes returned no response over ~13 min (world load slower than usual); user paused the test. Stand left parked: server killed, plugin folder only in Plugins_, DLL 367104 B in place. Resumption plan: boot once more, prod config via rcon (status/maxfps 60/fixclamp 0/fncache 1/iscache 1/cachename 1/nochart 1/overlaptrim 2), then validators: ticklist, overlaps 5 + overlapsreport, tickclasses, cachestat, window 20, after cooldown expiry bptrace 2 + bptrace.report, verify markers unchanged in TickProf.log; then saveworld+exit park.
+
+## 23.10 TickProf bptrace reworked on the BlueprintProf model (no tests, as agreed)
+
+Reference: C:\Dev\ARK-Server-Plugins\BlueprintProf (BlueprintProf.cpp, 945 lines) - automatic
+script-UFunction profiler: offsets from the ArkApi table, lock-free function->slot hashing,
+thread_local frame stack, self/total QPC timing, caller records with a used-flag.
+
+TickProf.cpp bptrace section reworked accordingly:
+- Offsets resolved at init (BpInit -> BpResolveConfig) via GetAddress("UObject.ProcessInternal")
+  and GetAddress(nullptr, "UFunction.Func" / "FFrame.Node" / "FFrame.PreviousFrame"); the
+  Ghidra-confirmed v361 values (RVA 0x01FC0270, 0xA8, 0x10, 0x70) remain only as fallback.
+  New init log line: "bptrace: offsets: ProcessInternal=... resolved|fallback" (additive marker).
+- unordered_map<void*,int32> + SRW lock on the hot path replaced by a lock-free open-addressed
+  table (131072 entries, atomic key + slot, golden-ratio index; BlueprintProf pattern). Handler
+  never takes g_bp_lock on the hot path anymore (was: shared lock per call + lazy name resolve).
+- Slot registration moved to scan time (BpRegisterSlot, best effort): the first 8192 registered
+  functions get timed; patch coverage is NOT limited by the slot table (all script UFunctions
+  still get patched) - marker values ("patched Func on N") stay at the old magnitudes.
+- Callers: BpCallerRec got a used-flag + per-slot unattributed counter; the old "slot==0 and
+  count==0 as vacant" heuristic (which hid a legitimate slot 0) is gone. Output formats untouched;
+  unattributed pairs are accumulated silently.
+- BpScanAndPatch: the O(n^2) duplicate scan (g_bp_targets linear membership check per object,
+  ~40k script functions) is gone - Func==handler marks already-patched objects. g_bp_orig_func
+  parallel vector removed (the original is one global pointer); restore is guarded by
+  func==handler before writing back.
+- BpResetCounters keeps names and the function->slot table (only counters are cleared) - the
+  "counters reset (window reopened)" semantics preserved, slot indices now stable across windows.
+- Plugin_Unload now unpatches UFunction::Func before removing hooks (was: patches leaked if a
+  window was active at unload; BlueprintProf RestoreScriptFunctions principle).
+- Untouched: all parser markers ("bptrace: enumeration/patched/v2 enabled/disabled/TOP-20 BY.../
+  bptrace.caller..." with "-2 native / -3 unknown" pseudoslots), commands, QPC frequency
+  reporting, BP_MAX_SLOTS=8192 (only table size grew to 131072 entries + ~2 MB heap).
+
+Build clean (3 pre-existing C4018, 4 pre-existing C4996 sscanf in S()). DLL 367104 B deployed to
+Plugins_\TickProf\TickProf.dll. NO boot validation yet (paused earlier, "continue later"): on resume
+expect the offsets line to say "resolved" (ArkApi table) and re-run the full marker check.
