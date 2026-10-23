@@ -4,7 +4,7 @@
 # boot - the ini value does not reach runtime.
 import os, re, subprocess, sys, time
 sys.path.insert(0, r'C:\Dev\_research')
-from tputils import PW, PLUG_DIR, rcon
+from tputils import HOSTS, PORT, PW, rcon
 
 EXE = r'C:\asmdata\Servers\Server1\ShooterGame\Binaries\Win64\ShooterGameServer.exe'
 CFG = r'C:\asmdata\Servers\Server1\ShooterGame\Saved\Config\WindowsServer'

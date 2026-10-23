@@ -2580,3 +2580,34 @@ build), table missing names falls back; NO boot test yet - on resume first check
 "offsets: struct layout" line and that tickflags/verify/overlaps outputs match the
 previous validated run's numbers (e.g. verify bAllowConcurrentTicks, ticklist actor
 counts) with the OLD constants, since pre/post-patch values differ on the prod side.
+
+## 23.10 validation boot PASSED (dynamic offsets, final build 373760 B)
+
+Genesis boot (11:34 plugin init, 11:44 game thread). Full command battery through abrcon
+(responses come back empty - "Server received, But no response!!" - PRE-EXISTING engine/ArkApi
+quirk, commands DO execute; TickProf.log is the source of truth), checked by plugin-log markers:
+
+- Plugin_Init: "offsets: struct layout: 24 fields resolved from the table, fallback: none"
+  (ArkApi error noise eliminated: dropped probes for FTickTaskSequencer.bAllowConcurrentTicks,
+  TArray/FArray.ArrayNum template names, FProperty.* - the property class in this PDB is
+  UProperty: UStruct.PropertyLink@96, UProperty.PropertyLinkNext@80, PropertyFlags@56
+  - the old fnflags constants 0x38/0x28/0x38 were wrong; fnflags now counts real parms/out/return).
+- "bptrace: offsets: ProcessInternal=0x... UFunction.Func=0xA8 FFrame.Node=0x10
+  FFrame.PreviousFrame=0x70 resolved" - resolved values equal the v361 fallbacks.
+- maxfps 60 -> NetServerMaxTickRate 30 -> 60 (verify ok); fixclamp trace ok; fncache/iscache/
+  canvas/nochart hooks installed; overlaptrim 2 -> disabled=24283 freed=195237 (same magnitudes).
+- verify: bAllowConcurrentTicks=0; ticklist levels=142 actors=106664 components=450894
+  (ticking 2219); tickclasses 284 ticking/3 classes; ticksets levels=143 all arrays non-empty
+  (TSparseArray Num via TARRAY_NUM) - no crash.
+- overlaps census: components=297670 with bGenerateOverlapEvents=6794 total=200200.
+- window 20 s -> "window result: t/s=59 cpu=5s ms/tick=4 frame_ms=16 busy=26% save=idle VALID".
+- bptrace 2 -> enumeration 40639/40638; bptrace 1 -> patch + real timing: TOP-20 BY CALLS/SELF
+  (Stego_ReeveBeginPlay self=0.5ms 44.4% etc.); bptrace.caller -> "<native/ProcessEvent-entry>"
+  100%; bptrace 0 -> "patches removed from 40638 UFunctions" (full coverage, rollback clean).
+- fnflags Stego: shown 40, sane parms/=out/return and SAFE/FORBIDDEN-for-throttling.
+
+Fixed during boot: S() formatter bug - a {"..."}"} block consumed the REST of the format
+(...)}"} blocks were always the tail in the past, so it never showed before). stand_start.py
+NameError (PORT import lost in the tputils migration) fixed. Additive tool: rcon_once.py.
+
+Server parked: saveworld OK, exit, taskkill, plugin folder back to Plugins_ (DLL 373760 B).
