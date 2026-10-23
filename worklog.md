@@ -2611,3 +2611,42 @@ Fixed during boot: S() formatter bug - a {"..."}"} block consumed the REST of th
 NameError (PORT import lost in the tputils migration) fixed. Additive tool: rcon_once.py.
 
 Server parked: saveworld OK, exit, taskkill, plugin folder back to Plugins_ (DLL 373760 B).
+
+## 23.10 > ghidra RE of the world-save chain (v361_ShooterGameServer.exe, project ARK_SE)
+Entry points found:
+- UShooterCheatManager::SaveWorld @140bc95f0 (RCON/cheat entry: GetGameMode vcall -> AShooterGameMode vcall+0xd78(0));
+- AShooterGameMode::SaveWorld @140cdc220 (4289 B, the real one, only caller of UWorld::SaveToFile);
+- execSaveWorld @1416cdf70; OnSaveWorldFinished @14247ed40; SaveTribeData @140cf2120;
+  SavePlayerData @140878d10 (x24 callers) / @140cf1150; UPaintingCache::SaveCache @1403d3530.
+
+AShooterGameMode::SaveWorld structure (decompiled):
+1) bDisableSaveLoad/GameBackupProcHandle guards -> "Saving world..." -> QPC start -> LastTimeSavedWorld=now;
+2) ChatLogFlush(true) sync;
+3) world-settings player list -> GetPlayerData -> vcall+600 per player (sync .arkprofile write path);
+4) PlayerDatas loop -> vcall+0xd88 each; MakeDirectory (IFileManager vt+0x50);
+5) FIRST save of the process only: copy prev .ark -> _NewLaunchBackup.bak (IFileManager vt+0x38) - NOT every autosave;
+6) <name>.tmp -> UWorld::SaveToFile @142755cc0 (87 KB of code, TMemoryWriter serialize of all
+   SaveGame objects: SerializeObjectData/DoStringArchive per actor) -> ONE TGraphTask<FWriteFileTask>
+   dispatched (GameThread type, buffered byte arrays via FWriteFileTaskInfo EXTRA_FileContent TArrays);
+7) UPaintingCache::SaveCache;
+8) BUSY-WAIT: do { for each write task FGraphEvent::IsComplete } while(!all) with
+   FWindowsPlatformProcess::Sleep(0.01) - game thread blocked for the WHOLE disk write;
+9) "World Save Complete. Took %f" + UAntiDupeTransactionLog::OnSaveWorldFinished. Tail of SaveToFile
+   'local_3d8=1' bool = write through temp file flag.
+
+File layer: FFileManagerGeneric::CreateFileWriter @141eb9780 -> FWindowsPlatformFile::OpenWrite
+@141f49650 -> CreateFileW(GENERIC_WRITE 0x40000000, disposition 2/4, FILE_ATTRIBUTE_NORMAL 0x80,
+NO FILE_FLAG_WRITE_THROUGH / NO_BUFFERING) -> FArchiveFileWriterGeneric + FFileHandleWindows
+(~FArchiveFileWriterGeneric @141ebce70 calls Close=flush buffer+seek). Bufferend normal write.
+
+Verdict (what is optimizable):
+- save freeze == (sync serialize on game thread) + (busy-wait for disk I/O). No engine knob short of
+  surgery; patching the wait loop is UNSAFE (AntiDupe consistency).
+- Real levers: disk medium for SavedArks (NVMe/SSD), Defender/AV exclusion for Saved dir, Windows
+  write caching ON, fewer autosave-triggered saves (interval config), smaller actor footprint.
+- bFirstSaveWorld .bak copy: negligible (once per boot). ChatLogFlush: negligible.
+
+Ghidra-MCP was intermittently timing out (list_class_members/list_globals/find_functions 30-60 s
+hangs); strategy that works: single-call find_functions(name_pattern, program:'v361_...') after
+~30 s waits. FWriteFileTask::Execute body NOT located (ctor @140d66670 only; vtable not resolved) -
+deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66xxx.
