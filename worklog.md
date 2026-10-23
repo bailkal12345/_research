@@ -2650,3 +2650,16 @@ Ghidra-MCP was intermittently timing out (list_class_members/list_globals/find_f
 hangs); strategy that works: single-call find_functions(name_pattern, program:'v361_...') after
 ~30 s waits. FWriteFileTask::Execute body NOT located (ctor @140d66670 only; vtable not resolved) -
 deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66xxx.
+
+## 23.10 > new standalone plugin: Caching (per forked "Кеширование" session)
+- Extracted from TickProf the cache trio with the strongest measured effect: fncache
+  (UClass::FindFunctionByName), iscache (UStruct::IsChildOf), cachename (Global.DoGetCanvasByName).
+- Location: C:\Dev\ARK-Server-Plugins\Caching\{Caching.cpp, Caching.vcxproj, README.md} - modeled
+  on mimalloc (single folder/TU), built clean: build\Release\Caching.dll 87040 B.
+- Changes vs TickProf: all three ON at Plugin_Init (prod autostart), hooks installed by ArkApi
+  offset-symbol names (no RVAs), travel-safety: UWorld pointer change (world load/travel) on the
+  tick callback auto-flushes all caches (pointer-keyed entry poisoning guard was the reason the
+  caches were RCON-opt-in in TickProf), new Caching.flush + Caching.stat + Caching.list.
+- RCON: Caching.fncache|iscache|cachename <0/1>, Caching.flush, Caching.stat, Caching.list.
+  Unload: gates off (detours stay, ArkApi-managed) - same policy as TickProf.
+- Not yet: stand boot validation + deployment into Server1 Plugins (asked-only rule).
