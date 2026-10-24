@@ -2724,3 +2724,43 @@ deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66x
 - Testing on hold per user instruction - no boot/measurement run since; next boot should confirm
   three 'hook removal ok' lines plus 'unload: caches disabled, detours removed' on shutdown.
 
+
+## 2026-10-24 hot-reload validation (ReflectCache, clean build b7983c8)
+- Booted Genesis stand, ArkApi loaded the DLL once; three hooks installed from Plugin_Init,
+  all gates enabled, `world changed -> caches flushed (flush #1)` on world pointer change.
+- RCON toggles only move gates now: `fncache 0` -> `on=0 hook=1`, table dropped, re-enable resets
+  hit/miss counters; same for iscache/canvas; `stat` reports `no data` while a gate is off.
+- Hot reload cycled 5+ times via `plugins.unload` / `plugins.load`: every unload logged three
+  `hook removal ok` plus `unload: caches disabled, detours removed`, every load re-installed all
+  three detours and re-registered commands. No crash, no leak: pid 4348 stayed alive with flat
+  working set, commands worked after every cycle (no duplicate-callback noise in the log).
+- Verify gate-off path does not count cache calls: disabled caches report `no data` rather than
+  stale counters.
+- Warm rates on an idle stand: fncache 99% hit, iscache 99% hit; cold-boot numbers unchanged.
+
+## 2026-10-24 BlueprintProf fleet analysis (13 servers x 2 days)
+- Dataset `C:\Users\Admin\Desktop\csv` is the WHOLE fleet, not two processes: 13 `bp_history*.csv`
+  files, one per server; two proc ids cover two maps each. Earlier note about "2 processes" was
+  an artifact of reading only `bp_history.csv` (= LostIsland).
+- `_research/bp_fleet.py` dedups on (proc_id, ts, function) across files: 376 758 rows -> 2 689
+  intervals (13 maps x ~207 ten-minute intervals), 988 unique BP functions, 23.10 07:15 -> 24.10 12:00.
+- Headline: BP self time 21 472 s over 18 247 860 s of wall = 0.118%. Median BP share of a frame
+  4.8% (2.7-8.2%), median tick 14.5 ms of 16.6 ms budget.
+- Per-map BP share of GameThread CPU: Genesis 18.3%, CrystalIsles 18.2%, Extinction 10.7%, Gen2 7.4%,
+  Aquatica 6.2%, TheCenter 5.9%, Fjordur 5.5%, Ragnarok 5.5%, Aberration 5.4%, LostIsland 5.2%,
+  ScorchedEarth 4.1%, Valguero 3.8%, TheIsland 3.2%.
+- BP is not the tps limiter anywhere: ScorchedEarth runs 5.9 tps on 0.167 ms BP/frame. Reverse
+  correlation holds (tps<5 -> 0.85 s BP/interval, tps>13 -> 6.52 s) - low tps on empty maps is the
+  prod throttle, not BP.
+- Top fleet hotspots: `Buff_UnderwaterCyclone_C:BuffTickServer` 3940 s (18.4% of all BP, 486 us/call,
+  72.9% of Genesis), `BP_FloatingObject_2_C:Transform__UpdateFunc` 2027 s (9.4%, mod, 74.7% of
+  CrystalIsles), `BrainSlug BlueprintOverrideWantsToRun` 375 s, `Dynamic_PhysicsVolume_Hazard Tick`
+  368 s, `IceJumper TryNextAbility` 277 s, `Scout FindAggressors` 236 s.
+- Families: BuffTickServer 23.4% + ReceiveTick 17.5% + BPTimerServer 7.4% + ThrottledTick 3.3% +
+  Tick 1.7% = 58% of BP time -> throttle lists should be built by family, not by class.
+- Mods 12.5% of BP self, concentrated: CrystalIsles 2310 s, Ragnarok 268 s, Fjordur 46 s,
+  LostIsland 42 s; other nine maps effectively vanilla.
+- Chronic vanilla tax across 8-11 maps (~25% of BP): Mammoth ThrottledTick, MilkGlider BPTimerServer,
+  LionfishLion ReceiveTick, Desmodus ReceiveTick, Bee_Queen BPTimerServer, BaseHumanAnimBP.
+- Report: `_research/REPORT-BLUEPROF-FLEET.md`; supersedes the LostIsland-only read in
+  REPORT-BLUEPROF-DAY.md (that file keeps the earlier 5 h window).
