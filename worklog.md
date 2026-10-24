@@ -2707,3 +2707,20 @@ deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66x
 - GitHub repo still named Caching: local repo pushed to the old URL (redirect-safe); rename the
   repo in GitHub settings, then: git remote set-url origin https://github.com/bailkal12345/ReflectCache.git
 
+
+## 24.10 > ReflectCache: isolation, plain function-pointer commands, full unhook on unload
+- Docs/comments de-branded: all TickProf mentions removed from ReflectCache.cpp and README
+  (grep TickProf = 0). Plugin reads as a standalone UE-reflection cache. Commit fad5103.
+- GitHub repo renamed to ReflectCache; origin set to the new URL (old one only redirected).
+- AddRconCommand now takes plain function pointers (&CmdList, &CmdFnCache, ...) instead of
+  lambdas - std::function converts implicitly, saves six wrapper allocations. Commit 5c59f0b.
+- Plugin_Unload no longer leaks detours: gates off first, then ArkApi::GetHooks().DisableHook
+  per installed hook, trampoline pointer and installed flag dropped so a re-load re-hooks
+  correctly. Hot unload is now crash-free (no code refs into the unloaded DLL). Commit 5c59f0b.
+- Factored into RemoveHook(prefix, fn, detour, trampoline, installed), a mirror of EnsureHook:
+  no-op when not installed, logs 'hook removal ok|FAILED' on the same [prefix] channel.
+  Commit 0820c61. Rebuilt 86016 B, deployed, hash matches build.
+- Found and fixed while renaming: Plugin_Unload did not unregister ReflectCache.flush.
+- Testing on hold per user instruction - no boot/measurement run since; next boot should confirm
+  three 'hook removal ok' lines plus 'unload: caches disabled, detours removed' on shutdown.
+
