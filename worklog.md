@@ -2651,53 +2651,11 @@ hangs); strategy that works: single-call find_functions(name_pattern, program:'v
 ~30 s waits. FWriteFileTask::Execute body NOT located (ctor @140d66670 only; vtable not resolved) -
 deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66xxx.
 
-## 24.10 ghidra RE: turret targeting / occlusion (v361) - plugin "turrets shoot dinos on structures"
-Class: APrimalStructureTurret. Target field Target @+3776, TargetingTraceOffset @+3860,
-AISetting @+3939, bitflags @+3936 (bUseNoWarning, bUseNoAmmo, bOnlyUseAmmoOnDamage,
-bHasOmniDirectionalFire, bFireProjectiles bit4, bClientFireProjectile, bIsTargeting,
-bInWaterOnlyTargetWater, bTurretIgnoreProjectiles, bUseBPTurretPreventsTargeting, bAimIgnoreSockets,
-bUseAmmoFromNearbyContainer, bUseMaxInventoryForAmmoContainerReload) - NO built-in LOS-ignore flag
-(PDB fieldcheck). ProjectileClass @+3968.
-
-Pipeline (base class -> covers Auto/Heavy/Ballista/Plant if they share it):
-- APrimalStructureTurret::Tick @140a39740 (21 KB) -> FindTarget @140a263e0 (79 KB decompile,
-  2839 instr) -> SetTarget @140a2a190; Tick also calls IsValidToFire @140a3bfe0 (angle-only check,
-  NO trace: GetTargetAimAtLocation/Rotation/fabsf), DoFire @140a2b9b0, UseTurretFastTargeting,
-  StartWarning, UpdatedTargeting (emitter only @140a3f460). FindTarget callers: Tick + GetAmmoNearby.
-
-OCCLUSION MECHANIC (the blocker):
-- FindTarget has TWO LOS sites (identical pattern): site1 calls at
-  140a28558/140a285ae (LineTraceSingle 1428292c0/142829810) + sweeps 140a28624/140a286a1
-  (1428293d0/142829920), GetActor @140a286ae; site2 @140a29c1a/140a29c70/140a29ce6/140a29d63,
-  GetActor @140a29d70 (2nd chance when target HAS an alt aim socket; channel dword=5 passed at
-  [RSP+0x20], sweep-vs-trace chosen by global dword [0x14497af78] - usually 0 -> LineTrace).
-- Trace: start = turret pos + TargetingTraceOffset; end = GetTargetFireAtLocation(target)
-  + TargetingTraceOffset; FCollisionQueryParams(turret self ignored, target's mount actor
-  *(target+0x848) AddIgnoredActor, plus an ignored-array loop before site2).
-- If GetActor(hit) != 0 AND hit actor != target: special-case accepts exist (hit is target's mount/
-  carrier/attached: vtable +0x888/+0x870/+0x860/+0x3c0 checks vs weak ptrs target+0x1540/+0xbc0/
-  +0x1398) else goto LAB_140a26852 = REJECT candidate -> no target. This is exactly "dino standing
-  on a structure is untargetable".
-- IsA<APrimalStructure> check pattern available for scoping (StaticClass callees).
-
-FIRE/DAMAGE PATH: DoFire @140a2b9b0 (8786 instr; Ghidra force_decompile times out repeatedly,
-disasm-only): 3 LOS trace sites (140a2f31b, 140a34bb0, 140a35720 + GetActor right after each),
-ConsumeAmmo @140a35b60, SpawnActor(projectile) @140a36499 -> SpawnImpactEffects @140a365e5,
-CalculateInterceptPosition @140a3777d, ApplyDamage @140a38406 (instant-damage path; args: victim
-[RSP+0x17c8], turret as instigator R9, FireDamageType via +0xf20). Branch order unconfirmed -
-finish at impl time.
-
-PATCH PLAN (TickProf-style plugin, dynamic addrs via signature scan, toggle+rollback):
-1. Site-redirect (5-byte E8 retarget) on the FindTarget trace CALLs -> wrapper runs real trace,
-   clears FHitResult only when hit actor is a structure THAT SUPPORTS THE TARGET (bounds contain
-   target XY, surface under feet) -> GetActor==0 -> accepted. Tribe/buff/PreventActorTargeting
-   checks untouched.
-2. Optional: same predicate in DoFire instant-damage trace (uses turret->Target @+3776).
-3. Phase 2 (only if projectile turrets need it): projectile impact filter to ignore the registered
-   support actor - NOT blanket wallbang.
-Risks: blanket structure-ignore = wallhack (reject); forced targeting without penetration = ammo
-waste (mitigate bOnlyUseAmmoOnDamage); perf negligible; social/perception risk (turret tracks
-through mesh) > technical; PvE farming buff; rollback = byte restore.
+## 24.10 ghidra RE: turret targeting / occlusion (v361) -> MOVED OUT
+- This investigation now lives in its own plugin repo: C:\Dev\ARK-Server-Plugins\Turrets
+  (README.md = full RE notes: FindTarget/DoFire LOS sites, PDB fields, patch plan, risks).
+- Ghidra plate comments remain in project ARK_SE (FindTarget 140a263e0, DoFire 140a2b9b0),
+  saved 24.10. Not duplicated here per directive.
 
 ## 23.10 > new standalone plugin: Caching (per forked "Кеширование" session)
 - Extracted from TickProf the cache trio with the strongest measured effect: fncache
