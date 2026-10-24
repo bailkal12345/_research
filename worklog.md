@@ -2697,3 +2697,13 @@ deferred, presumed rename+Close logic lives in dtor/Execute neighborhood 140d66x
 - Status: stand parked (TickProf back to Plugins_, Caching LEFT deployed in Plugins).
 - Next (ask-only): prod rollout via Plugins folder per server + longer window (60 s) on a
   populated server for a load-profile measurement.
+
+
+## 24.10 > rename: Caching -> ReflectCache
+- Meaning-based rename: the plugin caches UE reflection lookups (UFunction/IsChildOf/canvas).
+- Folder/vcxproj/DLL/log/RCON prefix all ReflectCache.*; README updated; rebuilt 87552 B.
+- Deployed to Server1 Plugins\ReflectCache, old Plugins\Caching removed (needed a running
+  ShooterGameServer pid 18868 to be killed first - it still held Caching.dll).
+- GitHub repo still named Caching: local repo pushed to the old URL (redirect-safe); rename the
+  repo in GitHub settings, then: git remote set-url origin https://github.com/bailkal12345/ReflectCache.git
+
