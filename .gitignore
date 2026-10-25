@@ -7,3 +7,8 @@ __pycache__/
 *.out
 *.err
 ab/
+
+etl/
+symcache/
+symbolize.exe
+dbghelp.dll
