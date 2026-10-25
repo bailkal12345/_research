@@ -1,0 +1,42 @@
+intervals 2689, maps 13
+
+map                iv    tps ms_tick   bp_ms  nat_ms     bp% save_ms    plr
+TheIsland         208  12.84   20.51   0.620   19.80    3.0%    0.00    3.0
+Gen2              206  12.76   17.77   1.316   16.59    7.1%    0.22    2.0
+Genesis           207  12.79   19.73   3.703   16.18   18.1%    0.22    2.0
+Aberration_P      207  12.81   16.54   0.755   15.99    4.9%    0.22    1.0
+Fjordur           207  14.92   15.98   0.784   15.07    5.0%    0.22    3.0
+LostIsland        207  12.81   14.48   0.700   13.86    4.8%    0.22    3.0
+Extinction        207  12.82   14.20   1.608   13.10    9.8%    0.00    1.0
+Valguero_P        207  12.83   13.43   0.494   12.92    3.7%    0.22    2.0
+TheCenter         207  12.81   13.31   0.645   12.61    4.8%    0.22    2.0
+Aquatica          207  12.82   12.23   0.698   11.57    5.6%    0.00    2.0
+Ragnarok          207  12.59   10.52   0.523   10.02    5.1%    0.00    1.0
+CrystalIsles      207  12.54   11.45   2.142    9.32   18.5%    0.22    1.0
+ScorchedEarth_P   205   3.00    3.60   0.037    3.49    1.5%    0.22    0.0
+
+FLEET: ms_tick median 13.79 | bp ms/frame median 0.805 | native median 12.77 | bp share median 5.5%
+native p10/p25/p75/p90: 7.76 / 12.77 / 16.23 / 22.39
+
+== native vs players (fleet, correlation) ==
+pearson r(native, players) = 0.730
+
+== native vs save load ==
+save_ms/frame [ 0.00, 0.01): n=1351 native median 12.80 ms/tick, ms_tick 13.78
+save_ms/frame [ 0.20, 1.00): n=1118 native median 14.09 ms/tick, ms_tick 15.34
+save_ms/frame [ 1.00,99.00): n= 220 native median 5.65 ms/tick, ms_tick 6.62
+
+== Genesis-family check: native per 100 players ==
+Aberration_P     players med   1.0  native med  15.99  bp med  0.75
+Aquatica         players med   2.0  native med  11.57  bp med  0.70
+CrystalIsles     players med   1.0  native med   9.32  bp med  2.14
+Extinction       players med   1.0  native med  13.10  bp med  1.61
+Fjordur          players med   3.0  native med  15.07  bp med  0.78
+Gen2             players med   2.0  native med  16.59  bp med  1.32
+Genesis          players med   2.0  native med  16.18  bp med  3.70
+LostIsland       players med   3.0  native med  13.86  bp med  0.70
+Ragnarok         players med   1.0  native med  10.02  bp med  0.52
+ScorchedEarth_P  players med   0.0  native med   3.49  bp med  0.04
+TheCenter        players med   2.0  native med  12.61  bp med  0.64
+TheIsland        players med   3.0  native med  19.80  bp med  0.62
+Valguero_P       players med   2.0  native med  12.92  bp med  0.49
