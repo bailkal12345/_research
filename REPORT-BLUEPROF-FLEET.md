@@ -17,6 +17,27 @@ whole folder.
 `sum(self_ms * frame_pct / 100)` per interval gives a median of 15.0 ms, matching median
 `ms_tick` 14.5 ms. So "bp/frame %" reads as "ms of BP per frame / 16.6".
 
+### Server fps cap = 15 (added 24.10.2026)
+
+All 13 prod servers run with a hard **15 fps cap**. This does not invalidate any number in
+this report, but it changes what the numbers mean:
+
+- Absolute BP cost (`self_ms`, seconds, per-map ranking) is unaffected: it is accumulated CPU
+  time of actual BP execution, not a per-frame count. Fleet total 21 472 s / 0.118% wall stands.
+- "BP ms/frame" and "BP % of GT CPU" are normalised on `tps * ms_tick` (really executed
+  frames), not on 15, so they are honest per-frame costs at the current cadence.
+- The cap **understates** BP load per wall-second: without it the server would run 30-60+ tps
+  and BP work per second of wall would grow roughly proportionally (x2-4), with ms/frame flat
+  or slightly lower (better cache locality, less spread).
+- The cap **strengthens** the "BP VM is not the tps limiter" conclusion: ScorchedEarth_P sits
+  at 5.91 tps with 0.167 ms BP/frame - at the bottom of the cap with no BP work at all.
+- Low tps on near-empty maps therefore has **two** causes, not one: the 15 fps cap plus the
+  prod plugin's power-saving throttle. Both mask true frame cost; empty maps are not a
+  meaningful place to measure lag.
+- Only open question the dataset cannot answer: whether ms BP/frame grows if the cap is
+  removed (animation/component BP ticking more often). That needs one uncapped interval on a
+  loaded map, and it is a question about the ceiling, not about BP being the bottleneck.
+
 ## Fleet summary
 
 | map | intervals | tps | ms/tick | players | BP self, s | BP ms/frame | BP % of GT CPU | save, s |
@@ -45,8 +66,10 @@ Median BP share of a frame is **4.8%** (min 2.7%, max 8.2%); median tick 14.5 ms
 - Reverse correlation between BP time and tps: intervals with tps<5 average 0.85 s BP self
   per 600 s; intervals with tps>13 average 6.52 s. More players and actors produce more BP
   work *and* higher tps.
-- Low tps on near-empty servers (SE 3.6, Ragnarok 7.0) is the prod plugin's power-saving
-  throttle, as established earlier - not lag.
+- Low tps on near-empty servers (SE 3.6, Ragnarok 7.0) is the server's 15 fps cap plus the
+  prod plugin's power-saving throttle, as established earlier - not lag. The cap also means
+  these maps say nothing about the real cost of a frame; for that, look at the loaded maps
+  (Genesis 11.4 tps / 20.8 ms tick, TheIsland 12.8 / 20.7, Gen2 12.5 / 19.7).
 
 Consequence: optimizing BP can recover at most a few percent of frame time. The remaining
 budget sits in the native part (AI, physics, replication) and in saves.

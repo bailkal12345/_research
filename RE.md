@@ -7,6 +7,7 @@ Image: `ShooterGameServer.exe` v361.7 (ARK: Survival Evolved), Win64 x64, image 
 - 2026-10-19: join-path RE in Ghidra on `v361_ShooterGame.exe` (client) - motivated by the bot auto-connect blocker found in the player slot (see REPORT-PLAYER.md); result in "RE session" below. Only the analysis was done.
 - Stage A (offline RE, bench untouched): tasks A1-A7; results recorded in the "RE2" section; deep dives A3 (inventory) and A5 (BP machine/tracer) in their own sections.
 - A1 IsA / A2 VictoryCore overlap / A4 SaveWorld / A6 report hygiene / A7 ARCH.md - all offline notes and verdicts below.
+- 2026-10-25: ETW capture of a real RCON SaveWorld on Genesis (capture1) - the 4.8 s freeze decomposed into serialization (~3.8 s CPU) + SavedArks directory enumeration (~1.0 s IO); result in "A8" below. A4 refined accordingly (3.9-4.3 s figure was serialization-only).
 
 ## RE2 (stage A results)
 
@@ -71,6 +72,34 @@ Done; all edits applied to REPORT-Genesis.md, REPORT-TheIsland.md, REPORT-Fjordu
 ### A7. ARCH.md
 
 Created separately: 5 active optimizations, 4 new patches with risk classes, configuration, built-in monitoring with the `CONTAMINATED` flag, the specification of the `perf.selftest` command and the deployment order.
+
+### A8. SaveWorld freeze decomposition (capture1, Genesis)
+
+**MAIN RESULT: the ~4.8 s freeze = ~3.8 s serialization (CPU-bound, ~1 core) + ~1.0 s of SavedArks directory enumeration (IO-blocked).** Evidence: ETW `capture1_merged.etl` (WPR CPU -filemode, merged via xperf), t = seconds of trace; RCON `saveworld` issued at t≈31.7; main-thread tid17180.
+
+**Timeline** (per-second stack reports `ps_*_SaveWorld/IterateDirectory.html`, root-hit counts from TblP):
+
+| t (s) | SaveWorld stacks | IterateDirectory stacks | phase |
+|---|---|---|---|
+| 33 | 0 | 0 | no save yet (RCON auth+polling delay ~2.5 s - not a freeze) |
+| 34 | 611 | 0 | serialization |
+| 35 | 998 | 0 | serialization (peak) |
+| 36 | 995 | 0 | serialization |
+| 37 | 803 | 0 | serialization |
+| 38 | 604 | **529 (88%)** | directory enumeration; whole second only ~255 ms CPU -> ~75% blocked in IO |
+| 39+ | 0 | 0 | save finished at t≈39; tail CPU 39-46 ≈ baseline (~130 ms/s) |
+
+Freeze window: t≈34.2-39.0 (~4.8 s). Refines A4: the old 3.9-4.3 s figure was the serialization part only; the invariant "file write is already async" holds (FWriteFileTask: 127 hits process-wide on workers, only 16 on tid17180).
+
+**CPU hotspots of the serialization spike 34-38** (exclusive hits, tid17180, `tid17180_spike.html`; ShooterGameServer module = 3.08 s of the 3.22 s window): `UProperty::ShouldSerializeValue` 691 / 19.82%, `TMemoryWriter<32>::Serialize` 553 / 15.86%, `UStruct::SerializeTaggedProperties` 291 excl (2796 incl), `FSaveFileObjectWriter::operator<<` 184+62, `UBoolProperty::Identical` 103, `TArray<...,TSizedDefaultAllocator<32>>::AddUninitialized` 102, `TProperty_WithEqualityAndSerializer<...>::Identical` family ~6%, `ShouldSerializeTransform` 50, `APrimalCharacter::AllowSaving` 50, `StaticFindObjectFastInternalThreadSafe` 46, `FArchive::IsSaveGame` 42. Consistent with A4 (serialization into memory, not disk).
+
+**NEW FINDING: `SerializeForSaveFile` enumerates the whole save directory on every save.** Decompilation of `AShooterGameMode::SerializeForSaveFile` (0x140D2C4C0, save branch `ArIsLoading==false`): `GetSaveDirectoryName(Profile)` (0x140D1FF40) + `FPaths::GameSavedDir` -> `IFileManager::FindFiles("*.arkproftemp")` (vtable+0x68) -> loop of `Delete` (vtable+0x30) over the results. Proven stack chain (529 samples in t=38): `RCONClientConnection::ProcessRCONPacket -> AShooterGameMode::SaveWorld -> UWorld::SaveToFile -> SerializeForSaveFile -> FWindowsPlatformFile::IterateDirectory -> FFileManagerGeneric::FindFiles -> FindNextFileW -> NtQueryDirectoryFileEx -> NtfsQueryDirectory -> NtfsWaitOnIo`. Enumerated directory = `ShooterGame/Saved/SavedArks` (the only directory under `Saved/` with a meaningful file count; Config=10, Logs=17).
+
+**Cost breakdown of the IO second:** SavedArks holds **1395 files / 3.15 GB** (1116 `.arktributetribe`, 250 `.arkprofile`, 23 `.ark`, 6 `.bak`) and **zero `*.arkproftemp`** -> the Delete loop runs 0 times; the cost is the pure scan. Blocking evidence: `NtfsWaitOnIo` 501 of 529 stacks (372 under `NtfsQueryDirectory`, 147 under `FindNextIndexEntry2`), `NtfsFsdRead`/`IoPageReadEx` 512. Hot local benchmark (`os.scandir`, 20 runs) = **7.2 ms/scan** -> the in-save ~1 s is cold NTFS index + ~500 blocking waits, not file count arithmetic. Storage: QEMU QEMU HARDDISK SSD SAS 400 GB, NTFS healthy, 31 GB free, no compression/sparse (wof.sys in stacks is only a filter callback; `fsutil wof` unsupported on this build).
+
+**Levers inside the allowed area (storage environment + world volume):** (1) shrink SavedArks file count - archive stale `.arktributetribe`/`.arkprofile`, drop old `.ark`/`.bak` (scan is O(entries), cold-index dominated); (2) scheduled directory index warm-up (a periodic scan keeps the index hot: 7 ms hot vs ~1 s cold per save); (3) serialization spike stays ~3.8 s - reducible only via world volume (actor/property count), not via storage.
+
+Artifacts: `etl/capture1_merged.etl`, `etl/cap1_sec_cpu.csv`, `etl/cap1_phase_timeline.csv`, `etl/tid17180_{phA,phB,phC,spike,save}.html`, `etl/ps_*_{SaveWorld,IterateDirectory}.html`, `etl/phC_{ntfs,fltp}.html`; parsers `etl/{parse_excl,parse_ps,butterfly_tree,butterfly_ctx}.py`.
 
 ## A3 inventory: GetItemTemplateQuantity / IsValidForCrafting
 
