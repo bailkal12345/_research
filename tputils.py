@@ -18,24 +18,27 @@ PLUGIN_LOG = ACTIVE_DIR + r'\TickProf.log'
 PLUGIN_DIR_SRC = r'C:\Dev\ARK-Server-Plugins\TickProf\TickProf'
 
 
-def _pack(rid, payload):
-    b = payload.encode('utf-8') + b'\x00\x00'
-    return struct.pack('<ii', len(b) + 8, rid) + b
+def _pack(rid, payload, typ=3):
+    """v361 RCON: size = bytes AFTER the size field; id, type; body + b'\\x00\\x00' (double NUL)."""
+    b = (payload.encode('utf-8') if isinstance(payload, str) else payload) + b'\x00\x00'
+    return struct.pack('<iii', 8 + len(b), rid, typ) + b
 
 
 def _unpack(buf):
-    if len(buf) < 4:
+    """Returns (total_size, rid, type, body) or None while incomplete."""
+    if len(buf) < 8:
         return None
-    size = struct.unpack_from('<i', buf, 0)[0]
+    size = struct.unpack_from('<i', buf, 0)[0]  # bytes after the size field
     if len(buf) < size + 4:
         return None
     rid = struct.unpack_from('<i', buf, 4)[0]
-    payload = buf[8:size + 4 - 2]
-    return size + 4, rid, payload
+    typ = struct.unpack_from('<i', buf, 8)[0]
+    body = buf[12:size + 4].rstrip(b'\x00')
+    return size + 4, rid, typ, body
 
 
-def rcon(cmd, timeout=6.0, port=PORT, pw=PW, wait=1.5):
-    """Source RCON: reads ALL packets, skips keep-alive (id=-1), returns the id=2 payload."""
+def rcon(cmd, timeout=6.0, port=PORT, pw=PW, wait=1.2):
+    """v361 RCON: auth (id=1,type=3) then command (id=2,type=2); skips 'Keep Alive' (id=0)."""
     for h in HOSTS:
         try:
             s = socket.create_connection((h, port), 4)
@@ -43,49 +46,69 @@ def rcon(cmd, timeout=6.0, port=PORT, pw=PW, wait=1.5):
             continue
         try:
             s.settimeout(0.5)
-            s.sendall(_pack(1, pw))
+            buf = b''
+
+            def _parse():
+                """Yield (rid, typ, body) for every complete packet in buf."""
+                nonlocal buf
+                while True:
+                    p = _unpack(buf)
+                    if not p:
+                        break
+                    ln, rid, typ, body = p
+                    buf = buf[ln:]
+                    yield rid, typ, body
+
+            # --- auth ---
+            s.sendall(_pack(1, pw, typ=3))
+            auth_seen = False
             t_end = time.time() + wait
-            auth_ok = False
+            peer_closed = False
             while time.time() < t_end:
                 try:
                     d = s.recv(65536)
                 except socket.timeout:
-                    break
+                    if auth_seen:
+                        break
+                    continue
                 if not d:
+                    peer_closed = True
                     break
-                p = _unpack(d)
-                if p and p[1] == 1:
-                    auth_ok = True
+                buf += d
+                for rid, typ, body in _parse():
+                    if rid == 1:
+                        auth_seen = True
+                if auth_seen:
                     break
-            if not auth_ok:
+            if peer_closed:
                 s.close()
-                continue
-            s.sendall(_pack(2, cmd))
-            buf = b''
+                continue  # wrong framing/password: server dropped us
+
+            # --- command ---
+            s.sendall(_pack(2, cmd, typ=2))
             out = []
             t_end = time.time() + timeout
+            idle = t_end
             while time.time() < t_end:
                 try:
                     d = s.recv(65536)
                 except socket.timeout:
-                    if buf:
+                    if out and time.time() > idle:
                         break
                     continue
                 if not d:
                     break
                 buf += d
-                while True:
-                    p = _unpack(buf)
-                    if not p:
-                        break
-                    ln, rid, payload = p
-                    buf = buf[ln:]
+                for rid, typ, body in _parse():
+                    if rid == 0 and body == b'Keep Alive':
+                        continue
                     if rid == 2:
-                        out.append(payload)
+                        out.append(body)
+                        idle = time.time() + 1.0  # reply may span packets; wrap up 1 s after the last one
             s.close()
             if out:
                 return b''.join(out).decode('utf-8', 'replace')
-            return ''
+            return '' if auth_seen else None
         except Exception:
             continue
     return None

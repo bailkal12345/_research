@@ -2,7 +2,7 @@ param(
     [ValidateSet("stock", "plugin")][string]$Mode = "stock",
     [string]$RestoreSave = "",
     [string]$SnapshotOut = "",
-    [string]$Dll = "C:\Dev\ARK-Server-Plugins\EngineSwap\Mimalloc\build\Release\Mimalloc.dll",
+    [string]$Dll = "C:\Dev\ARK-Server-Plugins\mimalloc\build\Release\mimalloc.dll",
     [switch]$SkipStop,
     [int]$ExitTimeoutSec = 120,
     [int]$LoadTimeoutSec = 900
@@ -12,13 +12,14 @@ $serverRoot = "C:\asmdata\Servers\Server2"
 $bin = Join-Path $serverRoot "ShooterGame\Binaries\Win64"
 $exe = Join-Path $bin "ShooterGameServer.exe"
 $plugins = Join-Path $bin "ArkApi\Plugins"
-$miDir = Join-Path $plugins "Mimalloc"
+$miDir = Join-Path $plugins "mimalloc"
 $miSrc = $Dll
 $args = "TheIsland?listen?MultiHome=192.168.8.218?Port=7778?QueryPort=27016?MaxPlayers=70?AllowCrateSpawnsOnTopOfStructures=True -EnableIdlePlayerKick -NoBattlEye -insecure -servergamelog -servergamelogincludetribelogs -ServerRCONOutputTribeLogs -NoHangDetection -noundermeshchecking -noundermeshkilling -NoDinos -nosteamclient -game -server -log -MinimumTimeBetweenInventoryRetrieval=3600"
 $env:RCON_HOST = "192.168.8.218"
 $env:RCON_PORT = "32331"
 $env:RCON_PASS = "9dzeZuoCBQJ7adMT"
-$rcon = "C:\Dev\_research\rcon.py"
+$env:RCON_PASS = "9dzeZuoCBQJ7adMT"
+$rcon = "C:\Dev\_research\abrcon.py"
 
 function Say($m) { Write-Output ("[{0}] {1}" -f (Get-Date -Format "HH:mm:ss"), $m) }
 
@@ -53,14 +54,14 @@ Start-Sleep -Seconds 10
 # ---- plugin state
 if ($Mode -eq "plugin") {
     New-Item -ItemType Directory -Force -Path $miDir | Out-Null
-    Copy-Item $miSrc (Join-Path $miDir "Mimalloc.dll") -Force
+    Copy-Item $miSrc (Join-Path $miDir "mimalloc.dll") -Force
     $pdb = [IO.Path]::ChangeExtension($miSrc, ".pdb")
-    if (Test-Path $pdb) { Copy-Item $pdb (Join-Path $miDir "Mimalloc.pdb") -Force }
-    if (Test-Path (Join-Path $miDir "Mimalloc.log")) { Remove-Item (Join-Path $miDir "Mimalloc.log") -Force }
-    Say "deployed mimalloc: $((Get-Item (Join-Path $miDir 'Mimalloc.dll')).Length) bytes"
+    if (Test-Path $pdb) { Copy-Item $pdb (Join-Path $miDir "mimalloc.pdb") -Force }
+    if (Test-Path (Join-Path $miDir "mimalloc.log")) { Remove-Item (Join-Path $miDir "mimalloc.log") -Force }
+    Say "deployed mimalloc: $((Get-Item (Join-Path $miDir 'mimalloc.dll')).Length) bytes"
 } else {
     if (Test-Path $miDir) {
-        Rename-Item -Path $miDir -NewName "Mimalloc.off" -Force -ErrorAction SilentlyContinue
+        Rename-Item -Path $miDir -NewName "mimalloc.off" -Force -ErrorAction SilentlyContinue
         if (Test-Path $miDir) { Remove-Item $miDir -Recurse -Force -ErrorAction SilentlyContinue }
     }
     Say "mimalloc removed from plugins"
